@@ -18,7 +18,6 @@
     along with FenixEdu Academic.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="org.fenixedu.academic.domain.accessControl.academicAdministration.AcademicOperationType"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <!--[if lt IE 9]>
@@ -457,11 +456,11 @@ a,input,.symbol {
 
 </style>
 
-<spring:url var="revokeUrl" value="/accessControl/revoke"/>
-<spring:url var="addUrl" value="/accessControl/addRule"/>
-<spring:url var="modifyOffice" value="/accessControl/modifyOffice"/>
-<spring:url var="modifyProgram" value="/accessControl/modifyProgram"/>
-<spring:url var="alterValidityURL" value="/accessControl/modifyValidity"/>
+<spring:url var="revokeUrl" value="/academic-authorizations/revoke"/>
+<spring:url var="addUrl" value="/academic-authorizations/addRule"/>
+<spring:url var="modifyOffice" value="/academic-authorizations/modifyOffice"/>
+<spring:url var="modifyProgram" value="/academic-authorizations/modifyProgram"/>
+<spring:url var="alterValidityURL" value="/academic-authorizations/modifyValidity"/>
 
 <script src="${pageContext.request.contextPath}/javaScript/jquery/jquery-ui.js"></script>
 
@@ -511,7 +510,7 @@ a,input,.symbol {
 	    	  
 		  });
 	      
-	      $('#confirmDeleteRule').find('.modal-footer #cancel').on("click",function(){ 
+	      $('#confirmDeleteRule').not('.modal-footer #confirm').on("click",function(){ 
 	    	  $('#confirmDeleteRule').find('.modal-footer #confirm').off("click");	
 	  	  });
 	      
@@ -620,7 +619,7 @@ a,input,.symbol {
 				
 			});
 			
-			$('#validity').find('.modal-footer #cancel').on("click",function(){ 
+			$('#validity').not('.modal-footer #confirm').on("click",function(){ 
 				$('#validity').find('.modal-footer #confirm').off("click");	
 			});
 			

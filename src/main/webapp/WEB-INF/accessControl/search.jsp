@@ -5,11 +5,11 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib uri = "http://java.sun.com/jsp/jstl/functions" prefix = "fn" %>
 
-<spring:url var="searchAction" value="/accessControl/search"/>
-<spring:url var="copyAction" value="/accessControl/search/copy"/>
+<spring:url var="searchAction" value="/academic-authorizations/search"/>
+<spring:url var="copyAction" value="/academic-authorizations/search/copy"/>
 <spring:url var="navigation" value="/academic-admin-office/academic-administration/navigation"/>
-<spring:url var="modifyOffice" value="/accessControl/modifyOffice"/>
-<spring:url var="modifyProgram" value="/accessControl/modifyProgram"/>
+<spring:url var="modifyOffice" value="/academic-authorizations/modifyOffice"/>
+<spring:url var="modifyProgram" value="/academic-authorizations/modifyProgram"/>
 
 <script type="text/javascript">
 var users = [<c:forEach var="user" items="${users}">"${user}",</c:forEach>];
