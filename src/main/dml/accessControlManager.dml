@@ -1,0 +1,24 @@
+package org.fenixedu.accessControl.domain;
+
+class ProfileSC {
+	String name;
+}
+
+
+relation ProfileGroups {
+	ProfileSC playsRole profile {
+        multiplicity *;
+    }
+	.org.fenixedu.bennu.core.domain.groups.PersistentGroup playsRole group {
+		multiplicity *;
+	}
+}
+
+relation ProfileMembers {
+	ProfileSC playsRole profileSC {
+        multiplicity *;
+    }
+	.org.fenixedu.bennu.core.domain.User playsRole member {
+		multiplicity *;
+	}
+}

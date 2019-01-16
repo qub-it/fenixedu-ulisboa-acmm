@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.fenixedu.academic.domain.AcademicProgram;
 import org.fenixedu.academic.domain.Degree;
@@ -15,8 +14,6 @@ import org.fenixedu.academic.domain.administrativeOffice.AdministrativeOffice;
 import org.fenixedu.academic.domain.phd.PhdProgram;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
-import org.fenixedu.bennu.core.domain.groups.PersistentDynamicGroup;
-import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.joda.time.DateTime;
 import org.springframework.ui.Model;
@@ -29,7 +26,7 @@ import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.Atomic.TxMode;
 
 @RequestMapping("/academic-authorizations")
-@SpringFunctionality(app = AccesscontrolController.class, title = "title.Accesscontrol")
+@SpringFunctionality(app = AccesscontrolController.class, title = "title.academicAuthorizations.AcademicAuthorizations")
 public class AcademicAuthorizations {
     @RequestMapping(method = RequestMethod.GET)
     public String initial(Model model) {
@@ -48,7 +45,7 @@ public class AcademicAuthorizations {
         model.addAttribute("degrees", degrees);
         model.addAttribute("phdPrograms", phdPrograms);
 
-        return "accessControl/search";
+        return "academicAuthorizations/search";
     }
 
     @RequestMapping(value = "search", method = RequestMethod.GET)
@@ -58,8 +55,6 @@ public class AcademicAuthorizations {
 
         final Set<AcademicAccessRule> rules = getAuthorizations(user);
 
-        final Set<PersistentGroup> groups = getDynamicGroups(user);
-
         final Set<String> users = getUsers();
         final AcademicOperationType[] operations = AcademicOperationType.class.getEnumConstants();
         final Set<AdministrativeOffice> offices = Bennu.getInstance().getAdministrativeOfficesSet();
@@ -68,14 +63,13 @@ public class AcademicAuthorizations {
 
         model.addAttribute("user", user);
         model.addAttribute("rules", rules);
-        model.addAttribute("groups", groups);
         model.addAttribute("users", users);
         model.addAttribute("operations", operations);
         model.addAttribute("offices", offices);
         model.addAttribute("degrees", degrees);
         model.addAttribute("phdPrograms", phdPrograms);
 
-        return "accessControl/search";
+        return "academicAuthorizations/search";
     }
 
     @RequestMapping(value = "search/copy", method = RequestMethod.GET)
@@ -113,16 +107,6 @@ public class AcademicAuthorizations {
         });
 
         return userAcademicOperation;
-    }
-
-    private Set<PersistentGroup> getDynamicGroups(User user) {
-
-        final Set<PersistentGroup> groups = Bennu.getInstance().getGroupSet().stream()
-                .filter(group -> (group.getClass().equals(PersistentDynamicGroup.class) && group.isMember(user)))
-                .collect(Collectors.toSet());
-
-        return groups;
-
     }
 
     private Set<String> getUsers() {

@@ -106,22 +106,7 @@ var users = [<c:forEach var="user" items="${users}">"${user}",</c:forEach>];
 		  	</table>
 		</div>
 		
-		<div class="small">
-			<table  class="table" >
-				<thead>
-					<tr>
-						<th>grupos</th>
-					<tr>
-				</thead>
-				<tbody>
-					<c:forEach var="group" items="${groups}">
-						<tr>
-							<td><button>${group.expression()} <span class="glyphicon glyphicon-remove"></span></button></td>
-						</tr>
-					</c:forEach>
-				</tbody>	
-			</table>
-		</div>
+		
 		
 	</div>
 	
