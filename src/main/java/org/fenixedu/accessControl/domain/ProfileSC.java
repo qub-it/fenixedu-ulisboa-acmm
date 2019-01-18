@@ -1,9 +1,16 @@
 package org.fenixedu.accessControl.domain;
 
+import java.util.Set;
+
+import org.fenixedu.academic.domain.accessControl.AcademicAuthorizationGroup;
+import org.fenixedu.academic.domain.accessControl.academicAdministration.AcademicAccessRule;
+import org.fenixedu.academic.domain.accessControl.academicAdministration.AcademicAccessRule.AcademicAccessTarget;
+import org.fenixedu.academic.domain.accessControl.academicAdministration.AcademicOperationType;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
 import org.fenixedu.bennu.core.groups.DynamicGroup;
+import org.joda.time.DateTime;
 
 public class ProfileSC extends ProfileSC_Base {
 
@@ -27,6 +34,7 @@ public class ProfileSC extends ProfileSC_Base {
         getGroupSet().forEach(group -> {
             final DynamicGroup dynamic = (DynamicGroup) group.toGroup();
             dynamic.mutator().changeGroup(dynamic.underlyingGroup().grant(member));
+
         });
 
         super.addMember(member);
@@ -47,7 +55,6 @@ public class ProfileSC extends ProfileSC_Base {
     public void addGroup(PersistentGroup group) {
 
         final DynamicGroup dynamic = (DynamicGroup) group.toGroup();
-
         getMemberSet().forEach(user -> {
             dynamic.mutator().changeGroup(dynamic.underlyingGroup().grant(user));
         });
@@ -66,11 +73,42 @@ public class ProfileSC extends ProfileSC_Base {
         super.removeGroup(group);
     }
 
+    public void addAuth(AcademicOperationType operation, Set<AcademicAccessTarget> targets, DateTime validity) {
+
+        getMemberSet().forEach(user -> {
+            new AcademicAccessRule(operation, user.groupOf(), targets, validity);
+        });
+
+        super.addGroup(AcademicAuthorizationGroup.get(operation).toPersistentGroup());
+    }
+
+    public void removeAuth(AcademicOperationType operation) {
+
+        getMemberSet().forEach(user -> {
+            try {
+                final AcademicAccessRule auth = AcademicAccessRule.accessRules()
+                        .filter(a -> a.getWhoCanAccess().equals(user.groupOf())).findFirst().get();
+
+                auth.revoke();
+            } catch (final Exception e) {
+                // TODO: handle exception
+            }
+        });
+
+        super.removeGroup(AcademicAuthorizationGroup.get(operation).toPersistentGroup());
+
+    }
+
     public static ProfileSC findByName(String name) {
 
-        final ProfileSC profile = Bennu.getInstance().getProfilescSet().stream()
-                .filter(profilesc -> profilesc.getName().equals(name)).findFirst().get();
-        return profile;
+        try {
+            final ProfileSC profile = Bennu.getInstance().getProfilescSet().stream()
+                    .filter(profilesc -> profilesc.getName().equals(name)).findFirst().get();
+            return profile;
+
+        } catch (final Exception e) {
+            return null;
+        }
     }
 
 }
