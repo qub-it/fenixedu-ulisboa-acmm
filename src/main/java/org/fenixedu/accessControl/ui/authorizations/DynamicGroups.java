@@ -1,4 +1,4 @@
-package org.fenixedu.accessControl.ui;
+package org.fenixedu.accessControl.ui.authorizations;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @RequestMapping("/dynamic-groups")
-@SpringFunctionality(app = AccesscontrolController.class, title = "title.Accesscontrol.DynamicGroups")
+@SpringFunctionality(app = AuthorizationsController.class, title = "title.Accesscontrol.Authorizations.DynamicGroups")
 public class DynamicGroups {
     @RequestMapping(method = RequestMethod.GET)
     public String initial(Model model) {

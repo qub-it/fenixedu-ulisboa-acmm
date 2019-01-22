@@ -1,4 +1,4 @@
-package org.fenixedu.accessControl.ui;
+package org.fenixedu.accessControl.ui.authorizations;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -26,7 +26,7 @@ import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.Atomic.TxMode;
 
 @RequestMapping("/academic-authorizations")
-@SpringFunctionality(app = AccesscontrolController.class, title = "title.Accesscontrol.AcademicAuthorizations")
+@SpringFunctionality(app = AuthorizationsController.class, title = "title.Accesscontrol.Authorizations.AcademicAuthorizations")
 public class AcademicAuthorizations {
     @RequestMapping(method = RequestMethod.GET)
     public String initial(Model model) {
