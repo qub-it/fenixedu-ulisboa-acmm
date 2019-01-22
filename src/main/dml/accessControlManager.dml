@@ -4,6 +4,15 @@ class AuthorizationSC {
     protected AccessOperation operation (REQUIRED);
 }
 
+relation SystemAuthorizationSC {
+	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		multiplicity 1..1;
+	}
+	AuthorizationSC playsRole authorizationsc {
+		multiplicity *;
+	}
+}
+
 class ProfileSC {
 	String name (REQUIRED);
 }

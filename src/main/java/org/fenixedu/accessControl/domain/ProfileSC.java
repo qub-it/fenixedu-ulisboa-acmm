@@ -104,7 +104,7 @@ public class ProfileSC extends ProfileSC_Base {
             new AcademicAccessRule(operation, user.groupOf(), targets, validity);
         });
 
-        super.addAuth(new AuthorizationSC(operation));
+        super.addAuth(AuthorizationSC.get(operation));
 
     }
 
