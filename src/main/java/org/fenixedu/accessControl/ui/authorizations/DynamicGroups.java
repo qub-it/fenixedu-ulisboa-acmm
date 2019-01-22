@@ -23,7 +23,7 @@ public class DynamicGroups {
         final Set<String> users = getUsers();
 
         model.addAttribute("users", users);
-        return "dynamicGroups/search";
+        return "authorizations/dynamicGroups/search";
     }
 
     @RequestMapping(value = "search", method = RequestMethod.GET)
@@ -37,7 +37,7 @@ public class DynamicGroups {
         model.addAttribute("users", users);
         model.addAttribute("groups", groups);
 
-        return "dynamicGroups/search";
+        return "authorizations/dynamicGroups/search";
     }
 
     private Set<PersistentGroup> getDynamicGroups(User user) {

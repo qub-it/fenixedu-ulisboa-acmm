@@ -45,7 +45,7 @@ public class AcademicAuthorizations {
         model.addAttribute("degrees", degrees);
         model.addAttribute("phdPrograms", phdPrograms);
 
-        return "academicAuthorizations/search";
+        return "authorizations/academicAuthorizations/search";
     }
 
     @RequestMapping(value = "search", method = RequestMethod.GET)
@@ -69,7 +69,7 @@ public class AcademicAuthorizations {
         model.addAttribute("degrees", degrees);
         model.addAttribute("phdPrograms", phdPrograms);
 
-        return "academicAuthorizations/search";
+        return "authorizations/academicAuthorizations/search";
     }
 
     @RequestMapping(value = "search/copy", method = RequestMethod.GET)
