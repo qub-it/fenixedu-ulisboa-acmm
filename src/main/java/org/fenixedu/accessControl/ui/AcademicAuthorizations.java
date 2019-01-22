@@ -26,7 +26,7 @@ import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.Atomic.TxMode;
 
 @RequestMapping("/academic-authorizations")
-@SpringFunctionality(app = AccesscontrolController.class, title = "title.academicAuthorizations.AcademicAuthorizations")
+@SpringFunctionality(app = AccesscontrolController.class, title = "title.Accesscontrol.AcademicAuthorizations")
 public class AcademicAuthorizations {
     @RequestMapping(method = RequestMethod.GET)
     public String initial(Model model) {

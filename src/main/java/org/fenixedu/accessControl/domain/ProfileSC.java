@@ -1,8 +1,8 @@
 package org.fenixedu.accessControl.domain;
 
+import java.util.HashSet;
 import java.util.Set;
 
-import org.fenixedu.academic.domain.accessControl.AcademicAuthorizationGroup;
 import org.fenixedu.academic.domain.accessControl.academicAdministration.AcademicAccessRule;
 import org.fenixedu.academic.domain.accessControl.academicAdministration.AcademicAccessRule.AcademicAccessTarget;
 import org.fenixedu.academic.domain.accessControl.academicAdministration.AcademicOperationType;
@@ -10,6 +10,7 @@ import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
 import org.fenixedu.bennu.core.groups.DynamicGroup;
+import org.fenixedu.bennu.core.groups.Group;
 import org.joda.time.DateTime;
 
 public class ProfileSC extends ProfileSC_Base {
@@ -32,8 +33,21 @@ public class ProfileSC extends ProfileSC_Base {
     public void addMember(User member) {
 
         getGroupSet().forEach(group -> {
-            final DynamicGroup dynamic = (DynamicGroup) group.toGroup();
-            dynamic.mutator().changeGroup(dynamic.underlyingGroup().grant(member));
+
+            final Group toGroup = group.toGroup();
+
+            if (toGroup instanceof DynamicGroup) {
+                final DynamicGroup dynamic = (DynamicGroup) toGroup;
+                dynamic.mutator().changeGroup(dynamic.underlyingGroup().grant(member));
+            }
+
+        });
+
+        final Set<AcademicAccessTarget> targets = new HashSet<>();
+        getAuthSet().forEach(auth -> {
+
+            new AcademicAccessRule((AcademicOperationType) auth.getOperation(), member.groupOf(), targets,
+                    new DateTime("9999-12-31"));
 
         });
 
@@ -44,8 +58,19 @@ public class ProfileSC extends ProfileSC_Base {
     public void removeMember(User member) {
 
         getGroupSet().forEach(group -> {
-            final DynamicGroup dynamic = (DynamicGroup) group.toGroup();
-            dynamic.mutator().changeGroup(dynamic.underlyingGroup().revoke(member));
+            final Group toGroup = group.toGroup();
+
+            if (toGroup instanceof DynamicGroup) {
+                final DynamicGroup dynamic = (DynamicGroup) toGroup;
+                dynamic.mutator().changeGroup(dynamic.underlyingGroup().revoke(member));
+            }
+        });
+
+        AcademicAccessRule.accessRules().forEach(rule -> {
+            if (rule.getWhoCanAccess().isMember(member)
+                    && getAuthSet().stream().filter(auth -> auth.getOperation().equals(rule.getOperation())).count() > 0) {
+                rule.revoke();
+            }
         });
 
         super.removeMember(member);
@@ -79,7 +104,8 @@ public class ProfileSC extends ProfileSC_Base {
             new AcademicAccessRule(operation, user.groupOf(), targets, validity);
         });
 
-        super.addGroup(AcademicAuthorizationGroup.get(operation).toPersistentGroup());
+        super.addAuth(new AuthorizationSC(operation));
+
     }
 
     public void removeAuth(AcademicOperationType operation) {
@@ -88,14 +114,17 @@ public class ProfileSC extends ProfileSC_Base {
             try {
                 final AcademicAccessRule auth = AcademicAccessRule.accessRules()
                         .filter(a -> a.getWhoCanAccess().equals(user.groupOf())).findFirst().get();
-
                 auth.revoke();
             } catch (final Exception e) {
                 // TODO: handle exception
             }
         });
 
-        super.removeGroup(AcademicAuthorizationGroup.get(operation).toPersistentGroup());
+        try {
+            super.removeAuth(getAuthSet().stream().filter(auth -> auth.getOperation().equals(operation)).findFirst().get());
+        } catch (final Exception e) {
+            // TODO: handle exception
+        }
 
     }
 
