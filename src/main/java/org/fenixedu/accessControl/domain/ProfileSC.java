@@ -54,6 +54,14 @@ public class ProfileSC extends ProfileSC_Base {
         super.addMember(member);
     }
 
+    public void addMembers(Group group) {
+
+        group.getMembers().forEach(member -> {
+            addMember(member);
+        });
+
+    }
+
     @Override
     public void removeMember(User member) {
 
