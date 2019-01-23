@@ -54,10 +54,18 @@ public class ProfileSC extends ProfileSC_Base {
         super.addMember(member);
     }
 
-    public void addMembers(Group group) {
+    public void addMembers(PersistentGroup group) {
 
         group.getMembers().forEach(member -> {
             addMember(member);
+        });
+
+    }
+
+    public void removeMembers(PersistentGroup group) {
+
+        group.getMembers().forEach(member -> {
+            removeMember(member);
         });
 
     }
