@@ -7,7 +7,7 @@
 
 <spring:url var="searchAction" value="/academic-authorizations/search"/>
 <spring:url var="copyAction" value="/academic-authorizations/search/copy"/>
-<spring:url var="navigation" value="/academic-admin-office/academic-administration/navigation"/>
+<spring:url var="navigation" value="/access-control/accessControl/navigation"/>
 <spring:url var="modifyOffice" value="/academic-authorizations/modifyOffice"/>
 <spring:url var="modifyProgram" value="/academic-authorizations/modifyProgram"/>
 

@@ -48,7 +48,7 @@ public class AcademicAuthorizations {
         return "authorizations/academicAuthorizations/search";
     }
 
-    @RequestMapping(value = "search", method = RequestMethod.GET)
+    @RequestMapping(path = "search", method = RequestMethod.GET)
     public String search(Model model, @RequestParam String username) {
 
         final User user = User.findByUsername(username);
@@ -72,7 +72,7 @@ public class AcademicAuthorizations {
         return "authorizations/academicAuthorizations/search";
     }
 
-    @RequestMapping(value = "search/copy", method = RequestMethod.GET)
+    @RequestMapping(path = "search/copy", method = RequestMethod.GET)
     public String copy(Model model, @RequestParam String username, @RequestParam String copyFromUsername) {
 
         final User user = User.findByUsername(username);
@@ -120,7 +120,7 @@ public class AcademicAuthorizations {
         return users;
     }
 
-    @RequestMapping(value = "addRule", method = RequestMethod.POST)
+    @RequestMapping(path = "addRule", method = RequestMethod.POST)
     @ResponseBody
     public String addRule(@RequestParam AcademicOperationType operation, @RequestParam User user, @RequestParam String validity) {
 
@@ -140,7 +140,7 @@ public class AcademicAuthorizations {
         return rule.getExternalId();
     }
 
-    @RequestMapping(value = "revoke", method = RequestMethod.POST)
+    @RequestMapping(path = "revoke", method = RequestMethod.POST)
     @ResponseBody
     public String revokeRule(Model model, @RequestParam AcademicAccessRule rule) {
 
@@ -154,7 +154,7 @@ public class AcademicAuthorizations {
         rule.revoke();
     }
 
-    @RequestMapping(value = "modifyOffice", method = RequestMethod.POST)
+    @RequestMapping(path = "modifyOffice", method = RequestMethod.POST)
     @ResponseBody
     public String editAuthorizationOffice(Model model, @RequestParam AcademicAccessRule rule,
             @RequestParam AdministrativeOffice scope, @RequestParam String action) {
@@ -180,7 +180,7 @@ public class AcademicAuthorizations {
         offices.add(office);
     }
 
-    @RequestMapping(value = "modifyProgram", method = RequestMethod.POST)
+    @RequestMapping(path = "modifyProgram", method = RequestMethod.POST)
     @ResponseBody
     public String editAuthorizationProgram(Model model, @RequestParam AcademicAccessRule rule,
             @RequestParam AcademicProgram scope, @RequestParam String action) {
@@ -206,7 +206,7 @@ public class AcademicAuthorizations {
         programs.add(program);
     }
 
-    @RequestMapping(value = "modifyValidity", method = RequestMethod.POST)
+    @RequestMapping(path = "modifyValidity", method = RequestMethod.POST)
     @ResponseBody
     public String editAuthorizationValidity(@RequestParam AcademicAccessRule rule, @RequestParam String validity) {
 

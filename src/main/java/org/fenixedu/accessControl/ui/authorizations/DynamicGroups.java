@@ -26,7 +26,7 @@ public class DynamicGroups {
         return "authorizations/dynamicGroups/search";
     }
 
-    @RequestMapping(value = "search", method = RequestMethod.GET)
+    @RequestMapping(path = "search", method = RequestMethod.GET)
     public String search(Model model, @RequestParam String username) {
 
         final User user = User.findByUsername(username);
