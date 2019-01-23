@@ -8,11 +8,13 @@ import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.domain.groups.PersistentDynamicGroup;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
+import org.fenixedu.bennu.core.groups.DynamicGroup;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @RequestMapping("/dynamic-groups")
 @SpringFunctionality(app = AuthorizationsController.class, title = "title.Accesscontrol.Authorizations.DynamicGroups")
@@ -21,8 +23,11 @@ public class DynamicGroups {
     public String initial(Model model) {
 
         final Set<String> users = getUsers();
+        final Set<PersistentGroup> dynamicGroups = getDynamicGroups();
 
         model.addAttribute("users", users);
+        model.addAttribute("dynamicGroups", dynamicGroups);
+
         return "authorizations/dynamicGroups/search";
     }
 
@@ -32,22 +37,27 @@ public class DynamicGroups {
         final User user = User.findByUsername(username);
         final Set<PersistentGroup> groups = getDynamicGroups(user);
         final Set<String> users = getUsers();
+        final Set<PersistentGroup> dynamicGroups = getDynamicGroups();
 
         model.addAttribute("user", user);
         model.addAttribute("users", users);
         model.addAttribute("groups", groups);
+        model.addAttribute("dynamicGroups", dynamicGroups);
 
         return "authorizations/dynamicGroups/search";
     }
 
     private Set<PersistentGroup> getDynamicGroups(User user) {
-
         final Set<PersistentGroup> groups = Bennu.getInstance().getGroupSet().stream()
                 .filter(group -> (group.getClass().equals(PersistentDynamicGroup.class) && group.isMember(user)))
                 .collect(Collectors.toSet());
-
         return groups;
+    }
 
+    private Set<PersistentGroup> getDynamicGroups() {
+        final Set<PersistentGroup> groups = Bennu.getInstance().getGroupSet().stream()
+                .filter(group -> (group.getClass().equals(PersistentDynamicGroup.class))).collect(Collectors.toSet());
+        return groups;
     }
 
     private Set<String> getUsers() {
@@ -59,6 +69,28 @@ public class DynamicGroups {
         });
 
         return users;
+    }
+
+    @RequestMapping(path = "add", method = RequestMethod.POST)
+    @ResponseBody
+    public Boolean addGroup(Model model, @RequestParam User user, @RequestParam PersistentDynamicGroup group) {
+
+        final DynamicGroup dynamic = (DynamicGroup) group.toGroup();
+
+        dynamic.mutator().changeGroup(dynamic.underlyingGroup().grant(user));
+
+        return true;
+    }
+
+    @RequestMapping(path = "revoke", method = RequestMethod.POST)
+    @ResponseBody
+    public Boolean revokeGroup(Model model, @RequestParam User user, @RequestParam PersistentDynamicGroup group) {
+
+        final DynamicGroup dynamic = (DynamicGroup) group.toGroup();
+
+        dynamic.mutator().changeGroup(dynamic.underlyingGroup().revoke(user));
+
+        return true;
     }
 
 }

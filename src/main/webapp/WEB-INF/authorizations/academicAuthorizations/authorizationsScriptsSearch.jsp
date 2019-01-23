@@ -466,9 +466,6 @@ a,input,.symbol {
 
 <script>
 
-
-
-
 	function modifyScope($scopeId, $authId, $url, $action) {
 		
 		response = false;

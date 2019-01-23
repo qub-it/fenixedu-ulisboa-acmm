@@ -1,23 +1,4 @@
-<%--
 
-    Copyright © 2002 Instituto Superior Técnico
-
-    This file is part of FenixEdu Academic.
-
-    FenixEdu Academic is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    FenixEdu Academic is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Lesser General Public License for more details.
-
-    You should have received a copy of the GNU Lesser General Public License
-    along with FenixEdu Academic.  If not, see <http://www.gnu.org/licenses/>.
-
---%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <!--[if lt IE 9]>
@@ -456,62 +437,39 @@ a,input,.symbol {
 
 </style>
 
-<spring:url var="revokeUrl" value="/dynamic-groups/revoke"/>
-<spring:url var="addUrl" value="/dynamic-groups/addRule"/>
-<spring:url var="modifyOffice" value="/dynamic-groups/modifyOffice"/>
-<spring:url var="modifyProgram" value="/dynamic-groups/modifyProgram"/>
-<spring:url var="alterValidityURL" value="/dynamic-groups/modifyValidity"/>
+<spring:url var="revokeGroup" value="/dynamic-groups/revoke"/>
+<spring:url var="addGroup" value="/dynamic-groups/add"/>
 
 <script src="${pageContext.request.contextPath}/javaScript/jquery/jquery-ui.js"></script>
 
 <script>
-
-
-
-
-	function modifyScope($scopeId, $authId, $url, $action) {
-		
-		response = false;
-		response = $.ajax({
-			data: {"rule": $authId, "scope": $scopeId, "action": $action},
-	      	url: $url,
-	      	type: 'POST',
-	      	headers: { '${csrf.headerName}' :  '${csrf.token}' } ,
-	      	success: function(result) {
-	    	  	return;
-		    }
-	  	});
-	    return response;
+	
+	function revokeGroup($userName, $userId, $groupName, $groupId) {
 	      
-	  };
+	      var $message = "Are you sure you want to remove '" + $userName + "' from '" + $groupName + "' ?";
+	      $('#confirmRevokeGroup').find('.modal-body p').text($message);
+	      var $title = "Remove '" + $groupName + "'";
+	      $('#confirmRevokeGroup').find('.modal-title').text($title);
 
-	  
-	  function revokeRule($userName, $authName, $authId) {
-	      
-	      var $message = "Are you sure you want to revoke the rule '" + $authName + "' from '" + $userName + "' ?";
-	      $('#confirmDeleteRule').find('.modal-body p').text($message);
-	      var $title = "Delete '" + $authName + "'";
-	      $('#confirmDeleteRule').find('.modal-title').text($title);
-
-	      $('#confirmDeleteRule').find('.modal-footer #confirm').on('click', function(){
+	      $('#confirmRevokeGroup').find('.modal-footer #confirm').on('click', function(){
 	    	  
 	    	  $.ajax({
-	    		  data: {"rule": $authId},
-                  url: "${revokeUrl}",
+	    		  data: {"user" : $userId, "group": $groupId},
+                  url: "${revokeGroup}",
                   type: 'POST',
                   headers: { '${csrf.headerName}' :  '${csrf.token}' } ,
                   success: function(result) {
-                	  $('#'+$authId).hide();
-                	  $('#confirmDeleteRule').modal('hide');
+                	  $('#'+$groupId).hide();
+                	  $('#confirmRevokeGroup').modal('hide');
 				    }
 				});
 	    	  
-	    	  $('#confirmDeleteRule').find('.modal-footer #confirm').off("click");
+	    	  $('#confirmRevokeGroup').find('.modal-footer #confirm').off("click");
 	    	  
 		  });
 	      
-	      $('#confirmDeleteRule').not('.modal-footer #confirm').on("click",function(){ 
-	    	  $('#confirmDeleteRule').find('.modal-footer #confirm').off("click");	
+	      $('#confirmRevokeGroup').not('.modal-footer #confirm').on("click",function(){ 
+	    	  $('#confirmRevokeGroup').find('.modal-footer #confirm').off("click");	
 	  	  });
 	      
 	  };
@@ -522,111 +480,35 @@ a,input,.symbol {
 	function dropFunction(event, ui) {
 		if(!$(ui.draggable).hasClass("course-dragging"))
 			return;
-		var authId = $(this).attr('id');
-		var userName = $(this).parent().parent().attr('id');
-		var userId = $(this).parent().parent().parent().attr('id');
-		var operation = $(this).find('td:nth-child(1) button').attr('data-auth-name');
-		var name = $(ui.draggable).children('#presentationName').html();
-		var description = $(ui.draggable).children('#warning').html();
+		
+		var userId = $(this).parent().parent().attr('id');
+		
 		var obj = $(this);
-		
-		
-		if($(ui.draggable).hasClass("office")){
-			var scopeId = $(ui.draggable).children('#oid').html();
-			var obj = $(this);
-			$.ajax({
-				data: {"rule": authId, "scope": scopeId, "action": "add"},
-		      	url: "${modifyOffice}",
-		      	type: 'POST',
-	            dataType: 'json',
-		      	headers: { '${csrf.headerName}' :  '${csrf.token}' } ,
-		      	success: function(result) {
-		      		$(obj).find('td:nth-child(2)').append('<tr id="'+result+'"><td><button style="margin-bottom: 2px;" data-scope-id="'+result+'" data-auth-id="'+authId+'" data-url="${modifyOffice}" data-user-name="'+userName+'" data-auth-name="'+operation+'" data-scope-name="'+name+'" data-toggle="modal" data-target="#confirmDeleteScope" class="btn btn-default">'+name+' <span class="glyphicon glyphicon-remove"></span></button class="btn btn-default"></td></tr>');
-					
-			    }
-		  	});
-			
-		}else if($(ui.draggable).hasClass("program")){
-			var scopeId = $(ui.draggable).children('#oid').html();
-			
-			$.ajax({
-				data: {"rule": authId, "scope": scopeId, "action": "add"},
-		      	url: "${modifyProgram}",
-		      	type: 'POST',
-	            dataType: 'json',
-		      	headers: { '${csrf.headerName}' :  '${csrf.token}' } ,
-		      	success: function(result) {
-		      		$(obj).find('td:nth-child(3)').append('<tr id="'+result+'"><td><button style="margin-bottom: 2px;" data-scope-id="'+result+'" data-auth-id="'+authId+'" data-url="${modifyProgram}" data-user-name="'+userName+'" data-auth-name="'+operation+'" data-scope-name="'+name+'" data-toggle="modal" data-target="#confirmDeleteScope" class="btn btn-default">'+name+' <span class="glyphicon glyphicon-remove"></span></button class="btn btn-default"></td></tr>');
-			    }
-		  	});
-		
 
-		}else if($(ui.draggable).hasClass("authorization")){
-			var operation = $(ui.draggable).children('#operationName').html();
-
-			$("#validity").modal();
+		var groupName = $(ui.draggable).children('#groupName').html();
+		var groupId = $(ui.draggable).children('#groupId').html();
 			
-			
-			$("#validity").find(".alert").remove();
-			if(description!=null){
-				
-				$("#validity").find(".modal-body").prepend("<div class=alert>"+description+"</div>");
-			}
-			
-			$('#validity').find('.modal-footer #confirm').on("click",function(){
-				
-				var validity = $("#dateValidity").val();
-				
-				$.ajax({
-		    		  data: {"operation": operation, "user": userId, "validity": validity},
-		              url: "${addUrl}",
-		              type: 'POST',
-		              dataType: 'json',
-		              headers: { '${csrf.headerName}' :  '${csrf.token}' } ,
-		              success: function(result) {
-		            	  	  
-		            	  var dropbl = $(obj).parent().prepend('<tr class="auth ui-droppable" id="'+result+'"><td><button data-user-name="'+userName+'" data-auth-id="'+result+'" data-auth-name="'+operation+'"  data-toggle="modal" data-target="#confirmDeleteRule" class="btn btn-default" >'+name+' <span class="glyphicon glyphicon-remove"></span></button class="btn btn-default"> </td> <td><table class="office-list"></table> </td> <td><table class="program-list"></table></td><td><input type="date" class="datepicker form-control" value="'+validity+'"/></td> </tr>');
-		              		
-		              		dropbl.parent().find("#"+result).droppable();
-		              		dropbl.parent().find("#"+result).droppable("enable");
-		              		
-		              		$(".datepicker").change(function(e){
+		$.ajax({
+    		  data: {"group": groupId, "user": userId},
+              url: "${addGroup}",
+              type: 'POST',
+              dataType: 'json',
+              headers: { '${csrf.headerName}' :  '${csrf.token}' } ,
+              success: function(result) {
+            	  	  
+           	    var dropbl = $(obj).parent().prepend('<tr><td><button style="margin-bottom: 2px;" data-group-expression="'+groupName+'" data-user-name="${user.username}" data-group-id="'+groupId+'" data-url="${revokeGroup}" data-user-id="'+userId+'" data-toggle="modal" data-target="#confirmRevokeGroup" class="btn btn-default"  title=<spring:message code="label.delete"/>>'+groupName+' <span class="glyphicon glyphicon-remove"></span></button></td></tr>');
+              		
+           		dropbl.parent().find("#"+result).droppable();
+           		dropbl.parent().find("#"+result).droppable("enable");
 
-
-		              			var $authId = e.target.parentElement.parentElement.id;
-		              			var $validity = e.target.value;
-		              			
-		              			
-		              			$.ajax({
-		              				data: {"rule": $authId, "validity": $validity},
-		              		        url: "${alterValidityURL}",
-		              		        type: 'POST',
-		              		        headers: { '${csrf.headerName}' :  '${csrf.token}' } ,
-		              				});
-		              			
-		              		})
-		              		
-		              		$('.auth').droppable({
-								drop: dropFunction
-							})
-						
-							$('#validity').modal('hide');
-		              		
-		              }
-					});
-				
-				$('#validity').find('.modal-footer #confirm').off("click");	
-				
+           		$('.auth').droppable({
+					drop: dropFunction
+				})
+              		
+              }
 			});
-			
-			$('#validity').not('.modal-footer #confirm').on("click",function(){ 
-				$('#validity').find('.modal-footer #confirm').off("click");	
-			});
-			
-		}else{
-			return;
-		}
 				
+	
 	}
 	
 	
@@ -661,35 +543,6 @@ a,input,.symbol {
 				    minLength: 3,
 				  });
 
-				$(".datepicker").on("load", function(){
-					
-					var date = new Date();
-					var tomorrow = date.setDate(date.getDate() + 1);
-			        tomorrow = new Date(tomorrow).toJSON().split('T')[0];
-					
-					$(".datepicker").prop('min', tomorrow);
-					
-				}).trigger("load");
-				
-				
-				$(".datepicker").change(function(e){
-
-
-					var $authId = e.target.parentElement.parentElement.id;
-					var $validity = e.target.value;
-					
-					
-					$.ajax({
-						data: {"rule": $authId, "validity": $validity},
-				        url: "${alterValidityURL}",
-				        type: 'POST',
-				        headers: { '${csrf.headerName}' :  '${csrf.token}' } ,
-					});
-					
-				})
-
-				
-
 				$('.auth').droppable({
 					drop: dropFunction
 				});
@@ -703,42 +556,15 @@ a,input,.symbol {
 					}
 				});
 				
-								
-				$('#confirmDeleteScope').on('show.bs.modal', function(e){ 
-					
-					var $scopeName = $(e.relatedTarget).attr('data-scope-name');
-			        var $scopeId = $(e.relatedTarget).attr('data-scope-id');
-			        var $userName = $(e.relatedTarget).attr('data-user-name');
-			        var $authName = $(e.relatedTarget).attr('data-auth-name');
-			        var $authId = $(e.relatedTarget).attr('data-auth-id');
-			        var $url = $(e.relatedTarget).attr('data-url');
-					var $action = "remove";
-					
-					var $message = "Are you sure you want to remove '" + $scopeName + "' from '" + $userName + "' in authorization '" + $authName + "' ?";
-				      $('#confirmDeleteScope').find('.modal-body p').text($message);
-				      var $title = "Delete '" + $scopeName + "'";
-				      $('#confirmDeleteScope').find('.modal-title').text($title);
-				    
-				    $('#confirmDeleteScope').find('.modal-footer #confirm').on('click', function(){
-				    	if(modifyScope($scopeId, $authId, $url, $action)){
-				    		$('#'+$authId).find('#'+$scopeId).hide();
-	                  	  	$('#confirmDeleteScope').modal('hide');
-				    	}
-				    	
-				    });
-				    
-				    return;
-					
-				});
-			
 
-				$('#confirmDeleteRule').on('show.bs.modal', function(e){ 
+				$('#confirmRevokeGroup').on('show.bs.modal', function(e){ 
 								
 					var $userName = $(e.relatedTarget).attr('data-user-name');
-				    var $authName = $(e.relatedTarget).attr('data-auth-name');
-				    var $authId = $(e.relatedTarget).attr('data-auth-id');
+					var $userId = $(e.relatedTarget).attr('data-user-id');
+				    var $groupName = $(e.relatedTarget).attr('data-group-expression');
+				    var $groupId = $(e.relatedTarget).attr('data-group-id');
 					
-				    revokeRule($userName, $authName, $authId);
+				    revokeGroup($userName, $userId, $groupName, $groupId);
 					    
 					
 				});
