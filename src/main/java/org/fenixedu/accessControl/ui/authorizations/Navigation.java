@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import org.fenixedu.academic.domain.accessControl.AcademicAuthorizationGroup;
 import org.fenixedu.academic.domain.accessControl.academicAdministration.AcademicAccessRule;
 import org.fenixedu.academic.domain.accessControl.academicAdministration.AcademicAccessRule.AcademicAccessTarget;
 import org.fenixedu.academic.domain.accessControl.academicAdministration.AcademicOperationType;
@@ -88,15 +88,17 @@ public class Navigation {
     @RequestMapping(path = "accessGroup", method = RequestMethod.GET)
     public String accessGroup(Model model, @RequestParam String expression) {
 
-        final Group group = AcademicAuthorizationGroup.parse(expression);
+        final Group group = Group.parse(expression);
 
-        final Map<String, String> users = new HashMap<>();
-        group.getMembers().forEach(user -> {
-            users.put(user.getName() + " (" + user.getDisplayName() + ")", user.getExternalId());
-        });
+        final Set<User> users = group.getMembers().collect(Collectors.toSet());
+
+        final Set<MenuItem> menus = getMenu(PortalConfiguration.getInstance().getMenu().getOrderedChild()).stream()
+                .filter(menu -> menu.getAccessGroup().getExpression().contains(expression) && menu.isVisible())
+                .collect(Collectors.toSet());
 
         model.addAttribute("expression", group.getExpression());
         model.addAttribute("users", users);
+        model.addAttribute("menus", menus);
 
         return "authorizations/navigation/group";
     }

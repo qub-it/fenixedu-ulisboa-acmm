@@ -7,9 +7,10 @@
 
 <spring:url var="searchAction" value="/dynamic-groups/search"/>
 <spring:url var="copyAction" value="/dynamic-groups/search/copy"/>
-<spring:url var="navigation" value="/academic-admin-office/academic-administration/navigation"/>
+<spring:url var="navigation" value="/navigation/accessGroup"/>
 <spring:url var="modifyOffice" value="/dynamic-groups/modifyOffice"/>
 <spring:url var="modifyProgram" value="/dynamic-groups/modifyProgram"/>
+
 
 <script type="text/javascript">
 var users = [<c:forEach var="user" items="${users}">"${user}",</c:forEach>];
@@ -85,12 +86,12 @@ var users = [<c:forEach var="user" items="${users}">"${user}",</c:forEach>];
 			<div id="collapseOne" class="panel-collapse collapse">
 				<div class="panel-body">
 					<c:forEach var="dynamicGroup" items="${dynamicGroups}">
-<%-- 						<a href="${navigation}?operation=${operation}"> --%>
+						<a href='${navigation}?expression=%23${dynamicGroup.expression().substring(1)}'>
 							<div class="draggable_course authorization">
 								<div id="groupName">${dynamicGroup.expression()}</div>
 								<div id="groupId" style="display:none">${dynamicGroup.externalId}</div>
 							</div>
-<!-- 						</a> -->
+						</a>
 					</c:forEach>
 				</div>
 			</div>

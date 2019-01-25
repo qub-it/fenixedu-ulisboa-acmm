@@ -21,9 +21,9 @@ public class MenusController {
     @RequestMapping(method = RequestMethod.GET)
     private String init(Model model) {
 
-        final Set<MenuItem> functionalities = getMenu(PortalConfiguration.getInstance().getMenu().getOrderedChild());
+        final Set<MenuItem> menus = getMenu(PortalConfiguration.getInstance().getMenu().getOrderedChild());
 
-        model.addAttribute("menus", functionalities);
+        model.addAttribute("menus", menus);
         return "menus/menus";
     }
 
