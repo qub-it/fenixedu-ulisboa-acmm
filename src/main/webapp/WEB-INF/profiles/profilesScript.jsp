@@ -70,8 +70,11 @@
 
 
 <spring:url var="addAuth" value="/profiles/addAuth"/>
+<spring:url var="removeAuth" value="/profiles/removeAuth"/>
 <spring:url var="addGroup" value="/profiles/addGroup"/>
+<spring:url var="removeGroup" value="/profiles/removeGroup"/>
 <spring:url var="addMember" value="/profiles/addMember"/>
+<spring:url var="removeMember" value="/profiles/removeMember"/>
 
 <script>
 
@@ -132,6 +135,93 @@
 			return;
 		}
 	}
+	
+	function deleteAuth($profile, $profileName, $auth, $authName) {
+	      
+	      var $message = "Are you sure you want to remove '" + $authName + "' from '" + $profileName + "' ?";
+	      $('#confirmDelete').find('.modal-body p').text($message);
+	      var $title = "Delete '" + $authName + "'";
+	      $('#confirmDelete').find('.modal-title').text($title);
+
+	      $('#confirmDelete').find('.modal-footer #confirm').on('click', function(){
+	    	  
+	    	  $.ajax({
+	    		  data: {"profile": $profile, "operation": $auth},
+                url: "${removeAuth}",
+                type: 'POST',
+                headers: { '${csrf.headerName}' :  '${csrf.token}' } ,
+                success: function(result) {
+              	  
+				    }
+				});
+	    	  
+	    	  $('#confirmDelete').find('.modal-footer #confirm').off("click");
+	    	  
+		  });
+	      
+	      $('#confirmDelete').not('.modal-footer #confirm').on("click",function(){ 
+	    	  $('#confirmDelete').find('.modal-footer #confirm').off("click");	
+	  	  });
+	      
+	  };
+	  
+	function deleteGroup($profile, $profileName, $group, $groupName) {
+	      
+	      var $message = "Are you sure you want to remove '" + $groupName + "' from '" + $profileName + "' ?";
+	      $('#confirmDelete').find('.modal-body p').text($message);
+	      var $title = "Delete '" + $groupName + "'";
+	      $('#confirmDelete').find('.modal-title').text($title);
+
+	      $('#confirmDelete').find('.modal-footer #confirm').on('click', function(){
+	    	  
+	    	  $.ajax({
+	    		  data: {"profile": $profile, "group": $group},
+                url: "${removeGroup}",
+                type: 'POST',
+                headers: { '${csrf.headerName}' :  '${csrf.token}' } ,
+                success: function(result) {
+              	  
+				    }
+				});
+	    	  
+	    	  $('#confirmDelete').find('.modal-footer #confirm').off("click");
+	    	  
+		  });
+	      
+	      $('#confirmDelete').not('.modal-footer #confirm').on("click",function(){ 
+	    	  $('#confirmDelete').find('.modal-footer #confirm').off("click");	
+	  	  });
+	      
+	  };
+	  
+	function deleteUser($profile, $profileName, $user, $userName) {
+	      
+	      var $message = "Are you sure you want to remove '" + $userName + "' from '" + $profileName + "' ?";
+	      $('#confirmDelete').find('.modal-body p').text($message);
+	      var $title = "Delete '" + $userName + "'";
+	      $('#confirmDelete').find('.modal-title').text($title);
+
+	      $('#confirmDelete').find('.modal-footer #confirm').on('click', function(){
+	    	  
+	    	  $.ajax({
+	    		  data: {"profile": $profile, "user": $user},
+                url: "${removeMember}",
+                type: 'POST',
+                headers: { '${csrf.headerName}' :  '${csrf.token}' } ,
+                success: function(result) {
+              	  
+				    }
+				});
+	    	  
+	    	  $('#confirmDelete').find('.modal-footer #confirm').off("click");
+	    	  
+		  });
+	      
+	      $('#confirmDelete').not('.modal-footer #confirm').on("click",function(){ 
+	    	  $('#confirmDelete').find('.modal-footer #confirm').off("click");	
+	  	  });
+	      
+	  };
 
 
 $(document).ready(function() {
@@ -158,10 +248,7 @@ $(document).ready(function() {
 		  });
 	
 	   $(".accordion").on("click", function(){
-		
-		   $(".accordion").not(this).removeClass("activeAccordion");
-		   $(".accordion-panel").not(this).css("display", "none");
-		   
+
 			$(this).toggleClass("activeAccordion");
 		    var panel = $(this).next();
 		    if (panel.css("display") === "block") {
@@ -186,7 +273,7 @@ $(document).ready(function() {
 		})
 
 		$('#userForm').on('submit', function(){
-		    $(this).parent().append("<div class='draggable_course user ui-draggable'><div id='userName'>" + $(this).find("#userInp").val() + "</div></div>");
+		    $(this).after("<div class='draggable_course user ui-draggable'><div id='userName'>" + $(this).find("#userInp").val() + "</div></div>");
 		    
 		    $(this).parent().find(".user").draggable({
 				revert : 'invalid',
@@ -199,6 +286,28 @@ $(document).ready(function() {
 		    
 		    return false;
 		 });
+		
+		$('#confirmDelete').on('show.bs.modal', function(e){ 
+			
+			var $profileId = $(e.relatedTarget).attr('data-profile-id');
+			var $profileName = $(e.relatedTarget).attr('data-profile-name');
+			var $type = $(e.relatedTarget).attr('data-type');
+			
+			if($type == "auth"){
+				var $auth = $(e.relatedTarget).attr('data-auth-id');
+				var $authName = $(e.relatedTarget).attr('data-auth-name');
+				deleteAuth($profileId, $profileName, $auth, $authName);
+			}else if($type == "group"){
+				var $group = $(e.relatedTarget).attr('data-group-id');
+				var $groupName = $(e.relatedTarget).attr('data-group-name');
+				deleteGroup($profileId, $profileName, $group, $groupName);
+			}else{
+				var $user = $(e.relatedTarget).attr('data-user-id');
+				var $userName = $(e.relatedTarget).attr('data-user-name');
+				deleteUser($profileId, $profileName, $user, $userName);
+			}
+
+		});
 
 })
 </script>

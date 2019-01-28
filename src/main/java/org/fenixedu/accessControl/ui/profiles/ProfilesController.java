@@ -151,6 +151,20 @@ public class ProfilesController {
         profile.removeMember(user);
     }
 
+    @RequestMapping(path = "delete", method = RequestMethod.POST)
+    @ResponseBody
+    public String delete(@RequestParam ProfileSC profile) {
+
+        deleteprofile(profile);
+
+        return "";
+    }
+
+    @Atomic(mode = TxMode.WRITE)
+    private void deleteprofile(ProfileSC profile) {
+        ProfileSC.delete(profile);;
+    }
+
     private Set<PersistentGroup> getDynamicGroups() {
         final Set<PersistentGroup> groups = Bennu.getInstance().getGroupSet().stream()
                 .filter(group -> (group.getClass().equals(PersistentDynamicGroup.class))).collect(Collectors.toSet());

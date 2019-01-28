@@ -156,4 +156,23 @@ public class ProfileSC extends ProfileSC_Base {
         }
     }
 
+    public static void delete(ProfileSC profile) {
+
+        profile.getAuthSet().forEach(auth -> {
+            profile.removeAuth(auth);
+        });
+
+        profile.getGroupSet().forEach(group -> {
+            profile.removeGroup(group);
+        });
+
+        profile.getMemberSet().forEach(user -> {
+            profile.removeMember(user);
+        });
+
+        profile.setBennu(null);
+        profile.setName(null);
+
+    }
+
 }
