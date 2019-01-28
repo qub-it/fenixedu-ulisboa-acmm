@@ -2,12 +2,14 @@ package org.fenixedu.accessControl.ui.profiles;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.fenixedu.academic.domain.accessControl.academicAdministration.AcademicAccessRule.AcademicAccessTarget;
 import org.fenixedu.academic.domain.accessControl.academicAdministration.AcademicOperationType;
 import org.fenixedu.accessControl.domain.ProfileSC;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
+import org.fenixedu.bennu.core.domain.groups.PersistentDynamicGroup;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
 import org.fenixedu.bennu.spring.portal.SpringApplication;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
@@ -16,6 +18,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.Atomic.TxMode;
@@ -30,18 +33,24 @@ public class ProfilesController {
     public String init(Model model) {
 
         final Set<ProfileSC> profiles = Bennu.getInstance().getProfilescSet();
+        final AcademicOperationType[] operations = AcademicOperationType.class.getEnumConstants();
+        final Set<PersistentGroup> groups = getDynamicGroups();
+        final Set<User> users = Bennu.getInstance().getUserSet();
 
         model.addAttribute("profiles", profiles);
+        model.addAttribute("operations", operations);
+        model.addAttribute("groups", groups);
+        model.addAttribute("users", users);
         return "profiles/profiles";
     }
 
-    @RequestMapping(path = "create", method = RequestMethod.GET)
+    @RequestMapping(path = "create", method = RequestMethod.POST)
     public String create(Model model, @RequestParam String name) {
 
         final ProfileSC profile = createProfile(name);
 
         model.addAttribute("profile", profile);
-        return "profiles/profiles";
+        return "redirect:/access-control/profiles/profiles";
     }
 
     @Atomic(mode = TxMode.WRITE)
@@ -49,13 +58,13 @@ public class ProfilesController {
         return new ProfileSC(name);
     }
 
-    @RequestMapping(path = "addGroup", method = RequestMethod.GET)
+    @RequestMapping(path = "addGroup", method = RequestMethod.POST)
+    @ResponseBody
     public String addGroup(Model model, @RequestParam ProfileSC profile, @RequestParam PersistentGroup group) {
 
         addGroup(profile, group);
 
-        model.addAttribute("profile", profile);
-        return "profiles/profiles";
+        return "";
     }
 
     @Atomic(mode = TxMode.WRITE)
@@ -63,13 +72,14 @@ public class ProfilesController {
         profile.addGroup(group);
     }
 
-    @RequestMapping(path = "removeGroup", method = RequestMethod.GET)
+    @RequestMapping(path = "removeGroup", method = RequestMethod.POST)
+    @ResponseBody
     public String removeGroup(Model model, @RequestParam ProfileSC profile, @RequestParam PersistentGroup group) {
 
         removeGroup(profile, group);
 
         model.addAttribute("profile", profile);
-        return "profiles/profiles";
+        return "";
     }
 
     @Atomic(mode = TxMode.WRITE)
@@ -77,14 +87,15 @@ public class ProfilesController {
         profile.removeGroup(group);
     }
 
-    @RequestMapping(path = "addAuth", method = RequestMethod.GET)
+    @RequestMapping(path = "addAuth", method = RequestMethod.POST)
+    @ResponseBody
     public String addAuth(Model model, @RequestParam ProfileSC profile, @RequestParam AcademicOperationType operation,
             @RequestParam String validity) {
 
         addAuth(profile, operation, new DateTime(validity));
 
         model.addAttribute("profile", profile);
-        return "profiles/profiles";
+        return "";
     }
 
     @Atomic(mode = TxMode.WRITE)
@@ -93,46 +104,57 @@ public class ProfilesController {
         profile.addAuth(operation, targets, validity);
     }
 
-    @RequestMapping(path = "removeAuth", method = RequestMethod.GET)
+    @RequestMapping(path = "removeAuth", method = RequestMethod.POST)
+    @ResponseBody
     public String removeAuth(Model model, @RequestParam ProfileSC profile, @RequestParam AcademicOperationType operation) {
 
         removeAuth(profile, operation);
 
         model.addAttribute("profile", profile);
-        return "profiles/profiles";
+        return "";
     }
 
     @Atomic(mode = TxMode.WRITE)
-    public void removeAuth(ProfileSC profile, AcademicOperationType operation) {
+    private void removeAuth(ProfileSC profile, AcademicOperationType operation) {
         profile.removeAuth(operation);
     }
 
-    @RequestMapping(path = "addMember", method = RequestMethod.GET)
-    public String addMember(Model model, @RequestParam ProfileSC profile, @RequestParam User user) {
+    @RequestMapping(path = "addMember", method = RequestMethod.POST)
+    @ResponseBody
+    public String addMember(Model model, @RequestParam ProfileSC profile, @RequestParam String username) {
+
+        final User user = User.findByUsername(username);
 
         addMember(profile, user);
 
         model.addAttribute("profile", profile);
-        return "profiles/profiles";
+        return "";
     }
 
     @Atomic(mode = TxMode.WRITE)
-    public void addMember(ProfileSC profile, User user) {
+    private void addMember(ProfileSC profile, User user) {
         profile.addMember(user);
     }
 
-    @RequestMapping(path = "removeMember", method = RequestMethod.GET)
+    @RequestMapping(path = "removeMember", method = RequestMethod.POST)
+    @ResponseBody
     public String removeMember(Model model, @RequestParam ProfileSC profile, @RequestParam User user) {
 
         removeMember(profile, user);
 
         model.addAttribute("profile", profile);
-        return "profiles/profiles";
+        return "";
     }
 
     @Atomic(mode = TxMode.WRITE)
-    public void removeMember(ProfileSC profile, User user) {
+    private void removeMember(ProfileSC profile, User user) {
         profile.removeMember(user);
+    }
+
+    private Set<PersistentGroup> getDynamicGroups() {
+        final Set<PersistentGroup> groups = Bennu.getInstance().getGroupSet().stream()
+                .filter(group -> (group.getClass().equals(PersistentDynamicGroup.class))).collect(Collectors.toSet());
+        return groups;
     }
 
 }
