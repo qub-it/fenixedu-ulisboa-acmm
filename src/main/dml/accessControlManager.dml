@@ -15,6 +15,7 @@ relation SystemAuthorizationSC {
 
 class ProfileSC {
 	String name (REQUIRED);
+	DateTime revoked;
 }
 
 relation ProfileMembers {
@@ -46,7 +47,7 @@ relation ProfileAccessAuth {
 
 relation SystemProfileSC {
 	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
-		multiplicity 1..1;
+		multiplicity 0..1;
 	}
 	ProfileSC playsRole profilesc {
 		multiplicity *;

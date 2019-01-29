@@ -159,7 +159,7 @@ public class ProfileSC extends ProfileSC_Base {
     public static void delete(ProfileSC profile) {
 
         profile.getAuthSet().forEach(auth -> {
-            profile.removeAuth(auth);
+            profile.removeAuth((AcademicOperationType) auth.getOperation());
         });
 
         profile.getGroupSet().forEach(group -> {
@@ -171,7 +171,7 @@ public class ProfileSC extends ProfileSC_Base {
         });
 
         profile.setBennu(null);
-        profile.setName(null);
+        profile.setRevoked(new DateTime());
 
     }
 

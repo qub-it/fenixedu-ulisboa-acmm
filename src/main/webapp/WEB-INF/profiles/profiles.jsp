@@ -33,7 +33,7 @@ var users = [<c:forEach var="user" items="${users}">"${user.getName()}",</c:forE
 <div class="col-lg-8">
 	<c:forEach var="profile" items="${profiles}">
 	
-		<button class="accordion" >${profile.name}</button>
+		<div class="accordion">${profile.name}</div>
 		
 		<div class="accordion-panel" id="${profile.getExternalId()}">
 
@@ -56,6 +56,13 @@ var users = [<c:forEach var="user" items="${users}">"${user.getName()}",</c:forE
 				<c:forEach var="user" items="${profile.getMemberSet()}">
 					<button data-profile-id="${profile.getExternalId()}" data-profile-name="${profile.name}" data-user-id="${user.getExternalId()}" data-user-name="${user.getUsername()}" data-type="user" data-toggle="modal" data-target="#confirmDelete" class="btn btn-default" title=<spring:message code="label.delete"/>>${user.getUsername()} <span class="glyphicon glyphicon-remove"></span></button>
 				</c:forEach>
+			</div>
+			
+			<div>
+				<div class="col-lg-10"></div>
+				<div id="box" class="col-lg-2">
+				<button data-profile-id="${profile.getExternalId()}" data-profile-name="${profile.name}" data-type="profile" data-toggle="modal" data-target="#confirmDelete" class="btn btn-danger" title=<spring:message code="label.delete"/>><spring:message code="label.delete"/> <span class="glyphicon glyphicon-remove"></span></button>
+				</div>
 			</div>
 			
 		</div>

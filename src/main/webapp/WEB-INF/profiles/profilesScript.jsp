@@ -2,9 +2,10 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <style>
 
-#box button {
-	margin: 2px;
+#box {
+	margin-top: 10px;
 }
+
 
 #auths.affix {
 	top: 20px;
@@ -75,6 +76,7 @@
 <spring:url var="removeGroup" value="/profiles/removeGroup"/>
 <spring:url var="addMember" value="/profiles/addMember"/>
 <spring:url var="removeMember" value="/profiles/removeMember"/>
+<spring:url var="delete" value="/profiles/delete"/>
 
 <script>
 
@@ -151,7 +153,8 @@
                 type: 'POST',
                 headers: { '${csrf.headerName}' :  '${csrf.token}' } ,
                 success: function(result) {
-              	  
+                	$('button[data-profile-id="'+$profile+'"][data-auth-id="'+$auth+'"]').hide();
+                	$('#confirmDelete').modal('hide');
 				    }
 				});
 	    	  
@@ -180,7 +183,8 @@
                 type: 'POST',
                 headers: { '${csrf.headerName}' :  '${csrf.token}' } ,
                 success: function(result) {
-              	  
+                	$('button[data-profile-id="'+$profile+'"][data-group-id="'+$group+'"]').hide();
+                	$('#confirmDelete').modal('hide');
 				    }
 				});
 	    	  
@@ -209,7 +213,38 @@
                 type: 'POST',
                 headers: { '${csrf.headerName}' :  '${csrf.token}' } ,
                 success: function(result) {
-              	  
+                	$('button[data-profile-id="'+$profile+'"][data-user-id="'+$user+'"]').hide();
+                	$('#confirmDelete').modal('hide');
+				    }
+				});
+	    	  
+	    	  $('#confirmDelete').find('.modal-footer #confirm').off("click");
+	    	  
+		  });
+	      
+	      $('#confirmDelete').not('.modal-footer #confirm').on("click",function(){ 
+	    	  $('#confirmDelete').find('.modal-footer #confirm').off("click");	
+	  	  });
+	      
+	  };
+	  
+	function deleteProfile($profile, $profileName) {
+	      
+	      var $message = "Are you sure you want to delete '" + $profileName + "' ?";
+	      $('#confirmDelete').find('.modal-body p').text($message);
+	      var $title = "Delete '" + $profileName + "'";
+	      $('#confirmDelete').find('.modal-title').text($title);
+
+	      $('#confirmDelete').find('.modal-footer #confirm').on('click', function(){
+	    	  
+	    	  $.ajax({
+	    		  data: {"profile": $profile},
+                url: "${delete}",
+                type: 'POST',
+                headers: { '${csrf.headerName}' :  '${csrf.token}' } ,
+                success: function(result) {
+                	$('#'+$profile).hide().prev().hide();
+                	$('#confirmDelete').modal('hide');
 				    }
 				});
 	    	  
@@ -249,6 +284,8 @@ $(document).ready(function() {
 	
 	   $(".accordion").on("click", function(){
 
+		   $(".accordion").not($(this)).removeClass("activeAccordion").next().css("display", "none");
+		   
 			$(this).toggleClass("activeAccordion");
 		    var panel = $(this).next();
 		    if (panel.css("display") === "block") {
@@ -301,10 +338,12 @@ $(document).ready(function() {
 				var $group = $(e.relatedTarget).attr('data-group-id');
 				var $groupName = $(e.relatedTarget).attr('data-group-name');
 				deleteGroup($profileId, $profileName, $group, $groupName);
-			}else{
+			}else if($type == "user"){
 				var $user = $(e.relatedTarget).attr('data-user-id');
 				var $userName = $(e.relatedTarget).attr('data-user-name');
 				deleteUser($profileId, $profileName, $user, $userName);
+			}else{
+				deleteProfile($profileId, $profileName);
 			}
 
 		});
