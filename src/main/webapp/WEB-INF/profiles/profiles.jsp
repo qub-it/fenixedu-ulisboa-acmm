@@ -19,7 +19,7 @@ var users = [<c:forEach var="user" items="${users}">"${user.getName()}",</c:forE
 <div class="col-md-4">
 	<form class="form-horizontal" action="${create}" method="POST">
 		<label class="control-label"><spring:message code="label.profile" /></label>
-		<input name="name">
+		<input name="name" required>
 		<input name="_csrf" value="${csrf.token}" hidden>
 		<button class="btn btn-primary" type="submit"><span class="glyphicon glyphicon-plus"></span> <spring:message code="label.create" /></button>
 	</form>

@@ -37,16 +37,17 @@
   width: 100%;
   height: 100%;
   padding: 10px;
-  border: 1px solid #44444487;
+/*   border: 1px solid #44444487; */
 }
 
 
 .accordion {
-  background-color: #eee;
+  background-image: -webkit-gradient( linear, left bottom, left top, color-stop(1, rgb(215,227,140)), color-stop(0, rgb(202,215,127)) );
   color: #444;
   padding: 15px;
   width: 100%;
   border: none;
+  border-radius: 5px;
   margin: 2px;
   text-align: left;
   outline: none;
@@ -55,7 +56,7 @@
 }
 
 .activeAccordion, .accordion:hover {
-  background-color: #ccc; 
+  background-image: -webkit-gradient( linear, left bottom, left top, color-stop(1, rgb(202,215,127)), color-stop(0, rgb(183, 193, 122)) );
 }
 
 .accordion-panel {

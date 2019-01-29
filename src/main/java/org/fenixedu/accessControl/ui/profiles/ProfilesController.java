@@ -45,11 +45,12 @@ public class ProfilesController {
     }
 
     @RequestMapping(path = "create", method = RequestMethod.POST)
-    public String create(Model model, @RequestParam String name) {
+    public String create(@RequestParam String name) {
 
-        final ProfileSC profile = createProfile(name);
+        if (name.length() > 0) {
+            createProfile(name);
+        }
 
-        model.addAttribute("profile", profile);
         return "redirect:/access-control/profiles/profiles";
     }
 
