@@ -120,11 +120,50 @@ public class Navigation {
         return items;
     }
 
-    @RequestMapping(path = "addMenu", method = RequestMethod.GET)
+    @RequestMapping(path = "addMenuToAuth", method = RequestMethod.GET)
     @ResponseBody
-    public String addMenu(Model model, @RequestParam MenuItem menuItem, @RequestParam AcademicOperationType operation) {
+    public String addMenuToAuth(Model model, @RequestParam MenuItem menuItem, @RequestParam AcademicOperationType operation) {
 
         final Group group = menuItem.getAccessGroup().or(Group.parse("academic(" + operation + ")"));
+
+        setGroup(menuItem, group);
+
+        return "";
+    }
+
+    @RequestMapping(path = "addMenuToGroup", method = RequestMethod.GET)
+    @ResponseBody
+    public String addMenuToGroup(Model model, @RequestParam MenuItem menuItem, @RequestParam String expression) {
+
+        System.out.println(menuItem.getAccessGroup().getExpression());
+
+        System.out.println(menuItem.getAccessGroup().or(Group.parse(expression)).getExpression());
+
+        final Group group = menuItem.getAccessGroup().or(Group.parse(expression));
+
+        setGroup(menuItem, group);
+
+        return "";
+    }
+
+    @RequestMapping(path = "removeMenuToAuth", method = RequestMethod.GET)
+    @ResponseBody
+    public String removeMenuToAuth(Model model, @RequestParam MenuItem menuItem, @RequestParam AcademicOperationType operation) {
+
+        final Group group = Group.parse(menuItem.getAccessGroup().getExpression()
+                .replaceAll("academic(" + operation + ")", "nobody").replaceAll("academic(" + operation + ")", "nobody"));
+
+        setGroup(menuItem, group);
+
+        return "";
+    }
+
+    @RequestMapping(path = "removeMenuToGroup", method = RequestMethod.GET)
+    @ResponseBody
+    public String removeMenuToGroup(Model model, @RequestParam MenuItem menuItem, @RequestParam String expression) {
+
+        final Group group = Group.parse(
+                menuItem.getAccessGroup().getExpression().replaceAll(expression, "nobody").replaceAll(expression, "nobody"));
 
         setGroup(menuItem, group);
 
