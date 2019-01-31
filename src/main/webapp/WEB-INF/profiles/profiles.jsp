@@ -6,7 +6,8 @@
 <%@ taglib uri = "http://java.sun.com/jsp/jstl/functions" prefix = "fn" %>
 
 <spring:url var="create" value="/profiles/create"/>
-<spring:url var="navigation" value="/navigation/accessGroup"/>
+<spring:url var="navigationAuths" value="/access-control/accessControl/navigation"/>
+<spring:url var="navigationGroup" value="/navigation/accessGroup"/>
 
 <script type="text/javascript">
 var users = [<c:forEach var="user" items="${users}">"${user.getName()}",</c:forEach>];
@@ -83,7 +84,7 @@ var users = [<c:forEach var="user" items="${users}">"${user.getName()}",</c:forE
 			<div id="collapseOne" class="panel-collapse collapse">
 				<div class="panel-body">
 					<c:forEach var="operation" items="${operations}">
-						<a href="${navigation}?operation=${operation}">
+						<a href="${navigationAuths}?operation=${operation}">
 							<div class="draggable_course authorization">
 								<c:if test="${operation.critical}">
 									<div id="warning">${operation.criticalDescription}</div>
@@ -108,7 +109,7 @@ var users = [<c:forEach var="user" items="${users}">"${user.getName()}",</c:forE
 			<div id="collapseTwo" class="panel-collapse collapse">
 				<div class="panel-body">
 					<c:forEach var="group" items="${groups}">
-						<a href='${navigation}?expression=%23${group.expression().substring(1)}'>
+						<a href='${navigationGroup}?expression=%23${group.expression().substring(1)}'>
 							<div class="draggable_course group">
 								<div id="groupName">${group.expression()}</div>
 								<div id="groupId" style="display:none">${group.externalId}</div>

@@ -55,7 +55,7 @@ functionalities
 
 	
 	<li>
-		<a href="${funcURL}">${functionality.key}</a>
+		<a href="${funcURL}">${functionality.key} - ${functionality.value.oid}</a>
 		<ul  style="list-style: none;">
 			<li>
 			group: <a href="${groupURL}?expression=${functionality.value.expression}">${functionality.value.expression}</a>

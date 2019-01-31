@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.Atomic.TxMode;
+
 @RequestMapping("/dynamic-groups")
 @SpringFunctionality(app = AuthorizationsController.class, title = "title.Accesscontrol.Authorizations.DynamicGroups")
 public class DynamicGroups {
@@ -45,6 +48,25 @@ public class DynamicGroups {
         model.addAttribute("dynamicGroups", dynamicGroups);
 
         return "authorizations/dynamicGroups/search";
+    }
+
+    @RequestMapping(path = "search/copy", method = RequestMethod.GET)
+    public String copy(Model model, @RequestParam String username, @RequestParam String copyFromUsername) {
+
+        final User user = User.findByUsername(username);
+        final User copyFrom = User.findByUsername(copyFromUsername);
+
+        final Set<PersistentGroup> groupsToCopy = getDynamicGroups(copyFrom);
+
+        groupsToCopy.forEach(group -> {
+
+            if (!group.isMember(user)) {
+                addToGroup((DynamicGroup) group.toGroup(), user);
+            }
+
+        });
+
+        return "redirect:?username=" + user.getUsername();
     }
 
     private Set<PersistentGroup> getDynamicGroups(User user) {
@@ -77,9 +99,16 @@ public class DynamicGroups {
 
         final DynamicGroup dynamic = (DynamicGroup) group.toGroup();
 
-        dynamic.mutator().changeGroup(dynamic.underlyingGroup().grant(user));
+        addToGroup(dynamic, user);
 
         return true;
+    }
+
+    @Atomic(mode = TxMode.WRITE)
+    private void addToGroup(DynamicGroup group, User user) {
+
+        group.mutator().changeGroup(group.underlyingGroup().grant(user));
+
     }
 
     @RequestMapping(path = "revoke", method = RequestMethod.POST)
@@ -88,9 +117,16 @@ public class DynamicGroups {
 
         final DynamicGroup dynamic = (DynamicGroup) group.toGroup();
 
-        dynamic.mutator().changeGroup(dynamic.underlyingGroup().revoke(user));
+        removeFromGroup(dynamic, user);
 
         return true;
+    }
+
+    @Atomic(mode = TxMode.WRITE)
+    private void removeFromGroup(DynamicGroup group, User user) {
+
+        group.mutator().changeGroup(group.underlyingGroup().revoke(user));
+
     }
 
 }

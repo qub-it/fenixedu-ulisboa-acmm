@@ -83,8 +83,6 @@ public class AcademicAuthorizations {
 
         rulesToCopy.forEach(rule -> {
 
-            rules.stream().forEach(ru -> ru.getOperation());
-
             if (rules.stream().noneMatch(r -> r.getOperation() == rule.getOperation())) {
                 grantRule(rule.getOperation(), user, rule.getWhatCanAffect(), rule.getValidity());
             }

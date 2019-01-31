@@ -21,6 +21,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.Atomic.TxMode;
@@ -44,6 +45,7 @@ public class Navigation {
                 final Map<String, String> info = new HashMap<>();
 
                 info.put("url", functionality.getFullPath());
+                info.put("oid", functionality.getExternalId());
                 info.put("expression", functionality.getAccessGroup().getExpression());
 
                 functionalities.put(functionality.getTitle().getContent(), info);
@@ -70,6 +72,7 @@ public class Navigation {
     }
 
     @RequestMapping(path = "addUser", method = RequestMethod.POST)
+    @ResponseBody
     public String addUser(@RequestParam AcademicOperationType operation, @RequestParam User user) {
 
         final Set<AcademicAccessTarget> targets = new HashSet<AcademicAccessTarget>();
@@ -115,6 +118,26 @@ public class Navigation {
             }
         }
         return items;
+    }
+
+    @RequestMapping(path = "addMenu", method = RequestMethod.GET)
+    @ResponseBody
+    public String addMenu(Model model, @RequestParam MenuItem menuItem, @RequestParam AcademicOperationType operation) {
+
+        final Group group = menuItem.getAccessGroup().or(Group.parse("academic(" + operation + ")"));
+
+        setGroup(menuItem, group);
+
+        return "";
+    }
+
+    @Atomic(mode = TxMode.WRITE)
+    private void setGroup(MenuItem menuItem, Group group) {
+        menuItem.setAccessGroup(group);
+
+        if (!menuItem.getParent().isRoot()) {
+            setGroup(menuItem.getParent(), group);
+        }
     }
 
 }
