@@ -9,7 +9,9 @@ import java.util.stream.Collectors;
 import org.fenixedu.academic.domain.accessControl.academicAdministration.AcademicAccessRule;
 import org.fenixedu.academic.domain.accessControl.academicAdministration.AcademicAccessRule.AcademicAccessTarget;
 import org.fenixedu.academic.domain.accessControl.academicAdministration.AcademicOperationType;
+import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
+import org.fenixedu.bennu.core.groups.DynamicGroup;
 import org.fenixedu.bennu.core.groups.Group;
 import org.fenixedu.bennu.portal.domain.MenuContainer;
 import org.fenixedu.bennu.portal.domain.MenuItem;
@@ -36,7 +38,11 @@ public class Navigation {
 
         final Map<String, String> users = getMembers(operation);
 
+        final Set<User> usersList = Bennu.getInstance().getUserSet();
+
         final Map<String, Map<String, String>> functionalities = new HashMap<>();
+
+        final Set<MenuItem> menus = new HashSet<>();
 
         getMenu(PortalConfiguration.getInstance().getMenu().getOrderedChild()).forEach(functionality -> {
             if (functionality.getAccessGroup().getExpression().contains("(" + operation.name().toString() + ")")
@@ -50,13 +56,19 @@ public class Navigation {
 
                 functionalities.put(functionality.getTitle().getContent(), info);
             }
+
+            if (functionality.isVisible()) {
+                menus.add(functionality);
+            }
         });
 
         model.addAttribute("operation", operation);
         model.addAttribute("users", users);
+        model.addAttribute("usersList", usersList);
         model.addAttribute("functionalities", functionalities);
+        model.addAttribute("menus", menus);
 
-        return "authorizations/navigation/navigation";
+        return "authorizations/navigation/auths";
     }
 
     @Atomic(mode = TxMode.WRITE)
@@ -71,9 +83,11 @@ public class Navigation {
 
     }
 
-    @RequestMapping(path = "addUser", method = RequestMethod.POST)
+    @RequestMapping(path = "addUserToAuth", method = RequestMethod.POST)
     @ResponseBody
-    public String addUser(@RequestParam AcademicOperationType operation, @RequestParam User user) {
+    public String addUserToAuth(@RequestParam AcademicOperationType operation, @RequestParam String username) {
+
+        final User user = User.findByUsername(username);
 
         final Set<AcademicAccessTarget> targets = new HashSet<AcademicAccessTarget>();
         final String id = grantRule(operation, user, targets, new DateTime("9999-12-31"));
@@ -88,6 +102,69 @@ public class Navigation {
         return rule.getExternalId();
     }
 
+    @RequestMapping(path = "removeUserToAuth", method = RequestMethod.POST)
+    @ResponseBody
+    public String removeUserToAuth(@RequestParam AcademicOperationType operation, @RequestParam String username) {
+
+        final User user = User.findByUsername(username);
+
+        try {
+            final AcademicAccessRule rule = AcademicAccessRule.accessRules()
+                    .filter(r -> r.getOperation().equals(operation) && r.getWhoCanAccess().isMember(user)).findFirst().get();
+            revokeRule(rule);
+            System.out.println(rule.getExternalId());
+            return "";
+        } catch (final Exception e) {
+            throw new Error("Rule doesn't exists!");
+        }
+
+    }
+
+    @Atomic(mode = TxMode.WRITE)
+    private void revokeRule(AcademicAccessRule rule) {
+        rule.revoke();
+    }
+
+    @RequestMapping(path = "addUserToGroup", method = RequestMethod.POST)
+    @ResponseBody
+    public Boolean addGroup(Model model, @RequestParam String username, @RequestParam String expression) {
+
+        final User user = User.findByUsername(username);
+
+        final DynamicGroup dynamic = (DynamicGroup) Group.parse(expression);
+
+        addToGroup(dynamic, user);
+
+        return true;
+    }
+
+    @Atomic(mode = TxMode.WRITE)
+    private void addToGroup(DynamicGroup group, User user) {
+
+        group.mutator().changeGroup(group.underlyingGroup().grant(user));
+
+    }
+
+    @RequestMapping(path = "removeUserToGroup", method = RequestMethod.POST)
+    @ResponseBody
+    public Boolean revokeGroup(Model model, @RequestParam String username, @RequestParam String expression) {
+
+        final User user = User.findByUsername(username);
+
+        final DynamicGroup dynamic = (DynamicGroup) Group.parse(expression);
+
+        removeFromGroup(dynamic, user);
+
+        return true;
+    }
+
+    @Atomic(mode = TxMode.WRITE)
+    private void removeFromGroup(DynamicGroup group, User user) {
+
+        group.mutator().changeGroup(group.underlyingGroup().revoke(user));
+
+    }
+
     @RequestMapping(path = "accessGroup", method = RequestMethod.GET)
     public String accessGroup(Model model, @RequestParam String expression) {
 
@@ -95,13 +172,20 @@ public class Navigation {
 
         final Set<User> users = group.getMembers().collect(Collectors.toSet());
 
+        final Set<User> usersList = Bennu.getInstance().getUserSet();
+
+        final Set<MenuItem> menusList = getMenu(PortalConfiguration.getInstance().getMenu().getOrderedChild()).stream()
+                .filter(menu -> menu.isVisible()).collect(Collectors.toSet());
+
         final Set<MenuItem> menus = getMenu(PortalConfiguration.getInstance().getMenu().getOrderedChild()).stream()
                 .filter(menu -> menu.getAccessGroup().getExpression().contains(expression) && menu.isVisible())
                 .collect(Collectors.toSet());
 
         model.addAttribute("expression", group.getExpression());
         model.addAttribute("users", users);
+        model.addAttribute("usersList", usersList);
         model.addAttribute("menus", menus);
+        model.addAttribute("menusList", menusList);
 
         return "authorizations/navigation/group";
     }
@@ -120,9 +204,9 @@ public class Navigation {
         return items;
     }
 
-    @RequestMapping(path = "addMenuToAuth", method = RequestMethod.GET)
+    @RequestMapping(path = "addMenuToAuth", method = RequestMethod.POST)
     @ResponseBody
-    public String addMenuToAuth(Model model, @RequestParam MenuItem menuItem, @RequestParam AcademicOperationType operation) {
+    public String addMenuToAuth(@RequestParam MenuItem menuItem, @RequestParam AcademicOperationType operation) {
 
         final Group group = menuItem.getAccessGroup().or(Group.parse("academic(" + operation + ")"));
 
@@ -131,13 +215,9 @@ public class Navigation {
         return "";
     }
 
-    @RequestMapping(path = "addMenuToGroup", method = RequestMethod.GET)
+    @RequestMapping(path = "addMenuToGroup", method = RequestMethod.POST)
     @ResponseBody
-    public String addMenuToGroup(Model model, @RequestParam MenuItem menuItem, @RequestParam String expression) {
-
-        System.out.println(menuItem.getAccessGroup().getExpression());
-
-        System.out.println(menuItem.getAccessGroup().or(Group.parse(expression)).getExpression());
+    public String addMenuToGroup(@RequestParam MenuItem menuItem, @RequestParam String expression) {
 
         final Group group = menuItem.getAccessGroup().or(Group.parse(expression));
 
@@ -146,24 +226,24 @@ public class Navigation {
         return "";
     }
 
-    @RequestMapping(path = "removeMenuToAuth", method = RequestMethod.GET)
+    @RequestMapping(path = "removeMenuToAuth", method = RequestMethod.POST)
     @ResponseBody
-    public String removeMenuToAuth(Model model, @RequestParam MenuItem menuItem, @RequestParam AcademicOperationType operation) {
+    public String removeMenuToAuth(@RequestParam MenuItem menuItem, @RequestParam AcademicOperationType operation) {
 
-        final Group group = Group.parse(menuItem.getAccessGroup().getExpression()
-                .replaceAll("academic(" + operation + ")", "nobody").replaceAll("academic(" + operation + ")", "nobody"));
+        final Group group = Group.parse(menuItem.getAccessGroup().getExpression().replace("academic(" + operation + ")", "nobody")
+                .replace("academic(" + operation + ")", "nobody"));
 
         setGroup(menuItem, group);
 
         return "";
     }
 
-    @RequestMapping(path = "removeMenuToGroup", method = RequestMethod.GET)
+    @RequestMapping(path = "removeMenuToGroup", method = RequestMethod.POST)
     @ResponseBody
-    public String removeMenuToGroup(Model model, @RequestParam MenuItem menuItem, @RequestParam String expression) {
+    public String removeMenuToGroup(@RequestParam MenuItem menuItem, @RequestParam String expression) {
 
-        final Group group = Group.parse(
-                menuItem.getAccessGroup().getExpression().replaceAll(expression, "nobody").replaceAll(expression, "nobody"));
+        final Group group = Group
+                .parse(menuItem.getAccessGroup().getExpression().replace(expression, "nobody").replace(expression, "nobody"));
 
         setGroup(menuItem, group);
 

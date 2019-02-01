@@ -4,7 +4,9 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
-<spring:url var="userURL" value="/academic-authorizations/search"/>
+<spring:url var="userURL" value="/search-authorizations/search"/>
+<spring:url var="groupURL" value="/navigation/accessGroup"/>
+<spring:url var="add" value="/navigation/addUser"/>
 
 <script type="text/javascript">
 var users = [<c:forEach var="user" items="${usersList}">"${user.getName()}",</c:forEach>];
@@ -12,27 +14,28 @@ var users = [<c:forEach var="user" items="${usersList}">"${user.getName()}",</c:
 
 
 <jsp:include page="ui-autocomplete.jsp" />
-<jsp:include page="groupScript.jsp" />
+<jsp:include page="navigationScript.jsp" />
 
-<h3 id="expression">${expression}</h3>
+<h3>${operation.getLocalizedName()}</h3>
+<div id="operation" style="display:none">${operation}</div>
 
 <div class="col-lg-8">
 
 	<header><spring:message code="label.users" /></header>
 	<div class="box users ui-droppable">
 		<c:forEach var="user" items="${users}">
-			<button id="${user.externalId}" data-user-id="${user.externalId}" data-user-name="${user.getUsername()}" data-toggle="modal" data-target="#confirmDelete" data-type="user" class="btn btn-default btn-box" title=<spring:message code="label.delete"/>>${user.getUsername()} <span class="glyphicon glyphicon-remove"></span></button>
+			<button id="${user.value}" data-user-id="${user.value}" data-user-name="${user.key}" data-toggle="modal" data-target="#confirmDelete" data-type="user" class="btn btn-default btn-box" title=<spring:message code="label.delete"/>>${user.key} <span class="glyphicon glyphicon-remove"></span></button>
 		</c:forEach>
 	</div>
 
 	<header><spring:message code="label.menus" /></header>
 	<div class="box menus ui-droppable">
-		<c:forEach var="menu" items="${menus}">
-			<button id="${menu.externalId}" data-menu-id="${menu.externalId}" data-menu-name="${menu.getTitle().getContent()}" data-toggle="modal" data-target="#confirmDelete" data-type="menu" class="btn btn-default btn-box" title=<spring:message code="label.delete"/>>${menu.getTitle().getContent()} <span class="glyphicon glyphicon-remove"></span></button>
+		<c:forEach var="functionality" items="${functionalities}">
+			<button id="${functionality.value.oid}" data-menu-id="${functionality.value.oid}" data-menu-name="${functionality.key}" data-toggle="modal" data-target="#confirmDelete" data-type="menu" class="btn btn-default btn-box" title=<spring:message code="label.delete"/>>${functionality.key} <span class="glyphicon glyphicon-remove"></span></button>
 		</c:forEach>
 	</div>
-
 </div>
+
 
 <div class="col-lg-4" style="float:right">
 	<div class="panel-group" id="auths" data-offset-top="200">
@@ -47,7 +50,7 @@ var users = [<c:forEach var="user" items="${usersList}">"${user.getName()}",</c:
 			</div>
 			<div id="collapseTwo" class="panel-collapse collapse">
 				<div class="panel-body">
-					<c:forEach var="menu" items="${menusList}">
+					<c:forEach var="menu" items="${menus}">
 						<div class="draggable_course menu">
 							<div id="menuName">${menu.getTitle().getContent()}</div>
 							<div id="menuId" style="display:none">${menu.externalId}</div>
