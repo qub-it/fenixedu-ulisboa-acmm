@@ -99,7 +99,7 @@
 	                type: 'POST',
 	                headers: { '${csrf.headerName}' :  '${csrf.token}' } ,
 	                success: function(result) {
-	                	obj.append("<button>"+authName+" <span class='glyphicon glyphicon-remove'></span></button>");
+	                	obj.append("<button class='btn btn-default btn-box'>"+authName+" <span class='glyphicon glyphicon-remove'></span></button>");
 					}
 				});
 	
@@ -115,7 +115,7 @@
 	                type: 'POST',
 	                headers: { '${csrf.headerName}' :  '${csrf.token}' } ,
 	                success: function(result) {
-	                	obj.append("<button>"+groupName+" <span class='glyphicon glyphicon-remove'></span></button>");
+	                	obj.append("<button class='btn btn-default btn-box'>"+groupName+" <span class='glyphicon glyphicon-remove'></span></button>");
 					}
 				});
 			
@@ -130,7 +130,7 @@
 	                type: 'POST',
 	                headers: { '${csrf.headerName}' :  '${csrf.token}' } ,
 	                success: function(result) {
-	                	obj.append("<button>"+userName+" <span class='glyphicon glyphicon-remove'></span></button>");
+	                	obj.append("<button class='btn btn-default btn-box'>"+userName+" <span class='glyphicon glyphicon-remove'></span></button>");
 					}
 				});
 			
