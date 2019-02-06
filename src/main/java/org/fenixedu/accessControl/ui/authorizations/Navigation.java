@@ -46,7 +46,14 @@ public class Navigation {
 
         getMenu(PortalConfiguration.getInstance().getMenu().getOrderedChild()).forEach(functionality -> {
             if (functionality.getAccessGroup().getExpression().contains("(" + operation.name().toString() + ")")
-                    && functionality.isVisible()) {
+                    && functionality.isVisible()
+                    && !(functionality.getAccessGroup().getExpression().contains("&")
+                            || functionality.getAccessGroup().getExpression().contains("-")
+                            || functionality.getAccessGroup().getExpression().contains("!")
+
+                    )
+
+            ) {
 
                 final Map<String, String> info = new HashMap<>();
 
@@ -112,7 +119,6 @@ public class Navigation {
             final AcademicAccessRule rule = AcademicAccessRule.accessRules()
                     .filter(r -> r.getOperation().equals(operation) && r.getWhoCanAccess().isMember(user)).findFirst().get();
             revokeRule(rule);
-            System.out.println(rule.getExternalId());
             return "";
         } catch (final Exception e) {
             throw new Error("Rule doesn't exists!");
@@ -178,8 +184,12 @@ public class Navigation {
                 .filter(menu -> menu.isVisible()).collect(Collectors.toSet());
 
         final Set<MenuItem> menus = getMenu(PortalConfiguration.getInstance().getMenu().getOrderedChild()).stream()
-                .filter(menu -> menu.getAccessGroup().getExpression().contains(expression) && menu.isVisible())
-                .collect(Collectors.toSet());
+                .filter(menu -> menu.getAccessGroup().getExpression().contains(expression) && menu.isVisible()
+                        && !(menu.getAccessGroup().getExpression().contains("&")
+                                || menu.getAccessGroup().getExpression().contains("-")
+                                || menu.getAccessGroup().getExpression().contains("!")
+
+                        )).collect(Collectors.toSet());
 
         model.addAttribute("expression", group.getExpression());
         model.addAttribute("users", users);
