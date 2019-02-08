@@ -172,4 +172,23 @@ public class ProfilesController {
         return groups;
     }
 
+    @RequestMapping(path = "copy", method = RequestMethod.GET)
+    public String copy(@RequestParam ProfileSC profileTo, @RequestParam ProfileSC profileFrom) {
+
+        copyTo(profileTo, profileFrom);
+
+        return "redirect:";
+    }
+
+    @Atomic(mode = TxMode.WRITE)
+    public void copyTo(ProfileSC profileTo, ProfileSC profileFrom) {
+        profileFrom.getAuthSet().forEach(auth -> {
+            profileTo.addAuth(auth);
+        });
+
+        profileFrom.getGroupSet().forEach(group -> {
+            profileTo.addGroup(group);
+        });
+    }
+
 }

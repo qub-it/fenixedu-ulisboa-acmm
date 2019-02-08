@@ -47,11 +47,9 @@ var users = [<c:forEach var="user" items="${users}">"${user}",</c:forEach>];
 	<h1>
 		${user.username}
 	</h1>
-	
-	
-	
-	
+		
 	<div class="col-lg-8" >
+	<div class="col-lg-8"></div><div class="col-lg-4">Change all dates:<input value="${fn:split(auth.getValidity(),'T')[0]}" type="date" class="maindate datepicker form-control" style="width:unset; display:initial"><button id="mainDateBtn" onClick="changeAllDates()" style="float:right">Apply</button></div>
 		<div id="${user.externalId}" class="small">
 			<table class="table" id="${user.username}">
 		  	  <thead>
@@ -61,8 +59,9 @@ var users = [<c:forEach var="user" items="${users}">"${user}",</c:forEach>];
 			  			<th><spring:message code="label.degrees"/></th>
 			  			<th><spring:message code="label.validity"/></th>	
 		  			</tr>
+		  			
 		  		</thead>
-		  		<tbody>	  			
+		  		<tbody>		
 			  		<c:forEach var="auth" items="${rules}">
 			  			<tr class="auth ui-droppable" id="${auth.externalId}">
 			  				<td>
@@ -96,7 +95,7 @@ var users = [<c:forEach var="user" items="${users}">"${user}",</c:forEach>];
 			  					</table>
 							</td>
 							<td>
-								<input value="${fn:split(auth.getValidity(),'T')[0]}" type="date" class="datepicker form-control">	
+								<input value="${fn:split(auth.getValidity(),'T')[0]}" type="date" class="singledate datepicker form-control">	
 								
 							</td>
 			  			</tr>

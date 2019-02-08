@@ -37,6 +37,15 @@ var users = [<c:forEach var="user" items="${users}">"${user.getName()}",</c:forE
 		<div class="accordion">${profile.name}</div>
 		
 		<div class="accordion-panel" id="${profile.getExternalId()}">
+		
+			<div>
+				<div class="col-lg-10"></div>
+				<div class="col-lg-2">
+					<button type="button" data-profile-id="${profile.getExternalId()}" data-toggle="modal" data-target="#copy" class="btn btn-default">
+			        	<span class="glyphicon glyphicon-copy"></span> <spring:message code="label.copy" /> 
+			      	</button>
+				</div>
+			</div>
 
 			<header><spring:message code="label.authorizations" /></header>
 			<div class="box authorizations ui-droppable">
@@ -162,4 +171,32 @@ var users = [<c:forEach var="user" items="${users}">"${user.getName()}",</c:forE
   </div>
 </div>
 
+<!-- Modal Dialog to delete authorization-->
+<div class="modal fade" id="copy" role="dialog" aria-labelledby="copy" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title"><spring:message code="label.copyprofile"/></h4>
+      </div>
+      <div class="modal-body">
+      	<div class="input-group" data-provide="copyFrom">
+		    <div class="input-group-addon">
+		        <spring:message code="label.copyfrom"/>
+		    </div>
+		    <select id="profileFrom" class="copyFrom form-control">
+	      		<option value=""><spring:message code="label.selectoption"/></option>
+	      		<c:forEach var="profile" items="${profiles}">
+	      			<option value="${profile.getExternalId()}">${profile.name}</option>
+	      		</c:forEach>
+	      	</select>
+		</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" id="cancel" data-dismiss="modal"><spring:message code="label.cancel"/></button>
+		<button type="button" class="btn btn-success" id="confirmCopy"><spring:message code="label.copy"/></button>
+      </div>
+    </div>
+  </div>
+</div>
 

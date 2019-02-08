@@ -78,6 +78,7 @@
 <spring:url var="addMember" value="/profiles/addMember"/>
 <spring:url var="removeMember" value="/profiles/removeMember"/>
 <spring:url var="delete" value="/profiles/delete"/>
+<spring:url var="copy" value="/profiles/copy"/>
 
 <script>
 
@@ -258,6 +259,12 @@
 	  	  });
 	      
 	  };
+	  
+	function copyProfile($profileTo, $profileFrom) {
+	      
+		 
+	  };
+	  
 
 
 $(document).ready(function() {
@@ -348,6 +355,27 @@ $(document).ready(function() {
 			}
 
 		});
+		
+		$('#copy').on('show.bs.modal', function(e){ 
+			
+			$profileTo = $(e.relatedTarget).attr('data-profile-id');
+			
+			
+			$('#copy').find('.modal-footer #confirmCopy').on('click', function(){
+			   	
+				$profileFrom = $("#profileFrom").val();
+				
+				$(location).attr('href', "${copy}?profileTo="+$profileTo+"&profileFrom="+$profileFrom);
+		      
+		      $('#copy').not('.modal-footer #confirmCopy').on("click",function(){ 
+		    	  $('#copy').find('.modal-footer #confirmCopy').off("click");	
+		  	  });
+			});  
+			
+			
+		});
+		
+		 
 
 })
 </script>

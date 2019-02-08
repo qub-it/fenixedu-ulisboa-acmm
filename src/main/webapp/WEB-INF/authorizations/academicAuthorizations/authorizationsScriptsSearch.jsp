@@ -466,6 +466,10 @@ a,input,.symbol {
 
 <script>
 
+	function changeAllDates(){
+		$('.singledate').val($('.maindate').val()).trigger("change");
+	}
+
 	function modifyScope($scopeId, $authId, $url, $action) {
 		
 		response = false;
@@ -616,7 +620,7 @@ a,input,.symbol {
 				
 			});
 			
-			$('#validity').not('.modal-footer #confirm').on("click",function(){ 
+			$('#validity').on("hide.bs.modal",function(){ 
 				$('#validity').find('.modal-footer #confirm').off("click");	
 			});
 			
@@ -684,6 +688,8 @@ a,input,.symbol {
 					});
 					
 				})
+				
+				
 
 				
 
