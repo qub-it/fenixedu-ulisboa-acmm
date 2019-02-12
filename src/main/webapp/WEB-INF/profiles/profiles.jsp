@@ -47,7 +47,7 @@ var users = [<c:forEach var="user" items="${users}">"${user.getName()}",</c:forE
 				</div>
 			</div>
 
-			<header><spring:message code="label.authorizations" /></header>
+			<header><spring:message code="label.authorizations.profile" /></header>
 			<div class="box authorizations ui-droppable">
 				<c:forEach var="auth" items="${profile.getAuthSet()}">
 					<button data-profile-id="${profile.getExternalId()}" data-profile-name="${profile.name}" data-auth-id="${auth.getOperation()}" data-auth-name="${auth.getOperation().localizedName}" data-type="auth" data-toggle="modal" data-target="#confirmDelete" class="btn btn-default" title=<spring:message code="label.delete"/>>${auth.getOperation().localizedName} <span class="glyphicon glyphicon-remove"></span></button>
@@ -86,7 +86,7 @@ var users = [<c:forEach var="user" items="${users}">"${user.getName()}",</c:forE
 			<div class="panel-heading">
 				<h3 class="panel-title">
 					<a data-toggle="collapse" data-parent="#auths" data-target="#collapseOne">
-						<spring:message code="label.authorizations" />
+						<spring:message code="label.authorizations.profile" />
 					</a>
 				</h3>
 			</div>
