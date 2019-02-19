@@ -43,6 +43,10 @@ public class ProfileGroup extends CustomGroup {
         return this.toPersistentGroup().getMembers();
     }
 
+    public Stream<User> getMembersWithoutFathers() {
+        return this.toPersistentGroup().getMembersWithoutFathers();
+    }
+
     @Override
     public Stream<User> getMembers(DateTime when) {
         return this.getMembers();
@@ -51,6 +55,10 @@ public class ProfileGroup extends CustomGroup {
     @Override
     public boolean isMember(User user) {
         return this.toPersistentGroup().isMember(user);
+    }
+
+    public boolean isMemberWithoutFathers(User user) {
+        return this.toPersistentGroup().isMemberWithoutFathers(user);
     }
 
     @Override

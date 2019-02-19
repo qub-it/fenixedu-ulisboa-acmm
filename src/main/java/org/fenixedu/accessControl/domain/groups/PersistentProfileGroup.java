@@ -48,6 +48,10 @@ public class PersistentProfileGroup extends PersistentProfileGroup_Base {
         return members.stream();
     }
 
+    public Stream<User> getMembersWithoutFathers() {
+        return this.getGroup().getMembers();
+    }
+
     @Override
     public Stream<User> getMembers(DateTime when) {
         return this.getMembers();
@@ -64,6 +68,10 @@ public class PersistentProfileGroup extends PersistentProfileGroup_Base {
         } else {
             return this.getGroup().isMember(user);
         }
+    }
+
+    public boolean isMemberWithoutFathers(User user) {
+        return this.getGroup().isMember(user);
     }
 
     @Override

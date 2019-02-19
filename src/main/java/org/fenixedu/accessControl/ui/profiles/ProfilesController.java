@@ -47,7 +47,7 @@ public class ProfilesController {
         final Multimap<String, AcademicAccessRule> profilesAuths = HashMultimap.create();
 
         profiles.forEach(profile -> {
-            profilesUsers.put(profile.getExternalId(), profile.getMembers().collect(Collectors.toSet()));
+            profilesUsers.put(profile.getExternalId(), profile.getMembersWithoutFathers().collect(Collectors.toSet()));
         });
 
         AcademicAccessRule.accessRules().forEach(rule -> {
