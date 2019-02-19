@@ -42,7 +42,7 @@
 
 
 .accordion {
-  background-image: -webkit-gradient( linear, left bottom, left top, color-stop(1, rgb(245, 245, 245)), color-stop(0, rgb(241, 241, 241)) );
+  background-image: -webkit-gradient( linear, left bottom, left top, color-stop(1, rgb(215,227,140)), color-stop(0, rgb(202,215,127)) );
   color: #444;
   padding: 15px;
   width: 100%;
@@ -56,7 +56,7 @@
 }
 
 .activeAccordion, .accordion:hover {
-  background-image: -webkit-gradient( linear, left bottom, left top, color-stop(1, rgb(241, 241, 241)), color-stop(0, rgb(162, 162, 162)) );
+  background-image: -webkit-gradient( linear, left bottom, left top, color-stop(1, rgb(202,215,127)), color-stop(0, rgb(183, 193, 122)) );
 }
 
 .accordion-panel {
@@ -95,12 +95,28 @@
 			var obj = $(this);
 			
 			$.ajax({
-	    		  	data: {"profile" : profile, "operation": operation},
+	    		  	data: {"profile" : profile, "operation": operation, "validity": "9999-12-31"},
 	                url: "${addAuth}",
 	                type: 'POST',
 	                headers: { '${csrf.headerName}' :  '${csrf.token}' } ,
 	                success: function(result) {
-	                	obj.append("<button class='btn btn-default btn-box' data-profile-id='"+profile+"' data-auth-id='"+result+"' data-type='auth' data-toggle='modal' data-target='#confirmDelete' >"+authName+" <span class='glyphicon glyphicon-remove'></span></button>");
+	                	obj.append("<button class='btn btn-default btn-box'>"+authName+" <span class='glyphicon glyphicon-remove'></span></button>");
+					}
+				});
+	
+		}else if($(ui.draggable).hasClass("group") && $(this).hasClass("groups")){
+			var groupName = $(ui.draggable).children('#groupName').html();
+			var groupId = $(ui.draggable).children('#groupId').html();	
+			
+			var obj = $(this);
+			
+			$.ajax({
+	    		  	data: {"profile" : profile, "group": groupId},
+	                url: "${addGroup}",
+	                type: 'POST',
+	                headers: { '${csrf.headerName}' :  '${csrf.token}' } ,
+	                success: function(result) {
+	                	obj.append("<button class='btn btn-default btn-box'>"+groupName+" <span class='glyphicon glyphicon-remove'></span></button>");
 					}
 				});
 			
@@ -115,7 +131,7 @@
 	                type: 'POST',
 	                headers: { '${csrf.headerName}' :  '${csrf.token}' } ,
 	                success: function(result) {
-	                	obj.append("<button  data-profile-id='"+profile+"'  data-user-id='"+result+"' class='btn btn-default btn-box'>"+userName+" <span class='glyphicon glyphicon-remove'></span></button>");
+	                	obj.append("<button class='btn btn-default btn-box'>"+userName+" <span class='glyphicon glyphicon-remove'></span></button>");
 					}
 				});
 			
@@ -134,7 +150,7 @@
 	      $('#confirmDelete').find('.modal-footer #confirm').on('click', function(){
 	    	  
 	    	  $.ajax({
-	    		  data: {"profile": $profile, "rule": $auth},
+	    		  data: {"profile": $profile, "operation": $auth},
                 url: "${removeAuth}",
                 type: 'POST',
                 headers: { '${csrf.headerName}' :  '${csrf.token}' } ,
@@ -154,7 +170,35 @@
 	      
 	  };
 	  
-	
+	function deleteGroup($profile, $profileName, $group, $groupName) {
+	      
+	      var $message = "Are you sure you want to remove '" + $groupName + "' from '" + $profileName + "' ?";
+	      $('#confirmDelete').find('.modal-body p').text($message);
+	      var $title = "Delete '" + $groupName + "'";
+	      $('#confirmDelete').find('.modal-title').text($title);
+
+	      $('#confirmDelete').find('.modal-footer #confirm').on('click', function(){
+	    	  
+	    	  $.ajax({
+	    		  data: {"profile": $profile, "group": $group},
+                url: "${removeGroup}",
+                type: 'POST',
+                headers: { '${csrf.headerName}' :  '${csrf.token}' } ,
+                success: function(result) {
+                	$('button[data-profile-id="'+$profile+'"][data-group-id="'+$group+'"]').hide();
+                	$('#confirmDelete').modal('hide');
+				    }
+				});
+	    	  
+	    	  $('#confirmDelete').find('.modal-footer #confirm').off("click");
+	    	  
+		  });
+	      
+	      $('#confirmDelete').not('.modal-footer #confirm').on("click",function(){ 
+	    	  $('#confirmDelete').find('.modal-footer #confirm').off("click");	
+	  	  });
+	      
+	  };
 	  
 	function deleteUser($profile, $profileName, $user, $userName) {
 	      
@@ -215,7 +259,12 @@
 	  	  });
 	      
 	  };
-
+	  
+	function copyProfile($profileTo, $profileFrom) {
+	      
+		 
+	  };
+	  
 
 
 $(document).ready(function() {
@@ -293,6 +342,10 @@ $(document).ready(function() {
 				var $auth = $(e.relatedTarget).attr('data-auth-id');
 				var $authName = $(e.relatedTarget).attr('data-auth-name');
 				deleteAuth($profileId, $profileName, $auth, $authName);
+			}else if($type == "group"){
+				var $group = $(e.relatedTarget).attr('data-group-id');
+				var $groupName = $(e.relatedTarget).attr('data-group-name');
+				deleteGroup($profileId, $profileName, $group, $groupName);
 			}else if($type == "user"){
 				var $user = $(e.relatedTarget).attr('data-user-id');
 				var $userName = $(e.relatedTarget).attr('data-user-name');
@@ -303,7 +356,24 @@ $(document).ready(function() {
 
 		});
 		
-		
+		$('#copy').on('show.bs.modal', function(e){ 
+			
+			$profileTo = $(e.relatedTarget).attr('data-profile-id');
+			
+			
+			$('#copy').find('.modal-footer #confirmCopy').on('click', function(){
+			   	
+				$profileFrom = $("#profileFrom").val();
+				
+				$(location).attr('href', "${copy}?profileTo="+$profileTo+"&profileFrom="+$profileFrom);
+		      
+		      $('#copy').not('.modal-footer #confirmCopy').on("click",function(){ 
+		    	  $('#copy').find('.modal-footer #confirmCopy').off("click");	
+		  	  });
+			});  
+			
+			
+		});
 		
 		 
 
