@@ -41,14 +41,14 @@ public class PersistentProfileGroup extends PersistentProfileGroup_Base {
 
         members.addAll(this.getGroup().getMembers().collect(Collectors.toSet()));
 
-        getFatherSet().forEach(father -> {
-            members.addAll(father.getMembers().collect(Collectors.toSet()));
+        getParentSet().forEach(Parent -> {
+            members.addAll(Parent.getMembers().collect(Collectors.toSet()));
         });
 
         return members.stream();
     }
 
-    public Stream<User> getMembersWithoutFathers() {
+    public Stream<User> getMembersWithoutParents() {
         return this.getGroup().getMembers();
     }
 
@@ -60,23 +60,47 @@ public class PersistentProfileGroup extends PersistentProfileGroup_Base {
     @Override
     public boolean isMember(User user) {
 
-        final Optional<PersistentProfileGroup> fathers =
-                getFatherSet().stream().filter(father -> father.isMember(user)).findAny();
+        final Optional<PersistentProfileGroup> Parents =
+                getParentSet().stream().filter(Parent -> Parent.isMember(user)).findAny();
 
-        if (fathers.isPresent()) {
+        if (Parents.isPresent()) {
             return true;
         } else {
             return this.getGroup().isMember(user);
         }
     }
 
-    public boolean isMemberWithoutFathers(User user) {
+    public boolean isMemberWithoutParents(User user) {
         return this.getGroup().isMember(user);
     }
 
     @Override
     public boolean isMember(User user, DateTime when) {
         return this.isMember(user);
+    }
+
+    public void insertParent(PersistentProfileGroup parent) {
+
+        if (validate(parent)) {
+            this.addParent(parent);
+        }
+    }
+
+    public boolean validate(PersistentProfileGroup parent) {
+
+        if (this.getName().equals(parent.getName())) {
+            throw new Error(parent.getName() + " is already an ancestor of " + this.getName());
+        }
+
+        if (parent.getParentSet().isEmpty()) {
+            return true;
+        }
+
+        parent.getParentSet().forEach(prt -> {
+            validate(prt);
+        });
+
+        return true;
     }
 
     public PersistentProfileGroup changeGroup(PersistentGroup overridingGroup) {

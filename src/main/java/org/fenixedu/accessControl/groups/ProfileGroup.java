@@ -43,8 +43,8 @@ public class ProfileGroup extends CustomGroup {
         return this.toPersistentGroup().getMembers();
     }
 
-    public Stream<User> getMembersWithoutFathers() {
-        return this.toPersistentGroup().getMembersWithoutFathers();
+    public Stream<User> getMembersWithoutParents() {
+        return this.toPersistentGroup().getMembersWithoutParents();
     }
 
     @Override
@@ -57,8 +57,8 @@ public class ProfileGroup extends CustomGroup {
         return this.toPersistentGroup().isMember(user);
     }
 
-    public boolean isMemberWithoutFathers(User user) {
-        return this.toPersistentGroup().isMemberWithoutFathers(user);
+    public boolean isMemberWithoutParents(User user) {
+        return this.toPersistentGroup().isMemberWithoutParents(user);
     }
 
     @Override
@@ -66,16 +66,16 @@ public class ProfileGroup extends CustomGroup {
         return this.isMember(user);
     }
 
-    public Set<PersistentProfileGroup> getFatherSet() {
-        return this.toPersistentGroup().getFatherSet();
+    public Set<PersistentProfileGroup> getParentSet() {
+        return this.toPersistentGroup().getParentSet();
     }
 
-    public void addFather(ProfileGroup father) {
-        this.toPersistentGroup().addFather(father.toPersistentGroup());
+    public void addParent(ProfileGroup Parent) {
+        this.toPersistentGroup().insertParent(Parent.toPersistentGroup());
     }
 
-    public void removeFather(ProfileGroup father) {
-        this.toPersistentGroup().removeFather(father.toPersistentGroup());
+    public void removeParent(ProfileGroup parent) {
+        this.toPersistentGroup().removeParent(parent.toPersistentGroup());
     }
 
     @Override

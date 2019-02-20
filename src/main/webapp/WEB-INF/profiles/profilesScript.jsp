@@ -79,6 +79,8 @@
 <spring:url var="removeMember" value="/profiles/removeMember"/>
 <spring:url var="delete" value="/profiles/delete"/>
 <spring:url var="copy" value="/profiles/copy"/>
+<spring:url var="modifyOffice" value="/profiles/modifyOffice"/>
+<spring:url var="modifyProgram" value="/profiles/modifyProgram"/>
 
 <script>
 
@@ -88,11 +90,13 @@
 		
 		var profile = $(this).parent().attr("id");
 		
+		
+		
 		if($(ui.draggable).hasClass("authorization") && $(this).hasClass("authorizations")){
 			var authName = $(ui.draggable).children('#presentationName').html();
 			var operation = $(ui.draggable).children('#operationName').html();
 			
-			var obj = $(this);
+			var obj = $(this).parent();
 			
 			$.ajax({
 	    		  	data: {"profile" : profile, "operation": operation},
@@ -100,8 +104,40 @@
 	                type: 'POST',
 	                headers: { '${csrf.headerName}' :  '${csrf.token}' } ,
 	                success: function(result) {
-	                	obj.append("<button class='btn btn-default btn-box' data-profile-id='"+profile+"' data-auth-id='"+result+"' data-type='auth' data-toggle='modal' data-target='#confirmDelete' >"+authName+" <span class='glyphicon glyphicon-remove'></span></button>");
+	                	obj.append("<tr><td><button class='btn btn-default btn-box' data-profile-id='"+profile+"' data-auth-id='"+result+"' data-type='auth' data-toggle='modal' data-target='#confirmDelete' >"+authName+" <span class='glyphicon glyphicon-remove'></span></button></td><td><table class='office-list'></table> </td> <td><table class='program-list'></table></td></tr>");
 					}
+				});
+			
+		}else if($(ui.draggable).hasClass("office") && $(this).hasClass("authorizations")){
+			var officeName = $(ui.draggable).children('#presentationName').html();
+			var office = $(ui.draggable).children('#oid').html();
+			
+			var obj = $(this);
+			
+			$.ajax({
+					data: {"rule": obj.attr("id"), "scope":office, "action":"add"},
+	                url: "${modifyOffice}",
+	                type: 'POST',
+	                headers: { '${csrf.headerName}' :  '${csrf.token}' } ,
+	                success: function(result) {
+	                	obj.find(".office-list").append("<tr><td><button class='btn btn-default btn-box' data-office-id='"+office+"' data-office-name='"+officeName+"' data-auth-id='"+obj.attr("id")+"' data-auth-name='"+authName+"' data-type='office' data-toggle='modal' data-target='#confirmDelete' >"+officeName+" <span class='glyphicon glyphicon-remove'></span></button></td></tr>");
+						}
+				});
+			
+		}else if($(ui.draggable).hasClass("program") && $(this).hasClass("authorizations")){
+			var programName = $(ui.draggable).children('#presentationName').html();
+			var program = $(ui.draggable).children('#oid').html();
+			
+			var obj = $(this);
+			
+			$.ajax({
+					data: {"rule": obj.attr("id"), "scope":program, "action":"add"},
+	                url: "${modifyProgram}",
+	                type: 'POST',
+	                headers: { '${csrf.headerName}' :  '${csrf.token}' } ,
+	                success: function(result) {
+	                	obj.find(".program-list").append("<tr><td><button class='btn btn-default btn-box' data-program-id='"+program+"' data-program-name='"+programName+"' data-auth-id='"+obj.attr("id")+"' data-auth-name='"+authName+"' data-type='program' data-toggle='modal' data-target='#confirmDelete' >"+programName+" <span class='glyphicon glyphicon-remove'></span></button></td></tr>");
+						}
 				});
 			
 		}else if($(ui.draggable).hasClass("user") && $(this).hasClass("users")){
@@ -154,7 +190,73 @@
 	      
 	  };
 	  
-	
+	  
+	function deleteOffice($office, $officeName, $auth, $authName) {
+	      
+	      var $message = "Are you sure you want to remove '" + $officeName + "' from '" + $authName + "' ?";
+	      $('#confirmDelete').find('.modal-body p').text($message);
+	      var $title = "Remove '" + $officeName + "'";
+	      $('#confirmDelete').find('.modal-title').text($title);
+
+	      $('#confirmDelete').find('.modal-footer #confirm').on('click', function(){
+	    	  
+	    	  $.ajax({
+	    		  data: {"rule": $auth, "scope":$office, "action":"remove"},
+                url: "${modifyOffice}",
+                type: 'POST',
+                headers: { '${csrf.headerName}' :  '${csrf.token}' } ,
+                success: function(result) {
+                	$('button[data-office-id="'+$office+'"][data-auth-id="'+$auth+'"]').hide();
+                	$('#confirmDelete').modal('hide');
+				    }
+				});
+	    	  
+	    	  $('#confirmDelete').find('.modal-footer #confirm').off("click");
+	    	  
+		  });
+	      
+	      $('#confirmDelete').not('.modal-footer #confirm').on("click",function(){ 
+	    	  $('#confirmDelete').find('.modal-footer #confirm').off("click");	
+	  	  });
+	      
+	  };
+	  
+	  
+	function deleteProgram($program, $programName, $auth, $authName) {
+	      
+	      var $message = "Are you sure you want to remove '" + $programName + "' from '" + $authName + "' ?";
+	      $('#confirmDelete').find('.modal-body p').text($message);
+	      var $title = "Remove '" + $programName + "'";
+	      $('#confirmDelete').find('.modal-title').text($title);
+
+	      $('#confirmDelete').find('.modal-footer #confirm').on('click', function(){
+	    	  
+	    	  $.ajax({
+	    		  data: {"rule": $auth, "scope":$program, "action":"remove"},
+                url: "${modifyProgram}",
+                type: 'POST',
+                headers: { '${csrf.headerName}' :  '${csrf.token}' } ,
+                success: function(result) {
+                	$('button[data-program-id="'+$program+'"][data-auth-id="'+$auth+'"]').hide();
+                	$('#confirmDelete').modal('hide');
+				    }
+				});
+	    	  
+	    	  $('#confirmDelete').find('.modal-footer #confirm').off("click");
+	    	  
+		  });
+	      
+	      $('#confirmDelete').not('.modal-footer #confirm').on("click",function(){ 
+	    	  $('#confirmDelete').find('.modal-footer #confirm').off("click");	
+	  	  });
+	      
+	  };
+	  
+	  
+	  
+	  
+	  
+	  
 	  
 	function deleteUser($profile, $profileName, $user, $userName) {
 	      
@@ -266,7 +368,12 @@ $(document).ready(function() {
 		
 		$(".box").droppable({
 			drop: dropFunction
+		});
+		
+		$(".authorizations").droppable({
+			drop: dropFunction
 		})
+		
 
 		$('#userForm').on('submit', function(){
 		    $(this).after("<div class='draggable_course user ui-draggable'><div id='userName'>" + $(this).find("#userInp").val() + "</div></div>");
@@ -293,6 +400,18 @@ $(document).ready(function() {
 				var $auth = $(e.relatedTarget).attr('data-auth-id');
 				var $authName = $(e.relatedTarget).attr('data-auth-name');
 				deleteAuth($profileId, $profileName, $auth, $authName);
+			}else if($type == "office"){
+				var $office = $(e.relatedTarget).attr('data-office-id');
+				var $officeName = $(e.relatedTarget).attr('data-office-name');
+				var $auth = $(e.relatedTarget).attr('data-auth-id');
+				var $authName = $(e.relatedTarget).attr('data-auth-name');
+				deleteOffice($office, $officeName, $auth, $authName);
+			}else if($type == "program"){
+				var $program = $(e.relatedTarget).attr('data-program-id');
+				var $programName = $(e.relatedTarget).attr('data-program-name');
+				var $auth = $(e.relatedTarget).attr('data-auth-id');
+				var $authName = $(e.relatedTarget).attr('data-auth-name');
+				deleteProgram($program, $programName, $auth, $authName);
 			}else if($type == "user"){
 				var $user = $(e.relatedTarget).attr('data-user-id');
 				var $userName = $(e.relatedTarget).attr('data-user-name');

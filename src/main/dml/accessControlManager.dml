@@ -35,10 +35,10 @@ relation PersistentProfileGroupGroup {
 }
 
 relation PersistentProfileGroupTree {
-	groups.PersistentProfileGroup playsRole father {
+	groups.PersistentProfileGroup playsRole parent {
         multiplicity *;
     }
-    groups.PersistentProfileGroup playsRole son {
+    groups.PersistentProfileGroup playsRole child {
         multiplicity *;
     }
 }

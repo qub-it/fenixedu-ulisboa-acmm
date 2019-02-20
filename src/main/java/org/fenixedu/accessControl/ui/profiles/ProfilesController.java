@@ -6,9 +6,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.fenixedu.academic.domain.AcademicProgram;
+import org.fenixedu.academic.domain.Degree;
 import org.fenixedu.academic.domain.accessControl.academicAdministration.AcademicAccessRule;
 import org.fenixedu.academic.domain.accessControl.academicAdministration.AcademicAccessRule.AcademicAccessTarget;
 import org.fenixedu.academic.domain.accessControl.academicAdministration.AcademicOperationType;
+import org.fenixedu.academic.domain.administrativeOffice.AdministrativeOffice;
+import org.fenixedu.academic.domain.phd.PhdProgram;
 import org.fenixedu.accessControl.domain.groups.PersistentProfileGroup;
 import org.fenixedu.accessControl.groups.ProfileGroup;
 import org.fenixedu.bennu.core.domain.Bennu;
@@ -47,7 +51,7 @@ public class ProfilesController {
         final Multimap<String, AcademicAccessRule> profilesAuths = HashMultimap.create();
 
         profiles.forEach(profile -> {
-            profilesUsers.put(profile.getExternalId(), profile.getMembersWithoutFathers().collect(Collectors.toSet()));
+            profilesUsers.put(profile.getExternalId(), profile.getMembersWithoutParents().collect(Collectors.toSet()));
         });
 
         AcademicAccessRule.accessRules().forEach(rule -> {
@@ -56,10 +60,18 @@ public class ProfilesController {
             }
         });
 
+        final Set<AdministrativeOffice> offices = Bennu.getInstance().getAdministrativeOfficesSet();
+        final Set<Degree> degrees = Bennu.getInstance().getDegreesSet();
+        final Set<PhdProgram> phdPrograms = Bennu.getInstance().getPhdProgramsSet();
+
         model.addAttribute("profiles", profiles);
         model.addAttribute("profilesUsers", profilesUsers);
         model.addAttribute("profilesAuths", profilesAuths);
         model.addAttribute("operations", operations);
+        model.addAttribute("offices", offices);
+        model.addAttribute("degrees", degrees);
+        model.addAttribute("phdPrograms", phdPrograms);
+
         model.addAttribute("users", users);
         return "profiles/profiles";
     }
@@ -152,6 +164,58 @@ public class ProfilesController {
 
         profile.delete();
 
+    }
+
+    @RequestMapping(path = "modifyOffice", method = RequestMethod.POST)
+    @ResponseBody
+    public String editAuthorizationOffice(@RequestParam AcademicAccessRule rule, @RequestParam AdministrativeOffice scope,
+            @RequestParam String action) {
+
+        final Set<AdministrativeOffice> offices = rule.getOfficeSet();
+
+        if (action.equals("add")) {
+            addOffice(scope, offices);
+        } else {
+            removeOffice(scope, offices);
+        }
+
+        return scope.getExternalId();
+    }
+
+    @Atomic(mode = TxMode.WRITE)
+    private void addOffice(AdministrativeOffice office, Set<AdministrativeOffice> offices) {
+        offices.add(office);
+    }
+
+    @Atomic(mode = TxMode.WRITE)
+    private void removeOffice(AdministrativeOffice office, Set<AdministrativeOffice> offices) {
+        offices.remove(office);
+    }
+
+    @RequestMapping(path = "modifyProgram", method = RequestMethod.POST)
+    @ResponseBody
+    public String editAuthorizationProgram(@RequestParam AcademicAccessRule rule, @RequestParam AcademicProgram scope,
+            @RequestParam String action) {
+
+        final Set<AcademicProgram> programs = rule.getProgramSet();
+
+        if (action.equals("add")) {
+            addProgram(scope, programs);
+        } else {
+            removeProgram(scope, programs);
+        }
+
+        return scope.getExternalId();
+    }
+
+    @Atomic(mode = TxMode.WRITE)
+    private void addProgram(AcademicProgram program, Set<AcademicProgram> programs) {
+        programs.add(program);
+    }
+
+    @Atomic(mode = TxMode.WRITE)
+    private void removeProgram(AcademicProgram program, Set<AcademicProgram> programs) {
+        programs.remove(program);
     }
 
 }
