@@ -32,6 +32,10 @@ public class ProfileGroup extends CustomGroup {
         return "Profile " + this.name;
     }
 
+    public String getName() {
+        return this.name;
+    }
+
     @Override
     public PersistentProfileGroup toPersistentGroup() {
         return PersistentProfileGroup.getInstance(this.name)

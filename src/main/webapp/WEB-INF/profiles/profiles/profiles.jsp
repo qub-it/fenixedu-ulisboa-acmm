@@ -88,25 +88,29 @@ var users = [<c:forEach var="user" items="${users}">"${user.getName()}",</c:forE
 							</td>
 			  			</tr>
 			  		</c:forEach>
+			  		<tr class="authorizations ui-droppable" style="height: 15px;">
+			  			<td></td>
+			  			<td></td>
+			  			<td></td>
+			  		</tr>
 			  	</tbody>		  		
 		  	</table>
 		</div>
-			
-			
-			
-			
-			
-			
-			
-			
-			
-	
-			<header><spring:message code="label.users" /></header>
+
+			<header class="headerProfile"><spring:message code="label.users" /></header>
 			<div class="box users ui-droppable">
 				<c:forEach var="user" items="${profilesUsers.get(profile.getExternalId())}">
 					<button data-profile-id="${profile.getExternalId()}" data-profile-name="${profile.getPresentationName()}" data-user-id="${user.getExternalId()}" data-user-name="${user.getUsername()}" data-type="user" data-toggle="modal" data-target="#confirmDelete" class="btn btn-default" title=<spring:message code="label.delete"/>>${user.getUsername()} <span class="glyphicon glyphicon-remove"></span></button>
 				</c:forEach>
-			</div>			
+			</div>
+			
+			
+			<header class="headerProfile"><spring:message code="label.menus" /></header>
+			<div class="box">
+				<c:forEach var="menu" items="${profilesMenus.get(profile.getExternalId())}">
+					<button>${menu.getFullPath()}</button>
+				</c:forEach>
+			</div>				
 	
 		</div>
 

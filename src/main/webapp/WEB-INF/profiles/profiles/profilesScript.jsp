@@ -2,6 +2,14 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <style>
 
+.headerProfile {
+	font-weight: bold;
+	font-size: 12px;
+	color: #4b565c;
+	padding: 8px;        
+	border-bottom: 2px solid #ddd;
+}
+
 #box {
 	margin-top: 10px;
 }

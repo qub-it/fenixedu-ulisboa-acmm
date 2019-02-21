@@ -31,7 +31,7 @@ public class PersistentProfileGroup extends PersistentProfileGroup_Base {
     }
 
     @Override
-    public Group toGroup() {
+    public ProfileGroup toGroup() {
         return new ProfileGroup(this.getName());
     }
 
