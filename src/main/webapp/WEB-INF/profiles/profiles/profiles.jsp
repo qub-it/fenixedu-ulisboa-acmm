@@ -6,8 +6,8 @@
 <%@ taglib uri = "http://java.sun.com/jsp/jstl/functions" prefix = "fn" %>
 
 <spring:url var="create" value="/profiles/create"/>
-<spring:url var="navigationAuths" value="/access-control/accessControl/navigation"/>
-<spring:url var="navigationGroup" value="/navigation/accessGroup"/>
+<spring:url var="navigationAuths" value="/access-control/profiles/navigationProfile"/>
+
 
 <script type="text/javascript">
 var users = [<c:forEach var="user" items="${users}">"${user.getName()}",</c:forEach>];
@@ -133,11 +133,12 @@ var users = [<c:forEach var="user" items="${users}">"${user.getName()}",</c:forE
 					<c:forEach var="operation" items="${operations}">
 						<a href="${navigationAuths}?operation=${operation}">
 							<div class="draggable_course authorization">
-								<c:if test="${operation.critical}">
-									<div id="warning">${operation.criticalDescription}</div>
-								</c:if>
-								<div id="presentationName">${operation.localizedName}</div>
-								<div id="operationName" style="display:none">${operation}</div>
+								<a>
+									<c:if test="${operation.critical}">
+										<div id="warning">${operation.criticalDescription}</div>
+									</c:if>
+									<div id="presentationName">${operation.localizedName}</div>
+									<div id="operationName" style="display:none">${operation}</div>
 							</div>
 						</a>
 					</c:forEach>

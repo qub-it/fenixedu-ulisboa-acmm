@@ -96,4 +96,23 @@ public class ProfileUserOriented {
         return "";
     }
 
+    @RequestMapping(path = "copy", method = RequestMethod.GET)
+    public String copy(Model model, @RequestParam String usernameTo, @RequestParam String usernameFrom) {
+
+        final User userTo = User.findByUsername(usernameTo);
+        final User userFrom = User.findByUsername(usernameFrom);
+
+        Bennu.getInstance().getProfileGroupSet().forEach(profile -> {
+
+            final ProfileGroup group = profile.toGroup();
+
+            if (group.isMemberWithoutParents(userFrom) && !group.isMemberWithoutParents(userTo)) {
+                group.grant(userTo);
+            }
+
+        });
+
+        return "redirect:search?username=" + userTo.getUsername();
+    }
+
 }

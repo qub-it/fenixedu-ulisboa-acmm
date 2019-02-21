@@ -6,6 +6,8 @@
 <%@ taglib uri = "http://java.sun.com/jsp/jstl/functions" prefix = "fn" %>
 
 <spring:url var="searchAction" value="/users/search"/>
+<spring:url var="copyAction" value="/users/copy"/>
+<spring:url var="navigationGroup" value="/navigationProfile/accessGroup"/>
 
 <script type="text/javascript">
 var users = [<c:forEach var="user" items="${users}">"${user}",</c:forEach>];
@@ -29,8 +31,8 @@ var users = [<c:forEach var="user" items="${users}">"${user}",</c:forEach>];
 	<div>
 		<form class="form-horizontal" action="${copyAction}" method="GET">
 			<label class="control-label"><spring:message code="label.copyFrom" /></label>
-			<input id="userInp2" name="copyFromUsername" class="autocomplete">
-			<input id="userId" name="username" value="${user.username}" type="hidden">
+			<input id="userInp2" name="usernameFrom" class="autocomplete">
+			<input id="userId" name="usernameTo" value="${user.username}" type="hidden">
 			<button class="btn btn-primary" type="submit"><spring:message code="label.copy" /></button>
 		</form>
 	</div>
@@ -65,9 +67,11 @@ var users = [<c:forEach var="user" items="${users}">"${user}",</c:forEach>];
 				<div id="collapseOne" class="panel-collapse collapse">
 					<div class="panel-body">
 						<c:forEach var="profile" items="${profileSet}">
-							<div class="draggable profile">
-								<div id="name">${profile.toGroup().getName()}</div>
-							</div>
+							<a href='${navigationGroup}?expression=${profile.expression()}'>
+								<div class="draggable profile">
+									<div id="name">${profile.toGroup().getName()}</div>
+								</div>
+							</a>
 						</c:forEach>
 					</div>
 				</div>
