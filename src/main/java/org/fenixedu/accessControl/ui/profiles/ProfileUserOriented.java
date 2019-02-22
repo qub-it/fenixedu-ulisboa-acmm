@@ -25,8 +25,6 @@ public class ProfileUserOriented {
         final Set<String> users = getUsers();
         final Set<PersistentProfileGroup> profileSet = getProfiles();
 
-        System.out.println("AQUI");
-
         model.addAttribute("users", users);
         model.addAttribute("profileSet", profileSet);
 

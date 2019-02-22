@@ -4,17 +4,29 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
-<spring:url var="userURL" value="/academic-authorizations/search"/>
+<spring:url var="copyAction" value="/navigationProfile/accessGroup/copy"/>
 
 <script type="text/javascript">
 var users = [<c:forEach var="user" items="${usersList}">"${user.getName()}",</c:forEach>];
 </script>
 
+<script type="text/javascript">
+var groups = [<c:forEach var="group" items="${groups}">"${group.toGroup().getName()}",</c:forEach>];
+</script>
 
 <jsp:include page="ui-autocomplete.jsp" />
 <jsp:include page="groupScript.jsp" />
 
-<h3 id="expression">${expression}</h3>
+<h3 id="expression">${group.getExpression()}</h3>
+
+<div>
+	<form class="form-horizontal" action="${copyAction}" method="GET">
+		<label class="control-label"><spring:message code="label.copyFrom" /></label>
+		<input id="groupInp" name="groupFrom" class="autocomplete">
+		<input id="groupId" name="groupTo" value="${group.getName()}" type="hidden">
+		<button class="btn btn-primary" type="submit"><spring:message code="label.copy" /></button>
+	</form>
+</div>
 
 <div class="col-lg-8">
 

@@ -174,6 +174,12 @@ $(document).ready(function() {
 	    minLength: 3,
 	  });
 	
+	$("#groupInp").autocomplete({
+	    source: groups,
+	    minLength: 3,
+	  });
+	
+	
 	$(".draggable_course").draggable({
 		revert : 'invalid',
 		helper: 'clone',

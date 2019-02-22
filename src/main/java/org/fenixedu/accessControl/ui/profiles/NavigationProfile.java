@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.fenixedu.academic.domain.accessControl.academicAdministration.AcademicAccessRule;
 import org.fenixedu.academic.domain.accessControl.academicAdministration.AcademicOperationType;
+import org.fenixedu.accessControl.groups.ProfileGroup;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.groups.Group;
@@ -188,13 +189,36 @@ public class NavigationProfile {
 
                         )).collect(Collectors.toSet());
 
-        model.addAttribute("expression", group.getExpression());
+        model.addAttribute("groups", Bennu.getInstance().getProfileGroupSet());
+        model.addAttribute("group", group);
         model.addAttribute("users", users);
         model.addAttribute("usersList", usersList);
         model.addAttribute("menus", menus);
         model.addAttribute("menusList", menusList);
 
         return "profiles/navigation/group";
+    }
+
+    @RequestMapping(path = "accessGroup/copy", method = RequestMethod.GET)
+    public String accessGroupCopy(Model model, @RequestParam String groupFrom, @RequestParam String groupTo) {
+
+        final ProfileGroup grpFrom = new ProfileGroup(groupFrom);
+        final ProfileGroup grpTo = new ProfileGroup(groupTo);
+
+        AcademicAccessRule.accessRules().forEach(rule -> {
+
+            if (rule.getWhoCanAccess().equals(grpFrom)) {
+                crearteRule(rule, grpTo);
+            }
+
+        });
+
+        return "redirect:?expression=profile(" + groupTo + ")";
+    }
+
+    @Atomic(mode = TxMode.WRITE)
+    private void crearteRule(AcademicAccessRule rule, ProfileGroup group) {
+        new AcademicAccessRule(rule.getOperation(), group, rule.getWhatCanAffect(), rule.getValidity());
     }
 
     private Set<MenuItem> getMenu(Set<MenuItem> menus) {

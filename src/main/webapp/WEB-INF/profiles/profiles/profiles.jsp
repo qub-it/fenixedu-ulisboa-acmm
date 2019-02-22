@@ -6,11 +6,16 @@
 <%@ taglib uri = "http://java.sun.com/jsp/jstl/functions" prefix = "fn" %>
 
 <spring:url var="create" value="/profiles/create"/>
+<spring:url var="copyAction" value="/profiles/copy"/>
 <spring:url var="navigationAuths" value="/access-control/profiles/navigationProfile"/>
 
 
 <script type="text/javascript">
 var users = [<c:forEach var="user" items="${users}">"${user.getName()}",</c:forEach>];
+</script>
+
+<script type="text/javascript">
+var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup().getName()}",</c:forEach>];
 </script>
 
 <jsp:include page="ui-autocomplete.jsp" />
@@ -34,10 +39,23 @@ var users = [<c:forEach var="user" items="${users}">"${user.getName()}",</c:forE
 <div class="col-lg-8">
 	<c:forEach var="profile" items="${profiles}">
 	
-		<div class="accordion">${profile.getPresentationName()}</div>
+		<div class="accordion">
+			${profile.getPresentationName()}
+		</div>
 		
 		<div class="accordion-panel" id="${profile.getExternalId()}">
-	
+			
+			<div>
+				<div class="col-lg-6"></div>
+				<div class="col-lg-6">
+					<form class="form-horizontal" action="${copyAction}" method="GET">
+						<label class="control-label"><spring:message code="label.copyFrom" /></label>
+						<input id="groupInp" name="groupFrom" class=" groupInp autocomplete">
+						<input id="groupId" name="groupTo" value="${profile.toGroup().getName()}" type="hidden">
+						<button class="btn btn-primary" type="submit"><spring:message code="label.copy" /></button>
+					</form>
+				</div>
+			</div>
 			
 			<div id="${profile.getExternalId()}" class="small">
 			<table class="table ">
@@ -133,7 +151,6 @@ var users = [<c:forEach var="user" items="${users}">"${user.getName()}",</c:forE
 					<c:forEach var="operation" items="${operations}">
 						<a href="${navigationAuths}?operation=${operation}">
 							<div class="draggable_course authorization">
-								<a>
 									<c:if test="${operation.critical}">
 										<div id="warning">${operation.criticalDescription}</div>
 									</c:if>

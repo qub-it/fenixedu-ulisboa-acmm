@@ -183,7 +183,7 @@
                 type: 'POST',
                 headers: { '${csrf.headerName}' :  '${csrf.token}' } ,
                 success: function(result) {
-                	$('button[data-profile-id="'+$profile+'"][data-auth-id="'+$auth+'"]').hide();
+                	$('button[data-profile-id="'+$profile+'"][data-auth-id="'+$auth+'"]').parent().parent().hide();
                 	$('#confirmDelete').modal('hide');
 				    }
 				});
@@ -348,6 +348,11 @@ $(document).ready(function() {
 		
 		$("#userInp").autocomplete({
 		    source: users,
+		    minLength: 3,
+		  });
+		
+		$(".groupInp").autocomplete({
+		    source: profiles,
 		    minLength: 3,
 		  });
 	

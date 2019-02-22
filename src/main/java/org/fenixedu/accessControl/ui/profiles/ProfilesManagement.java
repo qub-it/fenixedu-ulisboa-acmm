@@ -127,7 +127,7 @@ public class ProfilesManagement {
     @ResponseBody
     public String addAuth(@RequestParam PersistentProfileGroup profile, @RequestParam AcademicOperationType operation) {
 
-        return addAuth((ProfileGroup) profile.toGroup(), operation, new DateTime("9999-12-31"));
+        return addAuth(profile.toGroup(), operation, new DateTime("9999-12-31"));
 
     }
 
@@ -248,5 +248,27 @@ public class ProfilesManagement {
     @Atomic(mode = TxMode.WRITE)
     private void removeProgram(AcademicProgram program, Set<AcademicProgram> programs) {
         programs.remove(program);
+    }
+
+    @RequestMapping(path = "copy", method = RequestMethod.GET)
+    public String accessGroupCopy(Model model, @RequestParam String groupFrom, @RequestParam String groupTo) {
+
+        final ProfileGroup grpFrom = new ProfileGroup(groupFrom);
+        final ProfileGroup grpTo = new ProfileGroup(groupTo);
+
+        AcademicAccessRule.accessRules().forEach(rule -> {
+
+            if (rule.getWhoCanAccess().equals(grpFrom)) {
+                crearteRule(rule, grpTo);
+            }
+
+        });
+
+        return "redirect:";
+    }
+
+    @Atomic(mode = TxMode.WRITE)
+    private void crearteRule(AcademicAccessRule rule, ProfileGroup group) {
+        new AcademicAccessRule(rule.getOperation(), group, rule.getWhatCanAffect(), rule.getValidity());
     }
 }
