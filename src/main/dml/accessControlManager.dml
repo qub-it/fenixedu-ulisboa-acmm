@@ -1,8 +1,36 @@
 package org.fenixedu.accessControl.domain;
 
+/*
+* 	ProfileType nust have:
+*		- Managers
+*		- Base
+*		- General
+*/
+public class groups.ProfileType{
+	String type;
+}
+
+relation ProfileTypes {
+    .org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		multiplicity 0..1;
+	}
+    groups.ProfileType playsRole profileType {
+        multiplicity *;
+    }
+}
+
 public class groups.PersistentProfileGroup extends .org.fenixedu.bennu.core.domain.groups.PersistentGroup {
 	protected String name ;
 	protected DateTime created (REQUIRED); 
+}
+
+relation ProfileGroupType {
+    groups.PersistentProfileGroup playsRole group {
+		multiplicity *;
+	}
+    groups.ProfileType playsRole type {
+        multiplicity 0..1;
+    }
 }
 
 relation PersistentProfileGroupCreator {
@@ -13,8 +41,6 @@ relation PersistentProfileGroupCreator {
 		multiplicity 0..1;
 	}
 }
- 
- 
 
 relation PersistentProfileGroups {
     .org.fenixedu.bennu.core.domain.Bennu playsRole bennu {

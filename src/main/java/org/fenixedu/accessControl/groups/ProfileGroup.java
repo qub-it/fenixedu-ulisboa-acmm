@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import org.fenixedu.accessControl.domain.groups.PersistentProfileGroup;
+import org.fenixedu.accessControl.domain.groups.ProfileType;
 import org.fenixedu.bennu.core.annotation.GroupArgument;
 import org.fenixedu.bennu.core.annotation.GroupOperator;
 import org.fenixedu.bennu.core.domain.User;
@@ -15,6 +16,7 @@ import org.joda.time.DateTime;
 @GroupOperator(value = "profile")
 public class ProfileGroup extends CustomGroup {
     private static final long serialVersionUID = -2479247368353841836L;
+
     @GroupArgument(value = "")
     private String name;
 
@@ -34,6 +36,14 @@ public class ProfileGroup extends CustomGroup {
 
     public String getName() {
         return this.name;
+    }
+
+    public void setType(String type) {
+        toPersistentGroup().setType(ProfileType.get(type));
+    }
+
+    public ProfileType getType() {
+        return toPersistentGroup().getType();
     }
 
     @Override
