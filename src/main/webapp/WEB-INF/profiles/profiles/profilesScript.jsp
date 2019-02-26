@@ -79,16 +79,14 @@
 <script src="${pageContext.request.contextPath}/javaScript/jquery/jquery-ui.js"></script>
 
 
-<spring:url var="addAuth" value="/profiles/addAuth"/>
-<spring:url var="removeAuth" value="/profiles/removeAuth"/>
-<spring:url var="addGroup" value="/profiles/addGroup"/>
-<spring:url var="removeGroup" value="/profiles/removeGroup"/>
-<spring:url var="addMember" value="/profiles/addMember"/>
-<spring:url var="removeMember" value="/profiles/removeMember"/>
-<spring:url var="delete" value="/profiles/delete"/>
-<spring:url var="copy" value="/profiles/copy"/>
-<spring:url var="modifyOffice" value="/profiles/modifyOffice"/>
-<spring:url var="modifyProgram" value="/profiles/modifyProgram"/>
+<spring:url var="addAuth" value="/back-office-profiles/addAuth"/>
+<spring:url var="removeAuth" value="/back-office-profiles/removeAuth"/>
+<spring:url var="addToMenu" value="/back-office-profiles/addToMenu"/>
+<spring:url var="removeFromMenu" value="/back-office-profiles/removeFromMenu"/>
+<spring:url var="delete" value="/back-office-profiles/delete"/>
+<spring:url var="copy" value="/back-office-profiles/copy"/>
+<spring:url var="modifyOffice" value="/back-office-profiles/modifyOffice"/>
+<spring:url var="modifyProgram" value="/back-office-profiles/modifyProgram"/>
 
 <script>
 
@@ -148,18 +146,19 @@
 						}
 				});
 			
-		}else if($(ui.draggable).hasClass("user") && $(this).hasClass("users")){
-			var userName = $(ui.draggable).children('#userName').html();
+		}else if($(ui.draggable).hasClass("menu") && $(this).hasClass("menus")){
+			var menuPath = $(ui.draggable).children('#path').html();
+			var menu = $(ui.draggable).children('#oid').html();
 
 			var obj = $(this);
 			
 			$.ajax({
-	    		  	data: {"profile" : profile, "username": userName},
-	                url: "${addMember}",
+	    		  	data: {"profile" : profile, "menu": menu},
+	                url: "${addToMenu}",
 	                type: 'POST',
 	                headers: { '${csrf.headerName}' :  '${csrf.token}' } ,
 	                success: function(result) {
-	                	obj.append("<button  data-profile-id='"+profile+"'  data-user-id='"+result+"' class='btn btn-default btn-box'>"+userName+" <span class='glyphicon glyphicon-remove'></span></button>");
+	                	obj.append("<button  data-profile-id='"+profile+"' data-menu-id='"+result+"' class='btn btn-default btn-box' data-type='menu' data-toggle='modal' data-target='#confirmDelete' >"+menuPath+" <span class='glyphicon glyphicon-remove'></span></button>");
 					}
 				});
 			
@@ -262,26 +261,22 @@
 	  
 	  
 	  
-	  
-	  
-	  
-	  
-	function deleteUser($profile, $profileName, $user, $userName) {
+	function deleteMenu($profileId, $profileName, $menu, $menuPath) {
 	      
-	      var $message = "Are you sure you want to remove '" + $userName + "' from '" + $profileName + "' ?";
+	      var $message = "Are you sure you want to remove '" + $menuPath + "' from '" + $profileName + "' ?";
 	      $('#confirmDelete').find('.modal-body p').text($message);
-	      var $title = "Delete '" + $userName + "'";
+	      var $title = "Delete '" + $menuPath + "'";
 	      $('#confirmDelete').find('.modal-title').text($title);
 
 	      $('#confirmDelete').find('.modal-footer #confirm').on('click', function(){
 	    	  
 	    	  $.ajax({
-	    		  data: {"profile": $profile, "user": $user},
-                url: "${removeMember}",
+	    		  data: {"profile": $profileId, "menu": $menu},
+                url: "${removeFromMenu}",
                 type: 'POST',
                 headers: { '${csrf.headerName}' :  '${csrf.token}' } ,
                 success: function(result) {
-                	$('button[data-profile-id="'+$profile+'"][data-user-id="'+$user+'"]').hide();
+                	$('button[data-profile-id="'+$profileId+'"][data-menu-id="'+result+'"]').hide();
                 	$('#confirmDelete').modal('hide');
 				    }
 				});
@@ -346,10 +341,10 @@ $(document).ready(function() {
 		} );
 		
 		
-		$("#userInp").autocomplete({
-		    source: users,
-		    minLength: 3,
-		  });
+// 		$("#userInp").autocomplete({
+// 		    source: users,
+// 		    minLength: 3,
+// 		  });
 		
 		$(".groupInp").autocomplete({
 		    source: profiles,
@@ -425,10 +420,10 @@ $(document).ready(function() {
 				var $auth = $(e.relatedTarget).attr('data-auth-id');
 				var $authName = $(e.relatedTarget).attr('data-auth-name');
 				deleteProgram($program, $programName, $auth, $authName);
-			}else if($type == "user"){
-				var $user = $(e.relatedTarget).attr('data-user-id');
-				var $userName = $(e.relatedTarget).attr('data-user-name');
-				deleteUser($profileId, $profileName, $user, $userName);
+			}else if($type == "menu"){
+				var $menu = $(e.relatedTarget).attr('data-menu-id');
+				var $menuPath = $(e.relatedTarget).attr('data-menu-path');
+				deleteMenu($profileId, $profileName, $menu, $menuPath);
 			}else{
 				deleteProfile($profileId, $profileName);
 			}

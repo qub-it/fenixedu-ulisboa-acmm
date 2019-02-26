@@ -1,4 +1,4 @@
-package org.fenixedu.accessControl.ui.profiles;
+package org.fenixedu.accessControl.ui.profiles.backOffice;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.fenixedu.academic.domain.accessControl.academicAdministration.AcademicAccessRule;
 import org.fenixedu.academic.domain.accessControl.academicAdministration.AcademicOperationType;
 import org.fenixedu.accessControl.groups.ProfileGroup;
+import org.fenixedu.accessControl.ui.profiles.ProfilesController;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.groups.Group;
@@ -28,7 +29,7 @@ import pt.ist.fenixframework.Atomic.TxMode;
 
 @Controller
 @SpringFunctionality(app = ProfilesController.class, title = "title.Accesscontrol.Navigation")
-@RequestMapping("/navigationProfile")
+@RequestMapping("back-office-navigationProfile")
 public class NavigationProfile {
 
     @RequestMapping(method = RequestMethod.GET)

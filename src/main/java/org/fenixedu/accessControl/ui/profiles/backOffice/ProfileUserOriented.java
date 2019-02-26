@@ -1,4 +1,4 @@
-package org.fenixedu.accessControl.ui.profiles;
+package org.fenixedu.accessControl.ui.profiles.backOffice;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.fenixedu.accessControl.domain.groups.PersistentProfileGroup;
 import org.fenixedu.accessControl.groups.ProfileGroup;
+import org.fenixedu.accessControl.ui.profiles.ProfilesController;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-@RequestMapping("/users")
+@RequestMapping("back-office-users")
 @SpringFunctionality(app = ProfilesController.class, title = "label.users")
 public class ProfileUserOriented {
 

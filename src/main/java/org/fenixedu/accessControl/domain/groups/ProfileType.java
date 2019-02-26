@@ -11,6 +11,7 @@ public class ProfileType extends ProfileType_Base {
 
     public ProfileType(String type) {
         super();
+        this.setBennu(Bennu.getInstance());
         this.setType(type);
     }
 

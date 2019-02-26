@@ -4,7 +4,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
-<spring:url var="copyAction" value="/navigationProfile/accessGroup/copy"/>
+<spring:url var="copyAction" value="/back-office-navigationProfile/accessGroup/copy"/>
 
 <script type="text/javascript">
 var users = [<c:forEach var="user" items="${usersList}">"${user.getName()}",</c:forEach>];

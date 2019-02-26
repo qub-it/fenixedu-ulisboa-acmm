@@ -5,14 +5,14 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib uri = "http://java.sun.com/jsp/jstl/functions" prefix = "fn" %>
 
-<spring:url var="create" value="/profiles/create"/>
-<spring:url var="copyAction" value="/profiles/copy"/>
-<spring:url var="navigationAuths" value="/access-control/profiles/navigationProfile"/>
+<spring:url var="create" value="/back-office-profiles/create"/>
+<spring:url var="copyAction" value="/back-office-profiles/copy"/>
+<spring:url var="navigationAuths" value="/access-control/profiles/back-office-navigationProfile"/>
 
 
-<script type="text/javascript">
-var users = [<c:forEach var="user" items="${users}">"${user.getName()}",</c:forEach>];
-</script>
+<!-- <script type="text/javascript">
+ var users = [<c:forEach var="user" items="${users}">"${user.getName()}",</c:forEach>];
+</script> -->
 
 <script type="text/javascript">
 var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup().getName()}",</c:forEach>];
@@ -24,8 +24,23 @@ var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup(
 <div class="row">
 <div class="col-md-4">
 	<form class="form-horizontal" action="${create}" method="POST">
-		<label class="control-label"><spring:message code="label.profile" /></label>
-		<input name="name" required>
+		<div class="input-group">
+		    <div class="input-group-addon">
+		        <span><spring:message code="label.profile" /></span>
+		    </div>
+		    <input name="name" required>
+		</div>
+		<div class="input-group">
+		    <div class="input-group-addon">
+		        <span><spring:message code="label.type" /></span>
+		    </div>
+		    <select name="type" required>
+		    	<c:forEach var="tp" items="${types}">
+		    		<option value="${tp.getType()}">${tp.getType()}</option>
+		    	</c:forEach>
+		    </select>
+		</div>
+
 		<input name="_csrf" value="${csrf.token}" hidden>
 		<button class="btn btn-primary" type="submit"><span class="glyphicon glyphicon-plus"></span> <spring:message code="label.create" /></button>
 	</form>
@@ -40,7 +55,7 @@ var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup(
 	<c:forEach var="profile" items="${profiles}">
 	
 		<div class="accordion">
-			${profile.getPresentationName()}
+			${profile.getPresentationName()} - ${profile.getType().getType()}
 		</div>
 		
 		<div class="accordion-panel" id="${profile.getExternalId()}">
@@ -115,18 +130,18 @@ var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup(
 		  	</table>
 		</div>
 
-			<header class="headerProfile"><spring:message code="label.users" /></header>
-			<div class="box users ui-droppable">
-				<c:forEach var="user" items="${profilesUsers.get(profile.getExternalId())}">
-					<button data-profile-id="${profile.getExternalId()}" data-profile-name="${profile.getPresentationName()}" data-user-id="${user.getExternalId()}" data-user-name="${user.getUsername()}" data-type="user" data-toggle="modal" data-target="#confirmDelete" class="btn btn-default" title=<spring:message code="label.delete"/>>${user.getUsername()} <span class="glyphicon glyphicon-remove"></span></button>
-				</c:forEach>
-			</div>
+<%-- 			<header class="headerProfile"><spring:message code="label.users" /></header> --%>
+<!-- 			<div class="box users ui-droppable"> -->
+<%-- 				<c:forEach var="user" items="${profilesUsers.get(profile.getExternalId())}"> --%>
+<%-- 					<button data-profile-id="${profile.getExternalId()}" data-profile-name="${profile.getPresentationName()}" data-user-id="${user.getExternalId()}" data-user-name="${user.getUsername()}" data-type="user" data-toggle="modal" data-target="#confirmDelete" class="btn btn-default" title=<spring:message code="label.delete"/>>${user.getUsername()} <span class="glyphicon glyphicon-remove"></span></button> --%>
+<%-- 				</c:forEach> --%>
+<!-- 			</div> -->
 			
 			
 			<header class="headerProfile"><spring:message code="label.menus" /></header>
-			<div class="box">
+			<div class="box menus">
 				<c:forEach var="menu" items="${profilesMenus.get(profile.getExternalId())}">
-					<button>${menu.getFullPath()}</button>
+					<button data-type='menu' data-menu-path="${menu.getFullPath()}" data-menu-id="${menu.getExternalId()}" data-profile-id="${profile.getExternalId()}" data-profile-name="${profile.getPresentationName()}" class='btn btn-default btn-box' data-toggle='modal' data-target='#confirmDelete' title=<spring:message code="label.delete"/>>${menu.getFullPath()} <span class="glyphicon glyphicon-remove"></span></button>
 				</c:forEach>
 			</div>				
 	
@@ -209,42 +224,42 @@ var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup(
 				<div class="panel-heading">
 					<h3 class="panel-title">
 						<a data-toggle="collapse" data-parent="#cursos_acc" data-target="#collapseFour">
-							<spring:message code="title.phd.programs"/>
+							<spring:message code="label.menus"/>
 						</a>
 					</h3>
 				</div>
 				<div id="collapseFour" class="panel-collapse collapse">
 					<div class="panel-body">
-						<c:forEach var="program" items="${phdPrograms}">
-							<div class="draggable_course program">
-								<div id="oid" style="display:none">${program.oid}</div>
-								<div id="presentationName" style="display:none">${program.presentationName}</div>
-								<div id="name">${program.name}</div>
+						<c:forEach var="menu" items="${menus}">
+							<div class="draggable_course menu">
+								<div id="oid" style="display:none">${menu.oid}</div>
+								<div id="path">${menu.getFullPath()}</div>
 							</div>
 						</c:forEach>
 					</div>
 				</div>
 			</div>
+
 		
 		
-		<div class="panel panel-default">
-			<div class="panel-heading">
-				<h3 class="panel-title">
-					<a data-toggle="collapse" data-parent="#auths" data-target="#collapseFive">
-						<spring:message code="label.users" />
-					</a>
-				</h3>
-			</div>
-			<div id="collapseFive" class="panel-collapse collapse">
-				<div class="panel-body">
-					<form class="form-horizontal" id="userForm">
-						<label class="control-label"><spring:message code="label.username" /></label>
-						<input id="userInp" name="username" class="autocomplete">
-						<button class="btn btn-primary" type="submit"><spring:message code="label.search" /></button>
-					</form>
-				</div>
-			</div>
-		</div>
+<!-- 		<div class="panel panel-default"> -->
+<!-- 			<div class="panel-heading"> -->
+<!-- 				<h3 class="panel-title"> -->
+<!-- 					<a data-toggle="collapse" data-parent="#auths" data-target="#collapseFive"> -->
+<%-- 						<spring:message code="label.users" /> --%>
+<!-- 					</a> -->
+<!-- 				</h3> -->
+<!-- 			</div> -->
+<!-- 			<div id="collapseFive" class="panel-collapse collapse"> -->
+<!-- 				<div class="panel-body"> -->
+<%-- 					<form class="form-horizontal" id="userForm"> --%>
+<%-- 						<label class="control-label"><spring:message code="label.username" /></label> --%>
+<!-- 						<input id="userInp" name="username" class="autocomplete"> -->
+<%-- 						<button class="btn btn-primary" type="submit"><spring:message code="label.search" /></button> --%>
+<%-- 					</form> --%>
+<!-- 				</div> -->
+<!-- 			</div> -->
+<!-- 		</div> -->
 		
 	</div>
 </div>
