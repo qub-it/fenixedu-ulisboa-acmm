@@ -1,4 +1,4 @@
-package org.fenixedu.accessControl.ui.profiles.backOffice;
+package org.fenixedu.accessControl.ui.profiles.frontOffice;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-@RequestMapping("back-office-users")
-@SpringFunctionality(app = ProfilesController.class, title = "label.users")
-public class ProfileUserOriented {
+@RequestMapping("front-office-users")
+@SpringFunctionality(app = ProfilesController.class, title = "label.users.frontoffice")
+public class ProfileUserOrientedFO {
 
     @RequestMapping(method = RequestMethod.GET)
     public String initial(Model model) {
@@ -29,7 +29,7 @@ public class ProfileUserOriented {
         model.addAttribute("users", users);
         model.addAttribute("profileSet", profileSet);
 
-        return "profiles/users/search";
+        return "profiles/frontOffice/users/search";
     }
 
     @RequestMapping(path = "search", method = RequestMethod.GET)
@@ -46,7 +46,7 @@ public class ProfileUserOriented {
         model.addAttribute("users", users);
         model.addAttribute("profileSet", profileSet);
 
-        return "profiles/users/search";
+        return "profiles/frontOffice/users/search";
     }
 
     private Set<String> getUsers() {

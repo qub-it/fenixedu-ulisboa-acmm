@@ -28,9 +28,9 @@ import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.Atomic.TxMode;
 
 @Controller
-@SpringFunctionality(app = ProfilesController.class, title = "title.Accesscontrol.Navigation")
+@SpringFunctionality(app = ProfilesController.class, title = "title.Accesscontrol.Navigation.backoffice")
 @RequestMapping("back-office-navigationProfile")
-public class NavigationProfile {
+public class NavigationProfileBO {
 
     @RequestMapping(method = RequestMethod.GET)
     public String initial(Model model, @RequestParam AcademicOperationType operation) {
@@ -74,7 +74,7 @@ public class NavigationProfile {
         model.addAttribute("functionalities", functionalities);
         model.addAttribute("menus", menus);
 
-        return "profiles/navigation/auths";
+        return "profiles/backOffice/navigation/auths";
     }
 
     @Atomic(mode = TxMode.WRITE)
@@ -197,7 +197,7 @@ public class NavigationProfile {
         model.addAttribute("menus", menus);
         model.addAttribute("menusList", menusList);
 
-        return "profiles/navigation/group";
+        return "profiles/backOffice/navigation/group";
     }
 
     @RequestMapping(path = "accessGroup/copy", method = RequestMethod.GET)

@@ -1,4 +1,4 @@
-package org.fenixedu.accessControl.ui.profiles.backOffice;
+package org.fenixedu.accessControl.ui.profiles.frontOffice;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -33,9 +33,9 @@ import com.google.common.collect.Multimap;
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.Atomic.TxMode;
 
-@RequestMapping("back-office-profiles")
-@SpringFunctionality(app = ProfilesController.class, title = "title.Accesscontrol.Profiles")
-public class ProfilesManagement {
+@RequestMapping("front-office-profiles")
+@SpringFunctionality(app = ProfilesController.class, title = "title.Accesscontrol.Profiles.frontoffice")
+public class ProfilesManagementFO {
     @RequestMapping(method = RequestMethod.GET)
     public String init(Model model) {
 
@@ -89,7 +89,7 @@ public class ProfilesManagement {
         model.addAttribute("menus", menus);
         model.addAttribute("types", types);
 
-        return "profiles/profiles/profiles";
+        return "profiles/frontOffice/profiles/profiles";
     }
 
     private Set<MenuItem> getMenu(Set<MenuItem> menus) {
@@ -291,6 +291,12 @@ public class ProfilesManagement {
         AcademicAccessRule.accessRules().forEach(rule -> {
             if (rule.getWhoCanAccess().equals(grpFrom)) {
                 crearteRule(rule, grpTo);
+            }
+        });
+
+        getMenu(PortalConfiguration.getInstance().getMenu().getOrderedChild()).forEach(menu -> {
+            if (menu.getAccessGroup().getExpression().contains(groupFrom)) {
+                setGroup(menu, grpTo);
             }
         });
 

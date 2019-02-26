@@ -5,9 +5,9 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib uri = "http://java.sun.com/jsp/jstl/functions" prefix = "fn" %>
 
-<spring:url var="searchAction" value="back-office-users/search"/>
-<spring:url var="copyAction" value="back-office-users/copy"/>
-<spring:url var="navigationGroup" value="back-office-navigationProfile/accessGroup"/>
+<spring:url var="searchAction" value="/back-office-users/search"/>
+<spring:url var="copyAction" value="/back-office-users/copy"/>
+<spring:url var="navigationGroup" value="/back-office-navigationProfile/accessGroup"/>
 
 <script type="text/javascript">
 var users = [<c:forEach var="user" items="${users}">"${user}",</c:forEach>];
