@@ -37,8 +37,8 @@
 
 
 
-<spring:url var="addToProfile" value="/back-office-users/addToProfile"/>
-<spring:url var="removeFromProfile" value="/back-office-users/removeFromProfile"/>
+<spring:url var="addToProfile" value="/front-office-users/addToProfile"/>
+<spring:url var="removeFromProfile" value="/front-office-users/removeFromProfile"/>
 <script>
 
 	function dropFunction(event, ui) {

@@ -10,9 +10,9 @@
 <spring:url var="navigationAuths" value="/access-control/profiles/back-office-navigationProfile"/>
 
 
-<!-- <script type="text/javascript">
+<script type="text/javascript">
  var users = [<c:forEach var="user" items="${users}">"${user.getName()}",</c:forEach>];
-</script> -->
+</script>
 
 <script type="text/javascript">
 var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup().getName()}",</c:forEach>];
@@ -130,12 +130,12 @@ var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup(
 		  	</table>
 		</div>
 
-<%-- 			<header class="headerProfile"><spring:message code="label.users" /></header> --%>
-<!-- 			<div class="box users ui-droppable"> -->
-<%-- 				<c:forEach var="user" items="${profilesUsers.get(profile.getExternalId())}"> --%>
-<%-- 					<button data-profile-id="${profile.getExternalId()}" data-profile-name="${profile.getPresentationName()}" data-user-id="${user.getExternalId()}" data-user-name="${user.getUsername()}" data-type="user" data-toggle="modal" data-target="#confirmDelete" class="btn btn-default" title=<spring:message code="label.delete"/>>${user.getUsername()} <span class="glyphicon glyphicon-remove"></span></button> --%>
-<%-- 				</c:forEach> --%>
-<!-- 			</div> -->
+			<header class="headerProfile"><spring:message code="label.users" /></header>
+			<div class="box users ui-droppable">
+				<c:forEach var="user" items="${profilesUsers.get(profile.getExternalId())}">
+					<button data-profile-id="${profile.getExternalId()}" data-profile-name="${profile.getPresentationName()}" data-user-id="${user.getExternalId()}" data-user-name="${user.getUsername()}" data-type="user" data-toggle="modal" data-target="#confirmDelete" class="btn btn-default" title=<spring:message code="label.delete"/>>${user.getUsername()} <span class="glyphicon glyphicon-remove"></span></button>
+				</c:forEach>
+			</div>
 			
 			
 			<header class="headerProfile"><spring:message code="label.menus" /></header>
@@ -242,24 +242,24 @@ var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup(
 
 		
 		
-<!-- 		<div class="panel panel-default"> -->
-<!-- 			<div class="panel-heading"> -->
-<!-- 				<h3 class="panel-title"> -->
-<!-- 					<a data-toggle="collapse" data-parent="#auths" data-target="#collapseFive"> -->
-<%-- 						<spring:message code="label.users" /> --%>
-<!-- 					</a> -->
-<!-- 				</h3> -->
-<!-- 			</div> -->
-<!-- 			<div id="collapseFive" class="panel-collapse collapse"> -->
-<!-- 				<div class="panel-body"> -->
-<%-- 					<form class="form-horizontal" id="userForm"> --%>
-<%-- 						<label class="control-label"><spring:message code="label.username" /></label> --%>
-<!-- 						<input id="userInp" name="username" class="autocomplete"> -->
-<%-- 						<button class="btn btn-primary" type="submit"><spring:message code="label.search" /></button> --%>
-<%-- 					</form> --%>
-<!-- 				</div> -->
-<!-- 			</div> -->
-<!-- 		</div> -->
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title">
+					<a data-toggle="collapse" data-parent="#auths" data-target="#collapseFive">
+						<spring:message code="label.users" />
+					</a>
+				</h3>
+			</div>
+			<div id="collapseFive" class="panel-collapse collapse">
+				<div class="panel-body">
+					<form class="form-horizontal" id="userForm">
+						<label class="control-label"><spring:message code="label.username" /></label>
+						<input id="userInp" name="username" class="autocomplete">
+						<button class="btn btn-primary" type="submit"><spring:message code="label.search" /></button>
+					</form>
+				</div>
+			</div>
+		</div>
 		
 	</div>
 </div>

@@ -79,14 +79,16 @@
 <script src="${pageContext.request.contextPath}/javaScript/jquery/jquery-ui.js"></script>
 
 
-<spring:url var="addAuth" value="/back-office-profiles/addAuth"/>
-<spring:url var="removeAuth" value="/back-office-profiles/removeAuth"/>
-<spring:url var="addToMenu" value="/back-office-profiles/addToMenu"/>
-<spring:url var="removeFromMenu" value="/back-office-profiles/removeFromMenu"/>
-<spring:url var="delete" value="/back-office-profiles/delete"/>
-<spring:url var="copy" value="/back-office-profiles/copy"/>
-<spring:url var="modifyOffice" value="/back-office-profiles/modifyOffice"/>
-<spring:url var="modifyProgram" value="/back-office-profiles/modifyProgram"/>
+<spring:url var="addAuth" value="/front-office-profiles/addAuth"/>
+<spring:url var="removeAuth" value="/front-office-profiles/removeAuth"/>
+<spring:url var="addMember" value="/front-office-profiles/addMember"/>
+<spring:url var="removeMember" value="/front-office-profiles/removeMember"/>
+<spring:url var="addToMenu" value="/front-office-profiles/addToMenu"/>
+<spring:url var="removeFromMenu" value="/front-office-profiles/removeFromMenu"/>
+<spring:url var="delete" value="/front-office-profiles/delete"/>
+<spring:url var="copy" value="/front-office-profiles/copy"/>
+<spring:url var="modifyOffice" value="/front-office-profiles/modifyOffice"/>
+<spring:url var="modifyProgram" value="/front-office-profiles/modifyProgram"/>
 
 <script>
 
@@ -159,6 +161,21 @@
 	                headers: { '${csrf.headerName}' :  '${csrf.token}' } ,
 	                success: function(result) {
 	                	obj.append("<button  data-profile-id='"+profile+"' data-menu-id='"+result+"' class='btn btn-default btn-box' data-type='menu' data-toggle='modal' data-target='#confirmDelete' >"+menuPath+" <span class='glyphicon glyphicon-remove'></span></button>");
+					}
+				});
+			
+		}else if($(ui.draggable).hasClass("user") && $(this).hasClass("users")){
+			var userName = $(ui.draggable).children('#userName').html();
+
+			var obj = $(this);
+			
+			$.ajax({
+	    		  	data: {"profile" : profile, "username": userName},
+	                url: "${addMember}",
+	                type: 'POST',
+	                headers: { '${csrf.headerName}' :  '${csrf.token}' } ,
+	                success: function(result) {
+	                	obj.append("<button  data-profile-id='"+profile+"' data-user-id='"+result+"' class='btn btn-default btn-box' data-type='user' data-toggle='modal' data-target='#confirmDelete' >"+userName+" <span class='glyphicon glyphicon-remove'></span></button>");
 					}
 				});
 			
@@ -291,6 +308,36 @@
 	      
 	  };
 	  
+	function deleteUser($profileId, $profileName, $user, $userName) {
+	      
+	      var $message = "Are you sure you want to remove '" + $userName + "' from '" + $profileName + "' ?";
+	      $('#confirmDelete').find('.modal-body p').text($message);
+	      var $title = "Delete '" + $menuPath + "'";
+	      $('#confirmDelete').find('.modal-title').text($title);
+
+	      $('#confirmDelete').find('.modal-footer #confirm').on('click', function(){
+	    	  
+	    	  $.ajax({
+	    		  data: {"profile": $profileId, "username": $userName},
+                url: "${removeMember}",
+                type: 'POST',
+                headers: { '${csrf.headerName}' :  '${csrf.token}' } ,
+                success: function(result) {
+                	$('button[data-profile-id="'+$profileId+'"][data-user-id="'+user+'"]').hide();
+                	$('#confirmDelete').modal('hide');
+				    }
+				});
+	    	  
+	    	  $('#confirmDelete').find('.modal-footer #confirm').off("click");
+	    	  
+		  });
+	      
+	      $('#confirmDelete').not('.modal-footer #confirm').on("click",function(){ 
+	    	  $('#confirmDelete').find('.modal-footer #confirm').off("click");	
+	  	  });
+	      
+	  };
+	  
 	function deleteProfile($profile, $profileName) {
 	      
 	      var $message = "Are you sure you want to delete '" + $profileName + "' ?";
@@ -320,6 +367,8 @@
 	  	  });
 	      
 	  };
+	  
+	  
 
 
 
@@ -341,10 +390,10 @@ $(document).ready(function() {
 		} );
 		
 		
-// 		$("#userInp").autocomplete({
-// 		    source: users,
-// 		    minLength: 3,
-// 		  });
+ 		$("#userInp").autocomplete({
+ 		    source: users,
+ 		    minLength: 3,
+ 		  });
 		
 		$(".groupInp").autocomplete({
 		    source: profiles,
@@ -424,6 +473,10 @@ $(document).ready(function() {
 				var $menu = $(e.relatedTarget).attr('data-menu-id');
 				var $menuPath = $(e.relatedTarget).attr('data-menu-path');
 				deleteMenu($profileId, $profileName, $menu, $menuPath);
+			}else if($type == "user"){
+				var $user = $(e.relatedTarget).attr('data-user-id');
+				var $userName = $(e.relatedTarget).attr('data-user-name');
+				deleteUser($profileId, $profileName, $user, $userName);
 			}else{
 				deleteProfile($profileId, $profileName);
 			}

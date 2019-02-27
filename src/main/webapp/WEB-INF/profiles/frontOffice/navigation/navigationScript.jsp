@@ -40,10 +40,10 @@
 
 
 
-<spring:url var="addMenuToAuth" value="/back-office-navigationProfile/addMenuToAuth"/>
-<spring:url var="addUserToAuth" value="/back-office-navigationProfile/addUserToAuth"/>
-<spring:url var="removeMenuToAuth" value="/back-office-navigationProfile/removeMenuToAuth"/>
-<spring:url var="removeUserToAuth" value="/back-office-navigationProfile/removeUserToAuth"/>
+<spring:url var="addMenuToAuth" value="/front-office-navigationProfile/addMenuToAuth"/>
+<spring:url var="addUserToAuth" value="/front-office-navigationProfile/addUserToAuth"/>
+<spring:url var="removeMenuToAuth" value="/front-office-navigationProfile/removeMenuToAuth"/>
+<spring:url var="removeUserToAuth" value="/front-office-navigationProfile/removeUserToAuth"/>
 
 
 <script>

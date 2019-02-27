@@ -1,7 +1,10 @@
 package org.fenixedu.accessControl.ui.profiles.backOffice;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.fenixedu.academic.domain.AcademicProgram;
 import org.fenixedu.academic.domain.Degree;
@@ -15,6 +18,7 @@ import org.fenixedu.accessControl.domain.groups.ProfileType;
 import org.fenixedu.accessControl.groups.ProfileGroup;
 import org.fenixedu.accessControl.ui.profiles.ProfilesController;
 import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.groups.Group;
 import org.fenixedu.bennu.portal.domain.MenuContainer;
 import org.fenixedu.bennu.portal.domain.MenuItem;
@@ -43,6 +47,7 @@ public class ProfilesManagementBO {
         final AcademicOperationType[] operations = AcademicOperationType.class.getEnumConstants();
 
         final Set<ProfileType> types = Bennu.getInstance().getProfileTypeSet();
+        final Set<User> users = Bennu.getInstance().getUserSet();
 
         final Multimap<String, AcademicAccessRule> profilesAuths = HashMultimap.create();
 
@@ -50,11 +55,17 @@ public class ProfilesManagementBO {
 
         final Multimap<String, MenuItem> profilesMenus = HashMultimap.create();
 
+        final Map<String, Set<User>> profilesUsers = new HashMap<>();
+
         AcademicAccessRule.accessRules().forEach(rule -> {
             if (rule.getWhoCanAccess() instanceof ProfileGroup) {
                 profilesAuths.put(((ProfileGroup) rule.getWhoCanAccess()).toPersistentGroup().getExternalId(), rule);
 
             }
+        });
+
+        profiles.forEach(profile -> {
+            profilesUsers.put(profile.getExternalId(), profile.getMembers().collect(Collectors.toSet()));
         });
 
         getMenu(PortalConfiguration.getInstance().getMenu().getOrderedChild()).forEach(menu -> {
@@ -83,11 +94,13 @@ public class ProfilesManagementBO {
         model.addAttribute("profilesAuths", profilesAuths);
         model.addAttribute("profilesMenus", profilesMenus);
         model.addAttribute("authsMenus", authsMenus);
+        model.addAttribute("profilesUsers", profilesUsers);
         model.addAttribute("operations", operations);
         model.addAttribute("offices", offices);
         model.addAttribute("degrees", degrees);
         model.addAttribute("menus", menus);
         model.addAttribute("types", types);
+        model.addAttribute("users", users);
 
         return "profiles/backOffice/profiles/profiles";
     }
@@ -184,35 +197,35 @@ public class ProfilesManagementBO {
         }
     }
 
-//    @RequestMapping(path = "addMember", method = RequestMethod.POST)
-//    @ResponseBody
-//    public String addMember(@RequestParam PersistentProfileGroup profile, @RequestParam String username) {
-//
-//        final User user = User.findByUsername(username);
-//
-//        addMember(profile.toGroup(), user);
-//
-//        return user.getExternalId();
-//    }
-//
-//    @Atomic(mode = TxMode.WRITE)
-//    private void addMember(Group profile, User user) {
-//        profile.grant(user);
-//    }
-//
-//    @RequestMapping(path = "removeMember", method = RequestMethod.POST)
-//    @ResponseBody
-//    public String removeMember(@RequestParam PersistentProfileGroup profile, @RequestParam User user) {
-//
-//        removeMember(profile.toGroup(), user);
-//
-//        return "";
-//    }
-//
-//    @Atomic(mode = TxMode.WRITE)
-//    private void removeMember(Group profile, User user) {
-//        profile.revoke(user);
-//    }
+    @RequestMapping(path = "addMember", method = RequestMethod.POST)
+    @ResponseBody
+    public String addMember(@RequestParam PersistentProfileGroup profile, @RequestParam String username) {
+
+        final User user = User.findByUsername(username);
+
+        addMember(profile.toGroup(), user);
+
+        return user.getExternalId();
+    }
+
+    @Atomic(mode = TxMode.WRITE)
+    private void addMember(Group profile, User user) {
+        profile.grant(user);
+    }
+
+    @RequestMapping(path = "removeMember", method = RequestMethod.POST)
+    @ResponseBody
+    public String removeMember(@RequestParam PersistentProfileGroup profile, @RequestParam User user) {
+
+        removeMember(profile.toGroup(), user);
+
+        return "";
+    }
+
+    @Atomic(mode = TxMode.WRITE)
+    private void removeMember(Group profile, User user) {
+        profile.revoke(user);
+    }
 
     @RequestMapping(path = "delete", method = RequestMethod.POST)
     @ResponseBody

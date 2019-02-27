@@ -40,10 +40,10 @@
 
 
 
-<spring:url var="addMenuToGroup" value="/back-office-navigationProfile/addMenuToGroup"/>
-<spring:url var="addUserToGroup" value="/back-office-navigationProfile/addUserToGroup"/>
-<spring:url var="removeMenuToGroup" value="/back-office-navigationProfile/removeMenuToGroup"/>
-<spring:url var="removeUserToGroup" value="/back-office-navigationProfile/removeUserToGroup"/>
+<spring:url var="addMenuToGroup" value="/front-office-navigationProfile/addMenuToGroup"/>
+<spring:url var="addUserToGroup" value="/front-office-navigationProfile/addUserToGroup"/>
+<spring:url var="removeMenuToGroup" value="/front-office-navigationProfile/removeMenuToGroup"/>
+<spring:url var="removeUserToGroup" value="/front-office-navigationProfile/removeUserToGroup"/>
 
 
 <script>
