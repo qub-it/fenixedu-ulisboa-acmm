@@ -57,6 +57,8 @@ public class ProfilesManagementBO {
 
         final Map<String, Set<User>> profilesUsers = new HashMap<>();
 
+        final Map<String, Set<PersistentProfileGroup>> subProfiles = new HashMap<>();
+
         AcademicAccessRule.accessRules().forEach(rule -> {
             if (rule.getWhoCanAccess() instanceof ProfileGroup) {
                 profilesAuths.put(((ProfileGroup) rule.getWhoCanAccess()).toPersistentGroup().getExternalId(), rule);
@@ -66,6 +68,7 @@ public class ProfilesManagementBO {
 
         profiles.forEach(profile -> {
             profilesUsers.put(profile.getExternalId(), profile.getMembers().collect(Collectors.toSet()));
+            subProfiles.put(profile.getExternalId(), profile.getChildSet());
         });
 
         getMenu(PortalConfiguration.getInstance().getMenu().getOrderedChild()).forEach(menu -> {
@@ -93,6 +96,7 @@ public class ProfilesManagementBO {
         model.addAttribute("profiles", profiles);
         model.addAttribute("profilesAuths", profilesAuths);
         model.addAttribute("profilesMenus", profilesMenus);
+        model.addAttribute("subProfiles", subProfiles);
         model.addAttribute("authsMenus", authsMenus);
         model.addAttribute("profilesUsers", profilesUsers);
         model.addAttribute("operations", operations);

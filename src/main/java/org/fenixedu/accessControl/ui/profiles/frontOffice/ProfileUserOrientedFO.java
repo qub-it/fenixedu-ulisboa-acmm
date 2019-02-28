@@ -5,10 +5,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.fenixedu.accessControl.domain.groups.PersistentProfileGroup;
+import org.fenixedu.accessControl.domain.groups.ProfileType;
 import org.fenixedu.accessControl.groups.ProfileGroup;
 import org.fenixedu.accessControl.ui.profiles.ProfilesController;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
+import org.fenixedu.bennu.portal.domain.MenuContainer;
+import org.fenixedu.bennu.portal.domain.MenuItem;
+import org.fenixedu.bennu.portal.domain.PortalConfiguration;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,8 +45,11 @@ public class ProfileUserOrientedFO {
         final Set<String> users = getUsers();
         final Set<PersistentProfileGroup> profileSet = getProfiles();
 
+        final Set<MenuItem> menus = getMenu(PortalConfiguration.getInstance().getMenu().getOrderedChild(), user);
+
         model.addAttribute("user", user);
         model.addAttribute("profiles", profiles);
+        model.addAttribute("menus", menus);
         model.addAttribute("users", users);
         model.addAttribute("profileSet", profileSet);
 
@@ -60,16 +67,32 @@ public class ProfileUserOrientedFO {
         return users;
     }
 
+    private Set<MenuItem> getMenu(Set<MenuItem> menus, User user) {
+
+        final Set<MenuItem> items = new HashSet<>();
+        for (final MenuItem menuItem : menus) {
+            if (menuItem.isMenuContainer() && menuItem.isAvailable(user)) {
+                final Set<MenuItem> submenus = ((MenuContainer) menuItem).getOrderedChild();
+                items.addAll(getMenu(submenus, user));
+            } else {
+                items.add(menuItem);
+            }
+        }
+        return items;
+    }
+
     private Set<PersistentProfileGroup> getProfiles(User user) {
 
-        return Bennu.getInstance().getProfileGroupSet().stream().filter(profile -> profile.isMember(user))
+        return Bennu.getInstance().getProfileGroupSet().stream()
+                .filter(profile -> profile.isMember(user) && !profile.getType().equals(ProfileType.get("Managers")))
                 .collect(Collectors.toSet());
 
     }
 
     private Set<PersistentProfileGroup> getProfiles() {
 
-        return Bennu.getInstance().getProfileGroupSet();
+        return Bennu.getInstance().getProfileGroupSet().stream()
+                .filter(profile -> !profile.getType().equals(ProfileType.get("Managers"))).collect(Collectors.toSet());
 
     }
 

@@ -132,6 +132,13 @@ var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup(
 				<c:forEach var="menu" items="${profilesMenus.get(profile.getExternalId())}">
 					<button data-type='menu' data-menu-path="${menu.getFullPath()}" data-menu-id="${menu.getExternalId()}" data-profile-id="${profile.getExternalId()}" data-profile-name="${profile.getPresentationName()}" class='btn btn-default btn-box' data-toggle='modal' data-target='#confirmDelete' title=<spring:message code="label.delete"/>>${menu.getFullPath()} <span class="glyphicon glyphicon-remove"></span></button>
 				</c:forEach>
+			</div>	
+			
+			<header class="headerProfile"><spring:message code="label.subProfiles" /></header>
+			<div class="box subprofiles">
+				<c:forEach var="subProfile" items="${subProfiles.get(profile.getExternalId())}">
+					<button class='btn btn-default btn-box'> ${subProfile.getPresentationName()} </button>
+				</c:forEach>
 			</div>				
 	
 		</div>
@@ -214,11 +221,31 @@ var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup(
 			<div class="panel-heading">
 				<h3 class="panel-title">
 					<a data-toggle="collapse" data-parent="#auths" data-target="#collapseFive">
-						<spring:message code="label.users" />
+						<spring:message code="title.Accesscontrol.Profiles" />
 					</a>
 				</h3>
 			</div>
 			<div id="collapseFive" class="panel-collapse collapse">
+				<div class="panel-body">
+					<c:forEach var="profile" items="${profiles}">
+						<div class="draggable_course profile">
+							<div id="oid" style="display:none">${profile.oid}</div>
+							<div id="name">${profile.getPresentationName()}</div>
+						</div>
+					</c:forEach>
+				</div>
+			</div>
+		</div>
+		
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title">
+					<a data-toggle="collapse" data-parent="#auths" data-target="#collapseSix">
+						<spring:message code="label.users" />
+					</a>
+				</h3>
+			</div>
+			<div id="collapseSix" class="panel-collapse collapse">
 				<div class="panel-body">
 					<form class="form-horizontal" id="userForm">
 						<label class="control-label"><spring:message code="label.username" /></label>

@@ -51,6 +51,16 @@ var users = [<c:forEach var="user" items="${users}">"${user}",</c:forEach>];
 				</button>
 			</c:forEach>
 		</div>
+		
+		<header class="headerProfile"><spring:message code="title.Accesscontrol.Menus" /></header>
+		<div class="box" id="${user.getExternalId()}">
+			<c:forEach var="menu" items="${menus}">
+				<button class="btn btn-default">
+					${menu.getFullPath()}
+				</button>
+			</c:forEach>
+		</div>
+		
 	</div>
 	
 	<div class="col-lg-4" style="float:right">

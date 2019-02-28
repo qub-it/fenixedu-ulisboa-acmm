@@ -60,6 +60,8 @@ public class ProfilesManagementFO {
 
         final Map<String, Set<User>> profilesUsers = new HashMap<>();
 
+        final Map<String, Set<PersistentProfileGroup>> subProfiles = new HashMap<>();
+
         AcademicAccessRule.accessRules().forEach(rule -> {
             if (rule.getWhoCanAccess() instanceof ProfileGroup) {
                 profilesAuths.put(((ProfileGroup) rule.getWhoCanAccess()).toPersistentGroup().getExternalId(), rule);
@@ -80,6 +82,8 @@ public class ProfilesManagementFO {
 
         profiles.forEach(profile -> {
             profilesUsers.put(profile.getExternalId(), profile.getMembers().collect(Collectors.toSet()));
+            subProfiles.put(profile.getExternalId(), profile.getChildSet().stream()
+                    .filter(prf -> !prf.getType().equals(ProfileType.get("Managers"))).collect(Collectors.toSet()));
         });
 
         final Set<AdministrativeOffice> offices = Bennu.getInstance().getAdministrativeOfficesSet();
@@ -88,6 +92,7 @@ public class ProfilesManagementFO {
         model.addAttribute("profiles", profiles);
         model.addAttribute("profilesAuths", profilesAuths);
         model.addAttribute("profilesMenus", profilesMenus);
+        model.addAttribute("subProfiles", subProfiles);
         model.addAttribute("profilesUsers", profilesUsers);
         model.addAttribute("authsMenus", authsMenus);
         model.addAttribute("operations", operations);

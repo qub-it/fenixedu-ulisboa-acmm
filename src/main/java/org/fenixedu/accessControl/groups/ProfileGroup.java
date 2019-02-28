@@ -92,6 +92,10 @@ public class ProfileGroup extends CustomGroup {
         this.toPersistentGroup().removeParent(parent.toPersistentGroup());
     }
 
+    public Set<PersistentProfileGroup> getChildSet() {
+        return this.toPersistentGroup().getChildSet();
+    }
+
     @Override
     public Group grant(User user) {
         PersistentProfileGroup.set(this.name, this.persisted().or(user.groupOf()).toPersistentGroup());
