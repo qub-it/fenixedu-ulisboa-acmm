@@ -11,6 +11,7 @@ import org.fenixedu.bennu.core.annotation.GroupOperator;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.groups.CustomGroup;
 import org.fenixedu.bennu.core.groups.Group;
+import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.joda.time.DateTime;
 
 @GroupOperator(value = "profile")
@@ -31,7 +32,7 @@ public class ProfileGroup extends CustomGroup {
 
     @Override
     public String getPresentationName() {
-        return "Profile " + this.name;
+        return BundleUtil.getString("resources.AccesscontrolResources", "label.profile") + " " + this.name;
     }
 
     public String getName() {
@@ -84,8 +85,8 @@ public class ProfileGroup extends CustomGroup {
         return this.toPersistentGroup().getParentSet();
     }
 
-    public void addParent(ProfileGroup Parent) {
-        this.toPersistentGroup().insertParent(Parent.toPersistentGroup());
+    public void addParent(ProfileGroup parent) {
+        this.toPersistentGroup().insertParent(parent.toPersistentGroup());
     }
 
     public void removeParent(ProfileGroup parent) {

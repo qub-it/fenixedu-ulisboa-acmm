@@ -58,7 +58,7 @@ var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup(
 			${profile.getPresentationName()} - ${profile.getType().getType()}
 		</div>
 		
-		<div class="accordion-panel" id="${profile.getExternalId()}">
+		<div class="accordion-panel" style="overflow: visible;" id="${profile.getExternalId()}">
 			
 			<div>
 				<div class="col-lg-6"></div>
@@ -86,10 +86,20 @@ var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup(
 			  		<c:forEach var="auth" items="${profilesAuths.get(profile.getExternalId())}">
 			  			<tr class="authorizations ui-droppable" id="${auth.externalId}">
 			  				<td>
-			  					<button data-profile-id="${profile.getExternalId()}" data-profile-name="${profile.getPresentationName()}" data-auth-id="${auth.getExternalId()}" data-auth-name="${auth.getOperation().getLocalizedName()}" data-type="auth" data-toggle="modal" data-target="#confirmDelete" class="btn btn-default" title=<spring:message code="label.delete"/>>
-			  						${auth.operation.localizedName} 
-			  						<span class="glyphicon glyphicon-remove"></span>
-			  					</button>
+				  				<div class="authtip">
+				  					<button data-profile-id="${profile.getExternalId()}" data-profile-name="${profile.getPresentationName()}" data-auth-id="${auth.getExternalId()}" data-auth-name="${auth.getOperation().getLocalizedName()}" data-type="auth" data-toggle="modal" data-target="#confirmDelete" class="btn btn-default" title=<spring:message code="label.delete"/>>
+				  						${auth.operation.localizedName}
+				  						<span class="glyphicon glyphicon-remove"></span>
+				  					</button>
+				  				
+				  					<span class="authtiptext">
+				  						<ul>
+											<c:forEach var="menu" items="${authsMenus.get(auth.getOperation().toString())}">
+												<li>${menu}</li>
+											</c:forEach>
+										</ul>
+									</span>
+				  				</div>
 			  				</td>
 			  				<td>
 			  					<table class="office-list">
@@ -126,7 +136,7 @@ var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup(
 			  			<td></td>
 			  			<td></td>
 			  		</tr>
-			  	</tbody>		  		
+			  	</tbody>
 		  	</table>
 		</div>
 
@@ -148,7 +158,7 @@ var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup(
 			<header class="headerProfile"><spring:message code="label.subProfiles" /></header>
 			<div class="box subprofiles">
 				<c:forEach var="subProfile" items="${subProfiles.get(profile.getExternalId())}">
-					<button class='btn btn-default btn-box'> ${subProfile.getPresentationName()} </button>
+					<button data-profile-id="${profile.getExternalId()}" data-profile-name="${profile.getPresentationName()}" data-child-id="${subProfile.getExternalId()}" data-user-name="${subProfile.getPresentationName()}"  data-type='child' class='btn btn-default btn-box' data-toggle='modal' data-target='#confirmDelete' title=<spring:message code="label.delete"/>> ${subProfile.getPresentationName()} <span class="glyphicon glyphicon-remove"></span> </button>
 				</c:forEach>
 			</div>	
 	

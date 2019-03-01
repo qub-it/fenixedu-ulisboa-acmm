@@ -2,6 +2,56 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <style>
 
+
+
+
+
+
+.authtip {
+  position: relative;
+  display: inline-block;
+/*   border-bottom: 1px dotted black; */
+}
+
+.authtip .authtiptext {
+  visibility: hidden;
+/*   width: 120px; */
+  background-color: #555;
+  color: #fff;
+/*   text-align: center; */
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+/*   left: 50%; */
+  left: 25%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.authtip .authtiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+.authtip:hover .authtiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
+
+
+
+
+
 .headerProfile {
 	font-weight: bold;
 	font-size: 12px;
@@ -89,6 +139,15 @@
 <spring:url var="copy" value="/back-office-profiles/copy"/>
 <spring:url var="modifyOffice" value="/back-office-profiles/modifyOffice"/>
 <spring:url var="modifyProgram" value="/back-office-profiles/modifyProgram"/>
+<spring:url var="addChild" value="/back-office-profiles/addChild"/>
+<spring:url var="removeChild" value="/back-office-profiles/removeChild"/>
+
+<spring:url var="getTest" value="/back-office-profiles/getTest"/>
+
+
+
+
+
 
 <script>
 
@@ -112,8 +171,14 @@
 	                type: 'POST',
 	                headers: { '${csrf.headerName}' :  '${csrf.token}' } ,
 	                success: function(result) {
-	                	obj.append("<tr><td><button class='btn btn-default btn-box' data-profile-id='"+profile+"' data-auth-id='"+result+"' data-type='auth' data-toggle='modal' data-target='#confirmDelete' >"+authName+" <span class='glyphicon glyphicon-remove'></span></button></td><td><table class='office-list'></table> </td> <td><table class='program-list'></table></td></tr>");
-					}
+	                	obj.append("<tr class='authorizations ui-droppable' id='"+result+"'><td><button class='btn btn-default btn-box' data-profile-id='"+profile+"' data-auth-id='"+result+"' data-type='auth' data-toggle='modal' data-target='#confirmDelete' >"+authName+" <span class='glyphicon glyphicon-remove'></span></button></td><td><table class='office-list'></table> </td> <td><table class='program-list'></table></td></tr>");
+
+	                	$(".authorizations").droppable({
+	            			drop: dropFunction
+	            		})
+
+	                
+	                }
 				});
 			
 		}else if($(ui.draggable).hasClass("office") && $(this).hasClass("authorizations")){
@@ -176,6 +241,22 @@
 	                headers: { '${csrf.headerName}' :  '${csrf.token}' } ,
 	                success: function(result) {
 	                	obj.append("<button  data-profile-id='"+profile+"' data-user-id='"+result+"' class='btn btn-default btn-box' data-type='user' data-toggle='modal' data-target='#confirmDelete' >"+userName+" <span class='glyphicon glyphicon-remove'></span></button>");
+					}
+				});
+			
+		}else if($(ui.draggable).hasClass("profile") && $(this).hasClass("subprofiles")){
+			var childName = $(ui.draggable).children('#name').html();
+			var child = $(ui.draggable).children('#oid').html();
+			
+			var obj = $(this);
+			
+			$.ajax({
+	    		  	data: {"parent" : profile, "child": child},
+	                url: "${addChild}",
+	                type: 'POST',
+	                headers: { '${csrf.headerName}' :  '${csrf.token}' } ,
+	                success: function(result) {
+	                	obj.append("<button data-profile-id='"+profile+"' data-child-id='"+child+"' class='btn btn-default btn-box' data-type='profile' data-toggle='modal' data-target='#confirmDelete' >"+childName+" <span class='glyphicon glyphicon-remove'></span></button>");
 					}
 				});
 			
@@ -338,6 +419,37 @@
 	      
 	  };
 	  
+	  
+	function deleteChild($profileId, $profileName, $child, $childName) {
+	      
+	      var $message = "Are you sure you want to remove child '" + $childName + "' from '" + $profileName + "' ?";
+	      $('#confirmDelete').find('.modal-body p').text($message);
+	      var $title = "Remove '" + $childName + "'";
+	      $('#confirmDelete').find('.modal-title').text($title);
+
+	      $('#confirmDelete').find('.modal-footer #confirm').on('click', function(){
+	    	  
+	    	  $.ajax({
+	    		  data: {"parent": $profileId, "child": $child},
+                url: "${removeChild}",
+                type: 'POST',
+                headers: { '${csrf.headerName}' :  '${csrf.token}' } ,
+                success: function(result) {
+                	$('button[data-profile-id="'+$profileId+'"][data-child-id="'+$child+'"]').hide();
+                	$('#confirmDelete').modal('hide');
+				    }
+				});
+	    	  
+	    	  $('#confirmDelete').find('.modal-footer #confirm').off("click");
+	    	  
+		  });
+	      
+	      $('#confirmDelete').not('.modal-footer #confirm').on("click",function(){ 
+	    	  $('#confirmDelete').find('.modal-footer #confirm').off("click");	
+	  	  });
+	      
+	  };
+	  
 	function deleteProfile($profile, $profileName) {
 	      
 	      var $message = "Are you sure you want to delete '" + $profileName + "' ?";
@@ -367,8 +479,7 @@
 	  	  });
 	      
 	  };
-
-
+	  
 
 $(document).ready(function() {
 	
@@ -475,6 +586,10 @@ $(document).ready(function() {
 				var $user = $(e.relatedTarget).attr('data-user-id');
 				var $userName = $(e.relatedTarget).attr('data-user-name');
 				deleteUser($profileId, $profileName, $user, $userName);
+			}else if($type == "child"){
+				var $child = $(e.relatedTarget).attr('data-child-id');
+				var $childName = $(e.relatedTarget).attr('data-child-name');
+				deleteChild($profileId, $profileName, $child, $childName);
 			}else{
 				deleteProfile($profileId, $profileName);
 			}

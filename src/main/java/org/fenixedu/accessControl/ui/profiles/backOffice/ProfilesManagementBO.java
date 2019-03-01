@@ -81,7 +81,8 @@ public class ProfilesManagementBO {
                 if (parsed instanceof ProfileGroup) {
                     profilesMenus.put(parsed.toPersistentGroup().getExternalId(), menu);
                 } else if (parsed instanceof AcademicAuthorizationGroup) {
-                    authsMenus.put(parsed.getExpression(), menu.getFullPath());
+                    authsMenus.put(parsed.getExpression().replace("academic(", "").replace(")", ""),
+                            menu.getTitle().getContent());
                 }
 
             }
@@ -324,4 +325,31 @@ public class ProfilesManagementBO {
     private void crearteRule(AcademicAccessRule rule, ProfileGroup group) {
         new AcademicAccessRule(rule.getOperation(), group, rule.getWhatCanAffect(), rule.getValidity());
     }
+
+    @RequestMapping(path = "addChild", method = RequestMethod.POST)
+    @ResponseBody
+    private String addChild(@RequestParam PersistentProfileGroup parent, @RequestParam PersistentProfileGroup child) {
+
+        addToParent(parent.toGroup(), child.toGroup());
+        return "";
+    }
+
+    @Atomic(mode = TxMode.WRITE)
+    private void addToParent(ProfileGroup parent, ProfileGroup child) {
+        child.addParent(parent);
+    }
+
+    @RequestMapping(path = "removeChild", method = RequestMethod.POST)
+    @ResponseBody
+    private String removeChild(@RequestParam PersistentProfileGroup parent, @RequestParam PersistentProfileGroup child) {
+
+        removeFromParent(parent.toGroup(), child.toGroup());
+        return "";
+    }
+
+    @Atomic(mode = TxMode.WRITE)
+    private void removeFromParent(ProfileGroup parent, ProfileGroup child) {
+        child.removeParent(parent);
+    }
+
 }

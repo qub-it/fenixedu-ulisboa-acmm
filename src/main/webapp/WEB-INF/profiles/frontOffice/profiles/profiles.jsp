@@ -137,9 +137,9 @@ var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup(
 			<header class="headerProfile"><spring:message code="label.subProfiles" /></header>
 			<div class="box subprofiles">
 				<c:forEach var="subProfile" items="${subProfiles.get(profile.getExternalId())}">
-					<button class='btn btn-default btn-box'> ${subProfile.getPresentationName()} </button>
+					<button data-profile-id="${profile.getExternalId()}" data-profile-name="${profile.getPresentationName()}" data-child-id="${subProfile.getExternalId()}" data-user-name="${subProfile.getPresentationName()}"  data-type='child' class='btn btn-default btn-box' data-toggle='modal' data-target='#confirmDelete' title=<spring:message code="label.delete"/>> ${subProfile.getPresentationName()} <span class="glyphicon glyphicon-remove"></span> </button>
 				</c:forEach>
-			</div>				
+			</div>			
 	
 		</div>
 

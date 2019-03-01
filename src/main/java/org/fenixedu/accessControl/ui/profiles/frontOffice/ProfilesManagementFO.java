@@ -333,4 +333,30 @@ public class ProfilesManagementFO {
     private void crearteRule(AcademicAccessRule rule, ProfileGroup group) {
         new AcademicAccessRule(rule.getOperation(), group, rule.getWhatCanAffect(), rule.getValidity());
     }
+
+    @RequestMapping(path = "addChild", method = RequestMethod.POST)
+    @ResponseBody
+    private String addChild(@RequestParam PersistentProfileGroup parent, @RequestParam PersistentProfileGroup child) {
+
+        addToParent(parent.toGroup(), child.toGroup());
+        return "";
+    }
+
+    @Atomic(mode = TxMode.WRITE)
+    private void addToParent(ProfileGroup parent, ProfileGroup child) {
+        child.addParent(parent);
+    }
+
+    @RequestMapping(path = "removeChild", method = RequestMethod.POST)
+    @ResponseBody
+    private String removeChild(@RequestParam PersistentProfileGroup parent, @RequestParam PersistentProfileGroup child) {
+
+        removeFromParent(parent.toGroup(), child.toGroup());
+        return "";
+    }
+
+    @Atomic(mode = TxMode.WRITE)
+    private void removeFromParent(ProfileGroup parent, ProfileGroup child) {
+        child.removeParent(parent);
+    }
 }
