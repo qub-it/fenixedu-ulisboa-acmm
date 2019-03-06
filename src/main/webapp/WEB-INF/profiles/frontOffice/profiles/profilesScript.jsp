@@ -196,7 +196,7 @@
 	                type: 'POST',
 	                headers: { '${csrf.headerName}' :  '${csrf.token}' } ,
 	                success: function(result) {
-	                	obj.append("<button data-profile-id='"+profile+"' data-child-id='"+child+"' class='btn btn-default btn-box' data-type='profile' data-toggle='modal' data-target='#confirmDelete' >"+childName+" <span class='glyphicon glyphicon-remove'></span></button>");
+	                	obj.append("<button data-profile-id='"+profile+"' data-child-id='"+child+"' class='btn btn-default btn-box' data-type='child' data-toggle='modal' data-target='#confirmDelete' >"+childName+" <span class='glyphicon glyphicon-remove'></span></button>");
 					}
 				});
 			
