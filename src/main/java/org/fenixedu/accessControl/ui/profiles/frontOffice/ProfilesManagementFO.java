@@ -81,7 +81,7 @@ public class ProfilesManagementFO {
         });
 
         profiles.forEach(profile -> {
-            profilesUsers.put(profile.getExternalId(), profile.getMembers().collect(Collectors.toSet()));
+            profilesUsers.put(profile.getExternalId(), profile.getMembersWithoutParents().collect(Collectors.toSet()));
             subProfiles.put(profile.getExternalId(), profile.getChildSet().stream()
                     .filter(prf -> !prf.getType().equals(ProfileType.get("Managers"))).collect(Collectors.toSet()));
         });
