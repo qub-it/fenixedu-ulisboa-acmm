@@ -84,7 +84,9 @@ public class AcademicAuthorizations {
         rulesToCopy.forEach(rule -> {
 
             if (rules.stream().noneMatch(r -> r.getOperation() == rule.getOperation())) {
-                grantRule(rule.getOperation(), user, rule.getWhatCanAffect(), rule.getValidity());
+//                grantRule(rule.getOperation(), user, rule.getWhatCanAffect(), rule.getValidity());
+
+                grantRule(rule.getOperation(), user, rule.getWhatCanAffect());
             }
 
         });
@@ -127,14 +129,17 @@ public class AcademicAuthorizations {
         }
 
         final Set<AcademicAccessTarget> targets = new HashSet<AcademicAccessTarget>();
-        final String id = grantRule(operation, user, targets, new DateTime(validity));
+//        final String id = grantRule(operation, user, targets, new DateTime(validity));
+        final String id = grantRule(operation, user, targets);
 
         return id;
     }
 
     @Atomic(mode = TxMode.WRITE)
-    private String grantRule(AcademicOperationType operation, User user, Set<AcademicAccessTarget> targets, DateTime validity) {
-        final AcademicAccessRule rule = new AcademicAccessRule(operation, user.groupOf(), targets, validity);
+    private String grantRule(AcademicOperationType operation, User user, Set<AcademicAccessTarget> targets) {
+//    private String grantRule(AcademicOperationType operation, User user, Set<AcademicAccessTarget> targets, DateTime validity) {
+//        final AcademicAccessRule rule = new AcademicAccessRule(operation, user.groupOf(), targets, validity);
+        final AcademicAccessRule rule = new AcademicAccessRule(operation, user.groupOf(), targets);
         return rule.getExternalId();
     }
 
@@ -211,7 +216,7 @@ public class AcademicAuthorizations {
         final DateTime newValidity = new DateTime(validity);
 
         if (newValidity.isAfterNow()) {
-            alterValidity(rule, newValidity);
+//            alterValidity(rule, newValidity);
 
             return rule.getExternalId();
         }
@@ -220,8 +225,8 @@ public class AcademicAuthorizations {
 
     }
 
-    @Atomic(mode = TxMode.WRITE)
-    private void alterValidity(AcademicAccessRule rule, DateTime validity) {
-        rule.setValidity(validity);
-    }
+//    @Atomic(mode = TxMode.WRITE)
+//    private void alterValidity(AcademicAccessRule rule, DateTime validity) {
+//        rule.setValidity(validity);
+//    }
 }

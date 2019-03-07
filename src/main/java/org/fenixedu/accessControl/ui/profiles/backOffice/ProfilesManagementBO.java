@@ -77,12 +77,16 @@ public class ProfilesManagementBO {
 
             for (final String group : groups) {
 
-                final Group parsed = Group.parse(group);
-                if (parsed instanceof ProfileGroup) {
-                    profilesMenus.put(parsed.toPersistentGroup().getExternalId(), menu);
-                } else if (parsed instanceof AcademicAuthorizationGroup) {
-                    authsMenus.put(parsed.getExpression().replace("academic(", "").replace(")", ""),
-                            menu.getTitle().getContent());
+                try {
+                    final Group parsed = Group.parse(group);
+                    if (parsed instanceof ProfileGroup) {
+                        profilesMenus.put(parsed.toPersistentGroup().getExternalId(), menu);
+                    } else if (parsed instanceof AcademicAuthorizationGroup) {
+                        authsMenus.put(parsed.getExpression().replace("academic(", "").replace(")", ""),
+                                menu.getTitle().getContent());
+                    }
+                } catch (final Exception e) {
+                    System.out.println(e);
                 }
 
             }
@@ -153,7 +157,9 @@ public class ProfilesManagementBO {
     private String addAuth(ProfileGroup profile, AcademicOperationType operation, DateTime validity) {
         final Set<AcademicAccessTarget> targets = new HashSet<>();
 
-        return new AcademicAccessRule(operation, profile, targets, validity).getExternalId();
+//        return new AcademicAccessRule(operation, profile, targets, validity).getExternalId();
+        return new AcademicAccessRule(operation, profile, targets).getExternalId();
+
     }
 
     @RequestMapping(path = "removeAuth", method = RequestMethod.POST)
@@ -323,7 +329,9 @@ public class ProfilesManagementBO {
 
     @Atomic(mode = TxMode.WRITE)
     private void crearteRule(AcademicAccessRule rule, ProfileGroup group) {
-        new AcademicAccessRule(rule.getOperation(), group, rule.getWhatCanAffect(), rule.getValidity());
+//        new AcademicAccessRule(rule.getOperation(), group, rule.getWhatCanAffect(), rule.getValidity());
+        new AcademicAccessRule(rule.getOperation(), group, rule.getWhatCanAffect());
+
     }
 
     @RequestMapping(path = "addChild", method = RequestMethod.POST)

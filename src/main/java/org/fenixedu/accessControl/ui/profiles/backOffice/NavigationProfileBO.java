@@ -219,7 +219,9 @@ public class NavigationProfileBO {
 
     @Atomic(mode = TxMode.WRITE)
     private void crearteRule(AcademicAccessRule rule, ProfileGroup group) {
-        new AcademicAccessRule(rule.getOperation(), group, rule.getWhatCanAffect(), rule.getValidity());
+//        new AcademicAccessRule(rule.getOperation(), group, rule.getWhatCanAffect(), rule.getValidity());
+        new AcademicAccessRule(rule.getOperation(), group, rule.getWhatCanAffect());
+
     }
 
     private Set<MenuItem> getMenu(Set<MenuItem> menus) {

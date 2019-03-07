@@ -146,7 +146,9 @@ public class ProfilesManagementFO {
     @Atomic(mode = TxMode.WRITE)
     private String addAuth(ProfileGroup profile, AcademicOperationType operation, DateTime validity) {
         final Set<AcademicAccessTarget> targets = new HashSet<>();
-        return new AcademicAccessRule(operation, profile, targets, validity).getExternalId();
+//        return new AcademicAccessRule(operation, profile, targets, validity).getExternalId();
+        return new AcademicAccessRule(operation, profile, targets).getExternalId();
+
     }
 
     @RequestMapping(path = "removeAuth", method = RequestMethod.POST)
@@ -331,7 +333,8 @@ public class ProfilesManagementFO {
 
     @Atomic(mode = TxMode.WRITE)
     private void crearteRule(AcademicAccessRule rule, ProfileGroup group) {
-        new AcademicAccessRule(rule.getOperation(), group, rule.getWhatCanAffect(), rule.getValidity());
+//        new AcademicAccessRule(rule.getOperation(), group, rule.getWhatCanAffect(), rule.getValidity());
+        new AcademicAccessRule(rule.getOperation(), group, rule.getWhatCanAffect());
     }
 
     @RequestMapping(path = "addChild", method = RequestMethod.POST)

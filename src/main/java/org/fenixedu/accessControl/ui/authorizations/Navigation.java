@@ -104,7 +104,8 @@ public class Navigation {
 
     @Atomic(mode = TxMode.WRITE)
     private String grantRule(AcademicOperationType operation, User user, Set<AcademicAccessTarget> targets, DateTime validity) {
-        final AcademicAccessRule rule = new AcademicAccessRule(operation, user.groupOf(), targets, validity);
+//        final AcademicAccessRule rule = new AcademicAccessRule(operation, user.groupOf(), targets, validity);
+        final AcademicAccessRule rule = new AcademicAccessRule(operation, user.groupOf(), targets);
 
         return rule.getExternalId();
     }

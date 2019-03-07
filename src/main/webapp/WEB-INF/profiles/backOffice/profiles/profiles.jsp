@@ -184,11 +184,8 @@ var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup(
 					<c:forEach var="operation" items="${operations}">
 						<a href="${navigationAuths}?operation=${operation}">
 							<div class="draggable_course authorization">
-									<c:if test="${operation.critical}">
-										<div id="warning">${operation.criticalDescription}</div>
-									</c:if>
-									<div id="presentationName">${operation.localizedName}</div>
-									<div id="operationName" style="display:none">${operation}</div>
+								<div id="presentationName">${operation.localizedName}</div>
+								<div id="operationName" style="display:none">${operation}</div>
 							</div>
 						</a>
 					</c:forEach>

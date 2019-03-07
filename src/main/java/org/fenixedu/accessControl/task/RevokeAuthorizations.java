@@ -14,9 +14,9 @@ public class RevokeAuthorizations extends CronTask {
 
         AcademicAccessRule.accessRules().forEach(rule -> {
 
-            if (rule.getValidity().isBeforeNow()) {
-                revoke(rule);
-            }
+//            if (rule.getValidity().isBeforeNow()) {
+//                revoke(rule);
+//            }
 
         });
 
