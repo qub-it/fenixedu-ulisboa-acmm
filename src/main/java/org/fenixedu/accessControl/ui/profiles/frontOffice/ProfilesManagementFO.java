@@ -71,11 +71,15 @@ public class ProfilesManagementFO {
         getMenu(PortalConfiguration.getInstance().getMenu().getOrderedChild()).forEach(menu -> {
             final String[] groups = menu.getAccessGroup().getExpression().split("([|&-])");
             for (final String group : groups) {
-                final Group parsed = Group.parse(group);
-                if (parsed instanceof ProfileGroup) {
-                    profilesMenus.put(parsed.toPersistentGroup().getExternalId(), menu);
-                } else if (parsed instanceof AcademicAuthorizationGroup) {
-                    authsMenus.put(parsed.getExpression(), menu.getFullPath());
+                try {
+                    final Group parsed = Group.parse(group);
+                    if (parsed instanceof ProfileGroup) {
+                        profilesMenus.put(parsed.toPersistentGroup().getExternalId(), menu);
+                    } else if (parsed instanceof AcademicAuthorizationGroup) {
+                        authsMenus.put(parsed.getExpression(), menu.getFullPath());
+                    }
+                } catch (final Exception e) {
+                    System.out.println(e);
                 }
             }
         });
