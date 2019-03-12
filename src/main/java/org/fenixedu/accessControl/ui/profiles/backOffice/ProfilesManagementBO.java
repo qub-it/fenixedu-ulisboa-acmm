@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 
 import org.fenixedu.academic.domain.AcademicProgram;
 import org.fenixedu.academic.domain.Degree;
-import org.fenixedu.academic.domain.accessControl.AcademicAuthorizationGroup;
 import org.fenixedu.academic.domain.accessControl.academicAdministration.AcademicAccessRule;
 import org.fenixedu.academic.domain.accessControl.academicAdministration.AcademicAccessRule.AcademicAccessTarget;
 import org.fenixedu.academic.domain.accessControl.academicAdministration.AcademicOperationType;
@@ -20,7 +19,6 @@ import org.fenixedu.accessControl.ui.profiles.ProfilesController;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.groups.Group;
-import org.fenixedu.bennu.portal.domain.MenuContainer;
 import org.fenixedu.bennu.portal.domain.MenuItem;
 import org.fenixedu.bennu.portal.domain.PortalConfiguration;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
@@ -33,6 +31,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import com.google.gson.Gson;
 
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.Atomic.TxMode;
@@ -53,7 +52,7 @@ public class ProfilesManagementBO {
 
         final Multimap<String, String> authsMenus = HashMultimap.create();
 
-        final Multimap<String, MenuItem> profilesMenus = HashMultimap.create();
+//        final Multimap<String, MenuItem> profilesMenus = HashMultimap.create();
 
         final Map<String, Set<User>> profilesUsers = new HashMap<>();
 
@@ -71,47 +70,59 @@ public class ProfilesManagementBO {
             subProfiles.put(profile.getExternalId(), profile.getChildSet());
         });
 
-        getMenu(PortalConfiguration.getInstance().getMenu().getOrderedChild()).forEach(menu -> {
-
-            final String[] groups = menu.getAccessGroup().getExpression().split("([|&-])");
-
-            for (final String group : groups) {
-
-                try {
-                    final Group parsed = Group.parse(group);
-                    if (parsed instanceof ProfileGroup) {
-                        profilesMenus.put(parsed.toPersistentGroup().getExternalId(), menu);
-                    } else if (parsed instanceof AcademicAuthorizationGroup) {
-                        authsMenus.put(parsed.getExpression().replace("academic(", "").replace(")", ""),
-                                menu.getTitle().getContent());
-                    }
-                } catch (final Exception e) {
-                    System.out.println(e);
-                }
-
-            }
-
-        });
+//        getMenuWithContainers(PortalConfiguration.getInstance().getMenu().getAsMenuContainer().getOrderedChild())
+//                .forEach(menu -> {
+//                    final String[] groups = menu.getAccessGroup().getExpression().split("[|&-]");
+//                    for (final String group : groups) {
+//                        final Group parsed = Group.parse(group);
+//                        if (parsed instanceof ProfileGroup) {
+//                            profilesMenus.put(parsed.toPersistentGroup().getExternalId(), menu);
+//                        } else if (parsed instanceof AcademicAuthorizationGroup) {
+//                            authsMenus.put(parsed.getExpression().replace("academic(", "").replace(")", ""),
+//                                    menu.getTitle().getContent());
+//                        }
+//                    }
+//                });
 
         final Set<AdministrativeOffice> offices = Bennu.getInstance().getAdministrativeOfficesSet();
         final Set<Degree> degrees = Bennu.getInstance().getDegreesSet();
 
-        final Set<MenuItem> menus = getMenu(PortalConfiguration.getInstance().getMenu().getOrderedChild());
+//        final Set<MenuItem> menus = getMenu(PortalConfiguration.getInstance().getMenu().getOrderedChild());
 
         model.addAttribute("profiles", profiles);
         model.addAttribute("profilesAuths", profilesAuths);
-        model.addAttribute("profilesMenus", profilesMenus);
+//        model.addAttribute("profilesMenus", profilesMenus);
         model.addAttribute("subProfiles", subProfiles);
         model.addAttribute("authsMenus", authsMenus);
         model.addAttribute("profilesUsers", profilesUsers);
         model.addAttribute("operations", operations);
         model.addAttribute("offices", offices);
         model.addAttribute("degrees", degrees);
-        model.addAttribute("menus", menus);
+//        model.addAttribute("menus", menus);
         model.addAttribute("types", types);
         model.addAttribute("users", users);
 
         return "profiles/backOffice/profiles/profiles";
+    }
+
+    @RequestMapping(path = "getMenusTree", method = RequestMethod.GET, produces = "application/json")
+    @ResponseBody
+    public String getMenusTree() {
+
+        final Gson json = new Gson();
+
+        return json.toJson(getMenus(PortalConfiguration.getInstance().getMenu().getAsMenuContainer().getOrderedChild()));
+
+    }
+
+    @RequestMapping(path = "getTree", method = RequestMethod.GET, produces = "application/json")
+    @ResponseBody
+    public String getTree(@RequestParam PersistentProfileGroup profile) {
+
+        final Gson json = new Gson();
+
+        return json.toJson(getMenus(PortalConfiguration.getInstance().getMenu().getAsMenuContainer().getOrderedChild(), profile));
+
     }
 
     private Set<MenuItem> getMenu(Set<MenuItem> menus) {
@@ -119,10 +130,77 @@ public class ProfilesManagementBO {
         final Set<MenuItem> items = new HashSet<>();
         for (final MenuItem menuItem : menus) {
             if (menuItem.isMenuContainer()) {
-                final Set<MenuItem> submenus = ((MenuContainer) menuItem).getOrderedChild();
+                final Set<MenuItem> submenus = menuItem.getAsMenuContainer().getOrderedChild();
                 items.addAll(getMenu(submenus));
+                items.add(menuItem);
             } else {
                 items.add(menuItem);
+            }
+        }
+        return items;
+    }
+
+    private Set<Object> getMenus(Set<MenuItem> menus) {
+
+        final Set<Object> items = new HashSet<>();
+        for (final MenuItem menuItem : menus) {
+            if (menuItem.isMenuContainer()) {
+
+                final Map<String, Object> folder = new HashMap<>();
+
+                folder.put("key", menuItem.getExternalId());
+                folder.put("title", menuItem.getTitle().getContent());
+                folder.put("folder", "true");
+                folder.put("expanded", "true");
+
+                final Set<MenuItem> submenus = menuItem.getAsMenuContainer().getOrderedChild();
+                folder.put("children", getMenus(submenus));
+
+                items.add(folder);
+
+            } else {
+
+                final Map<String, String> leaf = new HashMap<>();
+
+                leaf.put("key", menuItem.getExternalId());
+                leaf.put("title",
+                        "<div class=\'draggable_course menu\'><div id=\'oid\' style=\'display:none\'>" + menuItem.getExternalId()
+                                + "</div><div id=\'path\'>" + menuItem.getTitle().getContent() + "</div></div>");
+
+                items.add(leaf);
+            }
+        }
+        return items;
+    }
+
+    private Set<Object> getMenus(Set<MenuItem> menus, PersistentProfileGroup profile) {
+
+        final Set<Object> items = new HashSet<>();
+        for (final MenuItem menuItem : menus) {
+            if (menuItem.getAccessGroup().getExpression().contains(profile.expression())) {
+                if (menuItem.isMenuContainer()) {
+
+                    final Map<String, Object> folder = new HashMap<>();
+
+                    folder.put("key", menuItem.getExternalId());
+                    folder.put("title", menuItem.getTitle().getContent());
+                    folder.put("folder", "true");
+                    folder.put("expanded", "true");
+
+                    final Set<MenuItem> submenus = menuItem.getAsMenuContainer().getOrderedChild();
+                    folder.put("children", getMenus(submenus, profile));
+
+                    items.add(folder);
+
+                } else {
+
+                    final Map<String, String> leaf = new HashMap<>();
+
+                    leaf.put("key", menuItem.getExternalId());
+                    leaf.put("title", menuItem.getTitle().getContent());
+
+                    items.add(leaf);
+                }
             }
         }
         return items;
@@ -159,7 +237,6 @@ public class ProfilesManagementBO {
 
 //        return new AcademicAccessRule(operation, profile, targets, validity).getExternalId();
         return new AcademicAccessRule(operation, profile, targets).getExternalId();
-
     }
 
     @RequestMapping(path = "removeAuth", method = RequestMethod.POST)
@@ -194,7 +271,7 @@ public class ProfilesManagementBO {
         final Group group = Group.parse(menu.getAccessGroup().getExpression().replace(profile.toGroup().getExpression(), "nobody")
                 .replace(profile.toGroup().getExpression(), "nobody"));
 
-        setGroup(menu, group);
+        setGroup(menu, group, profile);
 
         return menu.getExternalId();
     }
@@ -205,6 +282,17 @@ public class ProfilesManagementBO {
 
         if (!menuItem.getParent().isRoot()) {
             setGroup(menuItem.getParent(), group);
+        }
+    }
+
+    @Atomic(mode = TxMode.WRITE)
+    private void setGroup(MenuItem menuItem, Group group, PersistentProfileGroup profile) {
+
+        if ((menuItem.isMenuContainer() && menuItem.getAsMenuContainer().getOrderedChild().stream()
+                .filter(menu -> menu.getAccessGroup().getExpression().contains(profile.expression())).count() == 0)
+                || menuItem.isMenuFunctionality()) {
+            menuItem.setAccessGroup(group);
+            setGroup(menuItem.getParent(), group, profile);
         }
     }
 
@@ -331,7 +419,6 @@ public class ProfilesManagementBO {
     private void crearteRule(AcademicAccessRule rule, ProfileGroup group) {
 //        new AcademicAccessRule(rule.getOperation(), group, rule.getWhatCanAffect(), rule.getValidity());
         new AcademicAccessRule(rule.getOperation(), group, rule.getWhatCanAffect());
-
     }
 
     @RequestMapping(path = "addChild", method = RequestMethod.POST)

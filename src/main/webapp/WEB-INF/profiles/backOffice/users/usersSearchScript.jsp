@@ -39,6 +39,8 @@
 
 <spring:url var="addToProfile" value="/back-office-users/addToProfile"/>
 <spring:url var="removeFromProfile" value="/back-office-users/removeFromProfile"/>
+<spring:url var="getTree" value="/back-office-users/getTree"/>
+
 <script>
 
 	function dropFunction(event, ui) {
@@ -97,6 +99,12 @@
 
 
 $(document).ready(function() {
+	
+	$(".tree").fancytree({
+		source: {
+			url: "${getTree}?user="+$(".tree").attr('data-user'),
+		},
+	});
 	
 	
 //		new filter function

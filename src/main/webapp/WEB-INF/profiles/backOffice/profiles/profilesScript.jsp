@@ -5,8 +5,6 @@
 
 
 
-
-
 .authtip {
   position: relative;
   display: inline-block;
@@ -141,8 +139,8 @@
 <spring:url var="modifyProgram" value="/back-office-profiles/modifyProgram"/>
 <spring:url var="addChild" value="/back-office-profiles/addChild"/>
 <spring:url var="removeChild" value="/back-office-profiles/removeChild"/>
-
-<spring:url var="getTest" value="/back-office-profiles/getTest"/>
+<spring:url var="getTree" value="/back-office-profiles/getTree"/>
+<spring:url var="getMenusTree" value="/back-office-profiles/getMenusTree"/>
 
 
 
@@ -225,7 +223,8 @@
 	                type: 'POST',
 	                headers: { '${csrf.headerName}' :  '${csrf.token}' } ,
 	                success: function(result) {
-	                	obj.append("<button  data-profile-id='"+profile+"' data-menu-id='"+result+"' class='btn btn-default btn-box' data-type='menu' data-toggle='modal' data-target='#confirmDelete' >"+menuPath+" <span class='glyphicon glyphicon-remove'></span></button>");
+	                	loadTree(profile,$("#"+profile).prev().html());
+// 	                	obj.append("<button  data-profile-id='"+profile+"' data-menu-id='"+result+"' class='btn btn-default btn-box' data-type='menu' data-toggle='modal' data-target='#confirmDelete' >"+menuPath+" <span class='glyphicon glyphicon-remove'></span></button>");
 					}
 				});
 			
@@ -374,7 +373,7 @@
                 type: 'POST',
                 headers: { '${csrf.headerName}' :  '${csrf.token}' } ,
                 success: function(result) {
-                	$('button[data-profile-id="'+$profileId+'"][data-menu-id="'+result+'"]').hide();
+                	loadTree($profileId,$profileName);
                 	$('#confirmDelete').modal('hide');
 				    }
 				});
@@ -480,10 +479,38 @@
 	      
 	  };
 	  
+	  function loadTree($profile, $profileName){
+		  $(".tree"+$profile).fancytree({
+				source: {
+					url: "${getTree}?profile="+$profile,
+				},
+				dblclick: function(event, data) {
+					
+					$('#confirmDelete').modal("show");
+					
+					deleteMenu($profile, $profileName, data.node.key, data.node.title);
+									
+				},
+			});
+		  $(".draggable_course").draggable({
+				revert : 'invalid',
+				helper: 'clone',
+				appendTo: 'body',
+				start: function() {
+					$(this).addClass("course-dragging");
+				}
+			});
+	  };
+	  
 
 $(document).ready(function() {
 	
-	
+	$("#menus").fancytree({
+		source: {
+			url: "${getMenusTree}",
+		}
+	});
+		
 //		new filter function
 		$.extend( $.ui.autocomplete, {
 			escapeRegex: function( value ) {
@@ -531,6 +558,7 @@ $(document).ready(function() {
 				$(this).addClass("course-dragging");
 			}
 		});
+		
 		
 		$(".box").droppable({
 			drop: dropFunction

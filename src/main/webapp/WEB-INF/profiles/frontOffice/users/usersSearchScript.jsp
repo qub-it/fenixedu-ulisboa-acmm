@@ -39,6 +39,7 @@
 
 <spring:url var="addToProfile" value="/front-office-users/addToProfile"/>
 <spring:url var="removeFromProfile" value="/front-office-users/removeFromProfile"/>
+<spring:url var="getTree" value="/front-office-users/getTree"/>
 <script>
 
 	function dropFunction(event, ui) {
@@ -98,6 +99,11 @@
 
 $(document).ready(function() {
 	
+	$(".tree").fancytree({
+		source: {
+			url: "${getTree}?user="+$(".tree").attr('data-user'),
+		},
+	});
 	
 //		new filter function
 		$.extend( $.ui.autocomplete, {

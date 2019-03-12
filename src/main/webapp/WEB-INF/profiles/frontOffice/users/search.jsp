@@ -5,9 +5,14 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib uri = "http://java.sun.com/jsp/jstl/functions" prefix = "fn" %>
 
+<link href="${pageContext.request.contextPath}/bennu-admin/libs/fancytree/skin-lion/ui.fancytree.css" rel="stylesheet" type="text/css">
+<script src="${pageContext.request.contextPath}/bennu-admin/libs/fancytree/jquery-ui.min.js" type="text/javascript"></script>
+<script src="${pageContext.request.contextPath}/bennu-admin/libs/fancytree/jquery.fancytree-all.min.js" type="text/javascript"></script>
+
 <spring:url var="searchAction" value="/front-office-users/search"/>
 <spring:url var="copyAction" value="/front-office-users/copy"/>
 <spring:url var="navigationGroup" value="/front-office-navigationProfile/accessGroup"/>
+<spring:url var="getTree" value="/back-office-users/getTree"/>
 
 <script type="text/javascript">
 var users = [<c:forEach var="user" items="${users}">"${user}",</c:forEach>];
@@ -52,14 +57,12 @@ var users = [<c:forEach var="user" items="${users}">"${user}",</c:forEach>];
 			</c:forEach>
 		</div>
 		
-		<header class="headerProfile"><spring:message code="title.Accesscontrol.Menus" /></header>
-		<div class="box" id="${user.getExternalId()}">
-			<c:forEach var="menu" items="${menus}">
-				<button class="btn btn-default">
-					${menu.getFullPath()}
-				</button>
-			</c:forEach>
-		</div>
+		<header class="headerProfile"><spring:message code="label.menus" /></header>
+			<div class="box menus" >
+			
+				<div class="tree" data-user="${user.getExternalId()}"  style="broder: none;">
+				</div>				
+			</div>	
 		
 	</div>
 	
@@ -111,4 +114,3 @@ var users = [<c:forEach var="user" items="${users}">"${user}",</c:forEach>];
     </div>
   </div>
 </div>
-

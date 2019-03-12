@@ -5,6 +5,10 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib uri = "http://java.sun.com/jsp/jstl/functions" prefix = "fn" %>
 
+<link href="${pageContext.request.contextPath}/bennu-admin/libs/fancytree/skin-lion/ui.fancytree.css" rel="stylesheet" type="text/css">
+<script src="${pageContext.request.contextPath}/bennu-admin/libs/fancytree/jquery-ui.min.js" type="text/javascript"></script>
+<script src="${pageContext.request.contextPath}/bennu-admin/libs/fancytree/jquery.fancytree-all.min.js" type="text/javascript"></script>
+
 <spring:url var="create" value="/back-office-profiles/create"/>
 <spring:url var="copyAction" value="/back-office-profiles/copy"/>
 <spring:url var="navigationAuths" value="/access-control/profiles/back-office-navigationProfile"/>
@@ -54,7 +58,7 @@ var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup(
 <div class="col-lg-8">
 	<c:forEach var="profile" items="${profiles}">
 	
-		<div class="accordion">
+		<div class="accordion" onClick="loadTree(${profile.getExternalId()}, '${profile.getPresentationName()}')">
 			${profile.getPresentationName()} - ${profile.getType().getType()}
 		</div>
 		
@@ -149,10 +153,10 @@ var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup(
 			
 			
 			<header class="headerProfile"><spring:message code="label.menus" /></header>
-			<div class="box menus">
-				<c:forEach var="menu" items="${profilesMenus.get(profile.getExternalId())}">
-					<button data-type='menu' data-menu-path="${menu.getFullPath()}" data-menu-id="${menu.getExternalId()}" data-profile-id="${profile.getExternalId()}" data-profile-name="${profile.getPresentationName()}" class='btn btn-default btn-box' data-toggle='modal' data-target='#confirmDelete' title=<spring:message code="label.delete"/>>${menu.getFullPath()} <span class="glyphicon glyphicon-remove"></span></button>
-				</c:forEach>
+			<div class="box menus" >
+			
+				<div class="tree${profile.getExternalId()}"  style="broder: none;">
+				</div>				
 			</div>				
 	
 			<header class="headerProfile"><spring:message code="label.subProfiles" /></header>
@@ -245,12 +249,13 @@ var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup(
 				</div>
 				<div id="collapseFour" class="panel-collapse collapse">
 					<div class="panel-body">
-						<c:forEach var="menu" items="${menus}">
-							<div class="draggable_course menu">
-								<div id="oid" style="display:none">${menu.oid}</div>
-								<div id="path">${menu.getFullPath()}</div>
-							</div>
-						</c:forEach>
+						<div id="menus"></div>
+<%-- 						<c:forEach var="menu" items="${menus}"> --%>
+<!-- 							<div class="draggable_course menu"> -->
+<%-- 								<div id="oid" style="display:none">${menu.oid}</div> --%>
+<%-- 								<div id="path">${menu.getFullPath()}</div> --%>
+<!-- 							</div> -->
+<%-- 						</c:forEach> --%>
 					</div>
 				</div>
 			</div>
@@ -316,4 +321,3 @@ var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup(
     </div>
   </div>
 </div>
-
