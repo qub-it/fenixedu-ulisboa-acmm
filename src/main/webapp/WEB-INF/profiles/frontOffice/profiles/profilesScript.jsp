@@ -2,6 +2,47 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <style>
 
+.authtip {
+  position: relative;
+  display: inline-block;
+/*   border-bottom: 1px dotted black; */
+}
+
+.authtip .authtiptext {
+  visibility: hidden;
+/*   width: 120px; */
+  background-color: #555;
+  color: #fff;
+/*   text-align: center; */
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+/*   left: 50%; */
+  left: 25%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.authtip .authtiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+.authtip:hover .authtiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
+
 .headerProfile {
 	font-weight: bold;
 	font-size: 12px;
@@ -71,7 +112,6 @@
   padding: 15px;
   display: none;
   background-color: white;
-  overflow: hidden;
 }
 </style>
 
@@ -91,6 +131,7 @@
 <spring:url var="modifyProgram" value="/front-office-profiles/modifyProgram"/>
 <spring:url var="addChild" value="/front-office-profiles/addChild"/>
 <spring:url var="removeChild" value="/front-office-profiles/removeChild"/>
+<spring:url var="getTree" value="/front-office-profiles/getTree"/>
 
 <script>
 
@@ -118,7 +159,13 @@
 
 	                	$(".authorizations").droppable({
 	            			drop: dropFunction
-	            		})}
+	            		});
+	                	
+
+	            		
+	            		loadTree(profile, $("#"+profile).prev().html());
+	            		
+	                }
 				});
 			
 		}else if($(ui.draggable).hasClass("office") && $(this).hasClass("authorizations")){
@@ -197,6 +244,16 @@
 	                headers: { '${csrf.headerName}' :  '${csrf.token}' } ,
 	                success: function(result) {
 	                	obj.append("<button data-profile-id='"+profile+"' data-child-id='"+child+"' class='btn btn-default btn-box' data-type='child' data-toggle='modal' data-target='#confirmDelete' >"+childName+" <span class='glyphicon glyphicon-remove'></span></button>");
+					},
+					error: function(result) {
+						
+						$('#childNotification').modal().show();
+						
+						var $message = "You can't add '" + childName + "' as child of '" + $("#"+profile).prev().html() + "'";
+						$('#childNotification').find('.modal-body p').text($message);
+						var $title = "Error on adding child";
+						$('#childNotification').find('.modal-title').text($title);
+						
 					}
 				});
 			
@@ -222,6 +279,8 @@
                 success: function(result) {
                 	$('button[data-profile-id="'+$profile+'"][data-auth-id="'+$auth+'"]').parent().parent().hide();
                 	$('#confirmDelete').modal('hide');
+                	
+                	loadTree($profile, $profileName);
 				    }
 				});
 	    	  
@@ -419,6 +478,14 @@
 	    	  $('#confirmDelete').find('.modal-footer #confirm').off("click");	
 	  	  });
 	      
+	  };
+	  
+	  function loadTree($profile, $profileName){
+		  $(".tree"+$profile).fancytree({
+				source: {
+					url: "${getTree}?profile="+$profile,
+				}
+			});
 	  };
 	  
 	  

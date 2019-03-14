@@ -20,7 +20,6 @@ import org.fenixedu.accessControl.ui.profiles.ProfilesController;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.groups.Group;
-import org.fenixedu.bennu.portal.domain.MenuContainer;
 import org.fenixedu.bennu.portal.domain.MenuItem;
 import org.fenixedu.bennu.portal.domain.PortalConfiguration;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
@@ -35,6 +34,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import com.google.gson.Gson;
 
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.Atomic.TxMode;
@@ -56,8 +56,6 @@ public class ProfilesManagementFO {
 
         final Multimap<String, String> authsMenus = HashMultimap.create();
 
-        final Multimap<String, MenuItem> profilesMenus = HashMultimap.create();
-
         final Map<String, Set<User>> profilesUsers = new HashMap<>();
 
         final Map<String, Set<PersistentProfileGroup>> subProfiles = new HashMap<>();
@@ -73,14 +71,14 @@ public class ProfilesManagementFO {
             for (final String group : groups) {
                 try {
                     final Group parsed = Group.parse(group);
-                    if (parsed instanceof ProfileGroup) {
-                        profilesMenus.put(parsed.toPersistentGroup().getExternalId(), menu);
-                    } else if (parsed instanceof AcademicAuthorizationGroup) {
-                        authsMenus.put(parsed.getExpression(), menu.getFullPath());
+                    if (parsed instanceof AcademicAuthorizationGroup) {
+                        authsMenus.put(parsed.getExpression().replace("academic(", "").replace(")", ""),
+                                menu.getTitle().getContent());
                     }
                 } catch (final Exception e) {
                     System.out.println(e);
                 }
+
             }
         });
 
@@ -95,7 +93,6 @@ public class ProfilesManagementFO {
 
         model.addAttribute("profiles", profiles);
         model.addAttribute("profilesAuths", profilesAuths);
-        model.addAttribute("profilesMenus", profilesMenus);
         model.addAttribute("subProfiles", subProfiles);
         model.addAttribute("profilesUsers", profilesUsers);
         model.addAttribute("authsMenus", authsMenus);
@@ -108,15 +105,95 @@ public class ProfilesManagementFO {
         return "profiles/frontOffice/profiles/profiles";
     }
 
+    @RequestMapping(path = "getTree", method = RequestMethod.GET, produces = "application/json")
+    @ResponseBody
+    public String getTree(@RequestParam PersistentProfileGroup profile) {
+
+        final Gson json = new Gson();
+
+        return json.toJson(getMenus(PortalConfiguration.getInstance().getMenu().getAsMenuContainer().getOrderedChild(), profile));
+
+    }
+
     private Set<MenuItem> getMenu(Set<MenuItem> menus) {
 
         final Set<MenuItem> items = new HashSet<>();
         for (final MenuItem menuItem : menus) {
             if (menuItem.isMenuContainer()) {
-                final Set<MenuItem> submenus = ((MenuContainer) menuItem).getOrderedChild();
+                final Set<MenuItem> submenus = menuItem.getAsMenuContainer().getOrderedChild();
                 items.addAll(getMenu(submenus));
             } else {
                 items.add(menuItem);
+            }
+        }
+        return items;
+    }
+
+    private boolean checkAuthorizationGroups(MenuItem menu, PersistentProfileGroup profile) {
+
+        boolean cond = false;
+
+        final Set<AcademicAccessRule> rules = AcademicAccessRule.accessRules()
+                .filter(rule -> rule.getWhoCanAccess().equals(profile.toGroup())).collect(Collectors.toSet());
+
+        final String[] groups = menu.getAccessGroup().getExpression().split("([|&-])");
+
+        for (final String group : groups) {
+
+            try {
+                final Group parsed = Group.parse(group);
+
+                if (parsed instanceof AcademicAuthorizationGroup) {
+
+                    for (final AcademicAccessRule rule : rules) {
+
+                        if (AcademicAuthorizationGroup.get(rule.getOperation()).equals(parsed)) {
+
+                            cond = true;
+
+                        }
+
+                    }
+
+                }
+            } catch (final Exception e) {
+                System.out.println(e);
+            }
+
+        }
+
+        return cond;
+    }
+
+    private Set<Object> getMenus(Set<MenuItem> menus, PersistentProfileGroup profile) {
+
+        final Set<Object> items = new HashSet<>();
+        for (final MenuItem menuItem : menus) {
+            if (menuItem.getAccessGroup().getExpression().contains(profile.expression())
+                    || checkAuthorizationGroups(menuItem, profile)) {
+                if (menuItem.isMenuContainer()) {
+
+                    final Map<String, Object> folder = new HashMap<>();
+
+                    folder.put("key", menuItem.getExternalId());
+                    folder.put("title", menuItem.getTitle().getContent());
+                    folder.put("folder", "true");
+                    folder.put("expanded", "true");
+
+                    final Set<MenuItem> submenus = menuItem.getAsMenuContainer().getOrderedChild();
+                    folder.put("children", getMenus(submenus, profile));
+
+                    items.add(folder);
+
+                } else {
+
+                    final Map<String, String> leaf = new HashMap<>();
+
+                    leaf.put("key", menuItem.getExternalId());
+                    leaf.put("title", menuItem.getTitle().getContent());
+
+                    items.add(leaf);
+                }
             }
         }
         return items;
@@ -167,32 +244,6 @@ public class ProfilesManagementFO {
     private void revokeAuth(AcademicAccessRule rule) {
         rule.revoke();
     }
-
-//    @RequestMapping(path = "addToMenu", method = RequestMethod.POST)
-//    @ResponseBody
-//    public String addToMenu(@RequestParam PersistentProfileGroup profile, @RequestParam MenuItem menu) {
-//
-//        if (profile.getType().equals(ProfileType.get("Base"))) {
-//            final Group group = menu.getAccessGroup().or(profile.toGroup());
-//            setGroup(menu, group);
-//            return menu.getExternalId();
-//        } else {
-//            throw new ForbiddenException();
-//        }
-//    }
-//
-//    @RequestMapping(path = "removeFromMenu", method = RequestMethod.POST)
-//    @ResponseBody
-//    public String removeFromMenu(@RequestParam PersistentProfileGroup profile, @RequestParam MenuItem menu) {
-//        if (profile.getType().equals(ProfileType.get("Base"))) {
-//            final Group group = Group.parse(menu.getAccessGroup().getExpression()
-//                    .replace(profile.toGroup().getExpression(), "nobody").replace(profile.toGroup().getExpression(), "nobody"));
-//            setGroup(menu, group);
-//            return menu.getExternalId();
-//        } else {
-//            throw new ForbiddenException();
-//        }
-//    }
 
     @Atomic(mode = TxMode.WRITE)
     private void setGroup(MenuItem menuItem, Group group) {
@@ -339,6 +390,7 @@ public class ProfilesManagementFO {
     private void crearteRule(AcademicAccessRule rule, ProfileGroup group) {
 //        new AcademicAccessRule(rule.getOperation(), group, rule.getWhatCanAffect(), rule.getValidity());
         new AcademicAccessRule(rule.getOperation(), group, rule.getWhatCanAffect());
+
     }
 
     @RequestMapping(path = "addChild", method = RequestMethod.POST)
