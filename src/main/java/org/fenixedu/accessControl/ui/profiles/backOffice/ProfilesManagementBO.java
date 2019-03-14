@@ -60,7 +60,6 @@ public class ProfilesManagementBO {
         AcademicAccessRule.accessRules().forEach(rule -> {
             if (rule.getWhoCanAccess() instanceof ProfileGroup) {
                 profilesAuths.put(((ProfileGroup) rule.getWhoCanAccess()).toPersistentGroup().getExternalId(), rule);
-
             }
         });
 
@@ -146,9 +145,10 @@ public class ProfilesManagementBO {
                 final Map<String, Object> folder = new HashMap<>();
 
                 folder.put("key", menuItem.getExternalId());
-                folder.put("title", menuItem.getTitle().getContent());
+                folder.put("title",
+                        "<div class=\'draggable_course menu\'><div id=\'oid\' style=\'display:none\'>" + menuItem.getExternalId()
+                                + "</div><div id=\'path\'>" + menuItem.getTitle().getContent() + "</div></div>");
                 folder.put("folder", "true");
-                folder.put("expanded", "true");
 
                 final Set<MenuItem> submenus = menuItem.getAsMenuContainer().getOrderedChild();
                 folder.put("children", getMenus(submenus));
@@ -295,6 +295,12 @@ public class ProfilesManagementBO {
 
         setGroup(menu, group);
 
+        if (menu.isMenuContainer()) {
+            menu.getAsMenuContainer().getOrderedChild().forEach(menuChild -> {
+                setGroupToChild(menuChild, group);
+            });
+        }
+
         return menu.getExternalId();
     }
 
@@ -316,6 +322,18 @@ public class ProfilesManagementBO {
 
         if (!menuItem.getParent().isRoot()) {
             setGroup(menuItem.getParent(), group);
+        }
+    }
+
+    @Atomic(mode = TxMode.WRITE)
+    private void setGroupToChild(MenuItem menuItem, Group group) {
+        menuItem.setAccessGroup(group);
+
+        if (menuItem.isMenuContainer()) {
+            menuItem.getAsMenuContainer().getOrderedChild().forEach(menu -> {
+                setGroupToChild(menu, group);
+            });
+
         }
     }
 

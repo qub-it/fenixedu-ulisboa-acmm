@@ -122,6 +122,7 @@ public class ProfilesManagementFO {
             if (menuItem.isMenuContainer()) {
                 final Set<MenuItem> submenus = menuItem.getAsMenuContainer().getOrderedChild();
                 items.addAll(getMenu(submenus));
+                items.add(menuItem);
             } else {
                 items.add(menuItem);
             }
