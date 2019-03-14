@@ -408,7 +408,7 @@ public class ProfilesManagementBO {
 
         getMenu(PortalConfiguration.getInstance().getMenu().getOrderedChild()).forEach(menu -> {
             if (menu.getAccessGroup().getExpression().contains(groupFrom)) {
-                setGroup(menu, grpTo);
+                setGroup(menu, grpFrom.or(grpTo));
             }
         });
 
