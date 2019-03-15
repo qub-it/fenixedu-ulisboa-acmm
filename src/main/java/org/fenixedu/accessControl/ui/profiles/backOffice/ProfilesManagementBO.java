@@ -311,7 +311,11 @@ public class ProfilesManagementBO {
         final Group group = Group.parse(menu.getAccessGroup().getExpression().replace(profile.toGroup().getExpression(), "nobody")
                 .replace(profile.toGroup().getExpression(), "nobody"));
 
-        setGroup(menu, group, profile);
+        if (!menu.isMenuContainer()) {
+            setGroup(menu, group, profile);
+        } else {
+            setGroupToChild(menu, group);
+        }
 
         return menu.getExternalId();
     }
