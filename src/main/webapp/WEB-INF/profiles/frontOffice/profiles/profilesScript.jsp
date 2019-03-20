@@ -143,11 +143,11 @@
 		
 		
 		
-		if($(ui.draggable).hasClass("authorization") && $(this).hasClass("authorizations")){
+		if($(ui.draggable).hasClass("authorization") && $(this).hasClass("table")){
 			var authName = $(ui.draggable).children('#presentationName').html();
 			var operation = $(ui.draggable).children('#operationName').html();
 			
-			var obj = $(this).parent();
+			var obj = $(this);
 			
 			$.ajax({
 	    		  	data: {"profile" : profile, "operation": operation},
@@ -159,12 +159,9 @@
 
 	                	$(".authorizations").droppable({
 	            			drop: dropFunction
-	            		});
-	                	
+	            		})
 
-	            		
-	            		loadTree(profile, $("#"+profile).prev().html());
-	            		
+	                
 	                }
 				});
 			
@@ -277,7 +274,7 @@
                 type: 'POST',
                 headers: { '${csrf.headerName}' :  '${csrf.token}' } ,
                 success: function(result) {
-                	$('button[data-profile-id="'+$profile+'"][data-auth-id="'+$auth+'"]').parent().parent().hide();
+                	$('button[data-profile-id="'+$profile+'"][data-auth-id="'+$auth+'"]').parent().parent().parent().hide();
                 	$('#confirmDelete').modal('hide');
                 	
                 	loadTree($profile, $profileName);
@@ -546,6 +543,10 @@ $(document).ready(function() {
 		$(".box").droppable({
 			drop: dropFunction
 		});
+		
+		$(".table").droppable({
+			drop: dropFunction
+		})
 		
 		$(".authorizations").droppable({
 			drop: dropFunction

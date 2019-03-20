@@ -77,7 +77,7 @@ var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup(
 			</div>
 			
 			<div id="${profile.getExternalId()}" class="small">
-			<table class="table ">
+			<table class="table ui-droppable" >
 		  	  <thead>
 		  			<tr>
 		  				<th><spring:message code="label.authorizations.profile"/></th>
@@ -143,28 +143,27 @@ var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup(
 			  	</tbody>
 		  	</table>
 		</div>
+		
+			<header class="headerProfile"><spring:message code="label.menus" /></header>
+			<div class="box menus" >
+			
+				<div class="tree${profile.getExternalId()}"  style="broder: none;">
+				</div>				
+			</div>	
 
+			<header class="headerProfile"><spring:message code="label.subProfiles" /></header>
+			<div class="box subprofiles">
+				<c:forEach var="subProfile" items="${subProfiles.get(profile.getExternalId())}">
+					<button data-profile-id="${profile.getExternalId()}" data-profile-name="${profile.getPresentationName()}" data-child-id="${subProfile.getExternalId()}" data-user-name="${subProfile.getPresentationName()}"  data-type='child' class='btn btn-default btn-box' data-toggle='modal' data-target='#confirmDelete' title=<spring:message code="label.delete"/>> ${subProfile.getPresentationName()} <span class="glyphicon glyphicon-remove"></span> </button>
+				</c:forEach>
+			</div>
+			
 			<header class="headerProfile"><spring:message code="label.users" /></header>
 			<div class="box users ui-droppable">
 				<c:forEach var="user" items="${profilesUsers.get(profile.getExternalId())}">
 					<button data-profile-id="${profile.getExternalId()}" data-profile-name="${profile.getPresentationName()}" data-user-id="${user.getExternalId()}" data-user-name="${user.getUsername()}" data-type="user" data-toggle="modal" data-target="#confirmDelete" class="btn btn-default" title=<spring:message code="label.delete"/>>${user.getUsername()} <span class="glyphicon glyphicon-remove"></span></button>
 				</c:forEach>
 			</div>
-			
-			
-			<header class="headerProfile"><spring:message code="label.menus" /></header>
-			<div class="box menus" >
-			
-				<div class="tree${profile.getExternalId()}"  style="broder: none;">
-				</div>				
-			</div>				
-	
-			<header class="headerProfile"><spring:message code="label.subProfiles" /></header>
-			<div class="box subprofiles">
-				<c:forEach var="subProfile" items="${subProfiles.get(profile.getExternalId())}">
-					<button data-profile-id="${profile.getExternalId()}" data-profile-name="${profile.getPresentationName()}" data-child-id="${subProfile.getExternalId()}" data-user-name="${subProfile.getPresentationName()}"  data-type='child' class='btn btn-default btn-box' data-toggle='modal' data-target='#confirmDelete' title=<spring:message code="label.delete"/>> ${subProfile.getPresentationName()} <span class="glyphicon glyphicon-remove"></span> </button>
-				</c:forEach>
-			</div>	
 	
 	
 		</div>

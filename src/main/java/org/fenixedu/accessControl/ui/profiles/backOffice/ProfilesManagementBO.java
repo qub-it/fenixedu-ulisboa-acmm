@@ -247,7 +247,7 @@ public class ProfilesManagementBO {
             createProfile(name, type);
         }
 
-        return "redirect:/access-control/profiles/back-office-profiles";
+        return "redirect:";
     }
 
     @Atomic(mode = TxMode.WRITE)

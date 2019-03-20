@@ -207,7 +207,7 @@ public class ProfilesManagementFO {
             createProfile(name, "General");
         }
 
-        return "redirect:/access-control/profiles/front-office-profiles";
+        return "redirect:";
     }
 
     @Atomic(mode = TxMode.WRITE)
