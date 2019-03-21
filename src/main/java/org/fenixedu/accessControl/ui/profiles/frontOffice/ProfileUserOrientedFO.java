@@ -48,11 +48,8 @@ public class ProfileUserOrientedFO {
         final Set<String> users = getUsers();
         final Set<PersistentProfileGroup> profileSet = getProfiles();
 
-//        final Set<MenuItem> menus = getMenu(PortalConfiguration.getInstance().getMenu().getOrderedChild(), user);
-
         model.addAttribute("user", user);
         model.addAttribute("profiles", profiles);
-//        model.addAttribute("menus", menus);
         model.addAttribute("users", users);
         model.addAttribute("profileSet", profileSet);
 
@@ -69,20 +66,6 @@ public class ProfileUserOrientedFO {
 
         return users;
     }
-
-//    private Set<MenuItem> getMenu(Set<MenuItem> menus, User user) {
-//
-//        final Set<MenuItem> items = new HashSet<>();
-//        for (final MenuItem menuItem : menus) {
-//            if (menuItem.isMenuContainer() && menuItem.isAvailable(user)) {
-//                final Set<MenuItem> submenus = ((MenuContainer) menuItem).getOrderedChild();
-//                items.addAll(getMenu(submenus, user));
-//            } else {
-//                items.add(menuItem);
-//            }
-//        }
-//        return items;
-//    }
 
     private Set<PersistentProfileGroup> getProfiles(User user) {
 

@@ -197,67 +197,61 @@ var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup(
 		</div>
 		
 		<div class="panel panel-default">
-				<div class="panel-heading">
-					<h3 class="panel-title">
-						<a data-toggle="collapse" data-parent="#cursos_acc" data-target="#collapseTwo">
-							<spring:message code="portal.academicAdminOffice"/>
-						</a>
-					</h3>
-				</div>
-				<div id="collapseTwo" class="panel-collapse collapse">
-					<div class="panel-body">
-						<c:forEach var="office" items="${offices}">
-							<div class="draggable_course office">
-								<div id="oid" style="display:none">${office.oid}</div>
-								<div id="presentationName" style="display:none">${office.unit.name}</div>
-								<div id="name">${office.unit.name}</div>
-							</div>
-						</c:forEach>
-					</div>
+			<div class="panel-heading">
+				<h3 class="panel-title">
+					<a data-toggle="collapse" data-parent="#cursos_acc" data-target="#collapseTwo">
+						<spring:message code="portal.academicAdminOffice"/>
+					</a>
+				</h3>
+			</div>
+			<div id="collapseTwo" class="panel-collapse collapse">
+				<div class="panel-body">
+					<c:forEach var="office" items="${offices}">
+						<div class="draggable_course office">
+							<div id="oid" style="display:none">${office.oid}</div>
+							<div id="presentationName" style="display:none">${office.unit.name}</div>
+							<div id="name">${office.unit.name}</div>
+						</div>
+					</c:forEach>
 				</div>
 			</div>
-			
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<h3 class="panel-title">
-						<a data-toggle="collapse" data-parent="#cursos_acc" data-target="#collapseThree">
-							<spring:message code="label.degrees"/>
-						</a>
-					</h3>
-				</div>
-				<div id="collapseThree" class="panel-collapse collapse">
-					<div class="panel-body">
-						<c:forEach var="degree" items="${degrees}">
-							<div class="draggable_course program">
-								<div id="oid" style="display:none">${degree.oid}</div>
-								<div id="presentationName" style="display:none">${degree.presentationName}</div>
-								<div id="name">${degree.name}</div>
-							</div>
-						</c:forEach>
-					</div>
+		</div>
+		
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title">
+					<a data-toggle="collapse" data-parent="#cursos_acc" data-target="#collapseThree">
+						<spring:message code="label.degrees"/>
+					</a>
+				</h3>
+			</div>
+			<div id="collapseThree" class="panel-collapse collapse">
+				<div class="panel-body">
+					<c:forEach var="degree" items="${degrees}">
+						<div class="draggable_course program">
+							<div id="oid" style="display:none">${degree.oid}</div>
+							<div id="presentationName" style="display:none">${degree.presentationName}</div>
+							<div id="name">${degree.name}</div>
+						</div>
+					</c:forEach>
 				</div>
 			</div>
-			
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<h3 class="panel-title">
-						<a data-toggle="collapse" data-parent="#cursos_acc" data-target="#collapseFour">
-							<spring:message code="label.menus"/>
-						</a>
-					</h3>
-				</div>
-				<div id="collapseFour" class="panel-collapse collapse">
-					<div class="panel-body">
-						<div id="menus"></div>
-<%-- 						<c:forEach var="menu" items="${menus}"> --%>
-<!-- 							<div class="draggable_course menu"> -->
-<%-- 								<div id="oid" style="display:none">${menu.oid}</div> --%>
-<%-- 								<div id="path">${menu.getFullPath()}</div> --%>
-<!-- 							</div> -->
-<%-- 						</c:forEach> --%>
-					</div>
+		</div>
+		
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title">
+					<a data-toggle="collapse" data-parent="#cursos_acc" data-target="#collapseFour">
+						<spring:message code="label.menus"/>
+					</a>
+				</h3>
+			</div>
+			<div id="collapseFour" class="panel-collapse collapse">
+				<div class="panel-body">
+					<div id="menus"></div>
 				</div>
 			</div>
+		</div>
 
 		<div class="panel panel-default">
 			<div class="panel-heading">

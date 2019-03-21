@@ -76,7 +76,7 @@ public class ProfilesManagementFO {
                                 menu.getTitle().getContent());
                     }
                 } catch (final Exception e) {
-                    System.out.println(e);
+//                    System.out.println(e);
                 }
 
             }
@@ -92,10 +92,10 @@ public class ProfilesManagementFO {
         final Set<Degree> degrees = Bennu.getInstance().getDegreesSet();
 
         model.addAttribute("profiles", profiles);
-        model.addAttribute("profilesAuths", profilesAuths);
+        model.addAttribute("profilesAuths", profilesAuths.asMap());
         model.addAttribute("subProfiles", subProfiles);
         model.addAttribute("profilesUsers", profilesUsers);
-        model.addAttribute("authsMenus", authsMenus);
+        model.addAttribute("authsMenus", authsMenus.asMap());
         model.addAttribute("operations", operations);
         model.addAttribute("offices", offices);
         model.addAttribute("degrees", degrees);
@@ -158,7 +158,7 @@ public class ProfilesManagementFO {
 
                 }
             } catch (final Exception e) {
-                System.out.println(e);
+//                System.out.println(e);
             }
 
         }

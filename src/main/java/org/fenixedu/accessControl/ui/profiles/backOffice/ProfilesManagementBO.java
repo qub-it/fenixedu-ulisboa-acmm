@@ -78,7 +78,7 @@ public class ProfilesManagementBO {
                                 menu.getTitle().getContent());
                     }
                 } catch (final Exception e) {
-                    System.out.println(e);
+//                    System.out.println(e);
                 }
 
             }
@@ -88,9 +88,9 @@ public class ProfilesManagementBO {
         final Set<Degree> degrees = Bennu.getInstance().getDegreesSet();
 
         model.addAttribute("profiles", profiles);
-        model.addAttribute("profilesAuths", profilesAuths);
+        model.addAttribute("profilesAuths", profilesAuths.asMap());
         model.addAttribute("subProfiles", subProfiles);
-        model.addAttribute("authsMenus", authsMenus);
+        model.addAttribute("authsMenus", authsMenus.asMap());
         model.addAttribute("profilesUsers", profilesUsers);
         model.addAttribute("operations", operations);
         model.addAttribute("offices", offices);
@@ -198,7 +198,7 @@ public class ProfilesManagementBO {
 
                 }
             } catch (final Exception e) {
-                System.out.println(e);
+//                System.out.println(e);
             }
 
         }
@@ -291,66 +291,79 @@ public class ProfilesManagementBO {
     @ResponseBody
     public String addToMenu(@RequestParam PersistentProfileGroup profile, @RequestParam MenuItem menu) {
 
-        final Group group = menu.getAccessGroup().or(profile.toGroup());
-
-        setGroup(menu, group);
-
-        if (menu.isMenuContainer()) {
-            menu.getAsMenuContainer().getOrderedChild().forEach(menuChild -> {
-                setGroupToChild(menuChild, group);
-            });
-        }
+        setAddGroup(profile.toGroup(), menu);
 
         return menu.getExternalId();
+    }
+
+    @Atomic(mode = TxMode.WRITE)
+    private void setAddGroup(ProfileGroup profile, MenuItem menu) {
+
+        if (menu.isMenuContainer()) {
+            menu.setAccessGroup(menu.getAccessGroup().or(profile));
+
+            setAddToParentsGroup(profile, menu.getParent());
+
+            menu.getAsMenuContainer().getOrderedChild().forEach(child -> {
+                setAddToChildren(profile, child);
+            });
+
+        } else if (menu.isMenuFunctionality()) {
+            menu.setAccessGroup(menu.getAccessGroup().or(profile));
+        }
+
+    }
+
+    @Atomic(mode = TxMode.WRITE)
+    private void setAddToParentsGroup(ProfileGroup profile, MenuItem menu) {
+
+        if (!menu.getAsMenuContainer().isRoot()) {
+            menu.setAccessGroup(menu.getAccessGroup().or(profile));
+            setAddToParentsGroup(profile, menu.getParent());
+        }
+
+    }
+
+    @Atomic(mode = TxMode.WRITE)
+    private void setAddToChildren(ProfileGroup profile, MenuItem menu) {
+        menu.setAccessGroup(menu.getAccessGroup().or(profile));
+        if (menu.isMenuContainer()) {
+            menu.getAsMenuContainer().getOrderedChild().forEach(child -> {
+                setAddToChildren(profile, child);
+            });
+        }
     }
 
     @RequestMapping(path = "removeFromMenu", method = RequestMethod.POST)
     @ResponseBody
     public String removeFromMenu(@RequestParam PersistentProfileGroup profile, @RequestParam MenuItem menu) {
 
-        final Group group = Group.parse(menu.getAccessGroup().getExpression().replace(profile.toGroup().getExpression(), "nobody")
-                .replace(profile.toGroup().getExpression(), "nobody"));
-
-        if (!menu.isMenuContainer()) {
-            setGroup(menu, group, profile);
-        } else {
-            setGroupToChild(menu, group);
-        }
+        setRemoveGroup(profile.toGroup(), menu);
 
         return menu.getExternalId();
     }
 
     @Atomic(mode = TxMode.WRITE)
-    private void setGroup(MenuItem menuItem, Group group) {
-        menuItem.setAccessGroup(group);
+    private void setRemoveGroup(ProfileGroup profile, MenuItem menu) {
 
-        if (!menuItem.getParent().isRoot()) {
-            setGroup(menuItem.getParent(), group);
-        }
-    }
+        final Group group = Group.parse(menu.getAccessGroup().getExpression().replace(profile.getExpression(), "nobody")
+                .replace(profile.getExpression(), "nobody"));
 
-    @Atomic(mode = TxMode.WRITE)
-    private void setGroupToChild(MenuItem menuItem, Group group) {
-        menuItem.setAccessGroup(group);
-
-        if (menuItem.isMenuContainer()) {
-            menuItem.getAsMenuContainer().getOrderedChild().forEach(menu -> {
-                setGroupToChild(menu, group);
+        if (menu.isMenuContainer() && menu.getAsMenuContainer().getOrderedChild().stream()
+                .filter(child -> child.getAccessGroup().getExpression().contains(profile.getExpression())).count() > 0) {
+            menu.setAccessGroup(group);
+            menu.getAsMenuContainer().getOrderedChild().forEach(child -> {
+                setRemoveGroup(profile, child);
             });
+        } else {
+            menu.setAccessGroup(group);
+            if (!menu.getParent().isRoot() && menu.getParent().getAsMenuContainer().getOrderedChild().stream()
+                    .filter(child -> child.getAccessGroup().getExpression().contains(profile.getExpression())).count() == 0) {
+                setRemoveGroup(profile, menu.getParent());
+            }
 
         }
-    }
 
-    @Atomic(mode = TxMode.WRITE)
-    private void setGroup(MenuItem menuItem, Group group, PersistentProfileGroup profile) {
-
-        if ((menuItem.isMenuContainer()
-                && menuItem.getAsMenuContainer().getOrderedChild().stream()
-                        .filter(menu -> menu.getAccessGroup().getExpression().contains(profile.expression())).count() == 0
-                && !menuItem.getAsMenuContainer().isRoot()) || menuItem.isMenuFunctionality()) {
-            menuItem.setAccessGroup(group);
-            setGroup(menuItem.getParent(), group, profile);
-        }
     }
 
     @RequestMapping(path = "addMember", method = RequestMethod.POST)
@@ -465,7 +478,7 @@ public class ProfilesManagementBO {
 
         getMenu(PortalConfiguration.getInstance().getMenu().getOrderedChild()).forEach(menu -> {
             if (menu.getAccessGroup().getExpression().contains(groupFrom)) {
-                setGroup(menu, grpFrom.or(grpTo));
+                setAddGroup(grpTo, menu);
             }
         });
 

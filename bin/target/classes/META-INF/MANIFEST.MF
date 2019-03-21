@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Implementation-Title: Access Control
+Implementation-Version: 1.0.0-SNAPSHOT
+Built-By: danielpires
+Specification-Vendor: FenixEdu
+Specification-Title: Access Control
+Implementation-Vendor-Id: org.fenixedu
+Build-Jdk: 1.8.0_201
+Specification-Version: 1.0.0-SNAPSHOT
+Implementation-URL: http://fenixedu.github.io/web-library-project/feni
+ x-framework-project/accessControl
+Created-By: Maven Integration for Eclipse
+Implementation-Vendor: FenixEdu
+
