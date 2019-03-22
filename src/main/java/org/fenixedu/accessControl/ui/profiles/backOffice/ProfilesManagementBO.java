@@ -40,6 +40,9 @@ import pt.ist.fenixframework.Atomic.TxMode;
 @RequestMapping("back-office-profiles")
 @SpringFunctionality(app = ProfilesController.class, title = "title.Accesscontrol.Profiles.backoffice")
 public class ProfilesManagementBO {
+
+    private final String REGEX = "([|&-])";
+
     @RequestMapping(method = RequestMethod.GET)
     public String init(Model model) {
 
@@ -69,7 +72,7 @@ public class ProfilesManagementBO {
         });
 
         getMenu(PortalConfiguration.getInstance().getMenu().getOrderedChild()).forEach(menu -> {
-            final String[] groups = menu.getAccessGroup().getExpression().split("([|&-])");
+            final String[] groups = menu.getAccessGroup().getExpression().split(REGEX);
             for (final String group : groups) {
                 try {
                     final Group parsed = Group.parse(group);
@@ -149,6 +152,7 @@ public class ProfilesManagementBO {
                         "<div class=\'draggable_course menu\'><div id=\'oid\' style=\'display:none\'>" + menuItem.getExternalId()
                                 + "</div><div id=\'path\'>" + menuItem.getTitle().getContent() + "</div></div>");
                 folder.put("folder", "true");
+                folder.put("expanded", "true");
 
                 final Set<MenuItem> submenus = menuItem.getAsMenuContainer().getOrderedChild();
                 folder.put("children", getMenus(submenus));
@@ -173,34 +177,23 @@ public class ProfilesManagementBO {
     private boolean checkAuthorizationGroups(MenuItem menu, PersistentProfileGroup profile) {
 
         boolean cond = false;
-
         final Set<AcademicAccessRule> rules = AcademicAccessRule.accessRules()
                 .filter(rule -> rule.getWhoCanAccess().equals(profile.toGroup())).collect(Collectors.toSet());
-
-        final String[] groups = menu.getAccessGroup().getExpression().split("([|&-])");
+        final String[] groups = menu.getAccessGroup().getExpression().split(REGEX);
 
         for (final String group : groups) {
-
             try {
                 final Group parsed = Group.parse(group);
-
                 if (parsed instanceof AcademicAuthorizationGroup) {
-
                     for (final AcademicAccessRule rule : rules) {
-
                         if (AcademicAuthorizationGroup.get(rule.getOperation()).equals(parsed)) {
-
                             cond = true;
-
                         }
-
                     }
-
                 }
             } catch (final Exception e) {
 //                System.out.println(e);
             }
-
         }
 
         return cond;
@@ -260,9 +253,7 @@ public class ProfilesManagementBO {
     @RequestMapping(path = "addAuth", method = RequestMethod.POST)
     @ResponseBody
     public String addAuth(@RequestParam PersistentProfileGroup profile, @RequestParam AcademicOperationType operation) {
-
         return addAuth(profile.toGroup(), operation, new DateTime("9999-12-31"));
-
     }
 
     @Atomic(mode = TxMode.WRITE)
@@ -310,6 +301,7 @@ public class ProfilesManagementBO {
 
         } else if (menu.isMenuFunctionality()) {
             menu.setAccessGroup(menu.getAccessGroup().or(profile));
+            setAddToParentsGroup(profile, menu.getParent());
         }
 
     }

@@ -42,11 +42,16 @@ import pt.ist.fenixframework.Atomic.TxMode;
 @RequestMapping("front-office-profiles")
 @SpringFunctionality(app = ProfilesController.class, title = "title.Accesscontrol.Profiles.frontoffice")
 public class ProfilesManagementFO {
+
+    private final String MANAGERS = "Managers";
+    private final String GENERAL = "General";
+    private final String REGEX = "([|&-])";
+
     @RequestMapping(method = RequestMethod.GET)
     public String init(Model model) {
 
         final Set<PersistentProfileGroup> profiles = Bennu.getInstance().getProfileGroupSet().stream()
-                .filter(profile -> !profile.getType().equals(ProfileType.get("Managers"))).collect(Collectors.toSet());
+                .filter(profile -> !profile.getType().equals(ProfileType.get(MANAGERS))).collect(Collectors.toSet());
         final AcademicOperationType[] operations = AcademicOperationType.class.getEnumConstants();
 
         final Set<ProfileType> types = Bennu.getInstance().getProfileTypeSet();
@@ -67,7 +72,7 @@ public class ProfilesManagementFO {
         });
 
         getMenu(PortalConfiguration.getInstance().getMenu().getOrderedChild()).forEach(menu -> {
-            final String[] groups = menu.getAccessGroup().getExpression().split("([|&-])");
+            final String[] groups = menu.getAccessGroup().getExpression().split(REGEX);
             for (final String group : groups) {
                 try {
                     final Group parsed = Group.parse(group);
@@ -85,7 +90,7 @@ public class ProfilesManagementFO {
         profiles.forEach(profile -> {
             profilesUsers.put(profile.getExternalId(), profile.getMembersWithoutParents().collect(Collectors.toSet()));
             subProfiles.put(profile.getExternalId(), profile.getChildSet().stream()
-                    .filter(prf -> !prf.getType().equals(ProfileType.get("Managers"))).collect(Collectors.toSet()));
+                    .filter(prf -> !prf.getType().equals(ProfileType.get(MANAGERS))).collect(Collectors.toSet()));
         });
 
         final Set<AdministrativeOffice> offices = Bennu.getInstance().getAdministrativeOfficesSet();
@@ -133,34 +138,23 @@ public class ProfilesManagementFO {
     private boolean checkAuthorizationGroups(MenuItem menu, PersistentProfileGroup profile) {
 
         boolean cond = false;
-
         final Set<AcademicAccessRule> rules = AcademicAccessRule.accessRules()
                 .filter(rule -> rule.getWhoCanAccess().equals(profile.toGroup())).collect(Collectors.toSet());
-
-        final String[] groups = menu.getAccessGroup().getExpression().split("([|&-])");
+        final String[] groups = menu.getAccessGroup().getExpression().split(REGEX);
 
         for (final String group : groups) {
-
             try {
                 final Group parsed = Group.parse(group);
-
                 if (parsed instanceof AcademicAuthorizationGroup) {
-
                     for (final AcademicAccessRule rule : rules) {
-
                         if (AcademicAuthorizationGroup.get(rule.getOperation()).equals(parsed)) {
-
                             cond = true;
-
                         }
-
                     }
-
                 }
             } catch (final Exception e) {
 //                System.out.println(e);
             }
-
         }
 
         return cond;
@@ -204,7 +198,7 @@ public class ProfilesManagementFO {
     public String create(@RequestParam String name) {
 
         if (name.length() > 0) {
-            createProfile(name, "General");
+            createProfile(name, GENERAL);
         }
 
         return "redirect:";
@@ -259,7 +253,7 @@ public class ProfilesManagementFO {
     @ResponseBody
     public ResponseEntity<String> addMember(@RequestParam PersistentProfileGroup profile, @RequestParam String username) {
 
-        if (profile.getType().equals(ProfileType.get("General"))) {
+        if (profile.getType().equals(ProfileType.get(GENERAL))) {
             final User user = User.findByUsername(username);
             addMember(profile.toGroup(), user);
             return new ResponseEntity<String>(user.getExternalId(), HttpStatus.ACCEPTED);
@@ -278,7 +272,7 @@ public class ProfilesManagementFO {
     @ResponseBody
     public ResponseEntity<String> removeMember(@RequestParam PersistentProfileGroup profile, @RequestParam User user) {
 
-        if (profile.getType().equals(ProfileType.get("General"))) {
+        if (profile.getType().equals(ProfileType.get(GENERAL))) {
             removeMember(profile.toGroup(), user);
             return new ResponseEntity<String>("", HttpStatus.ACCEPTED);
         } else {
@@ -296,7 +290,7 @@ public class ProfilesManagementFO {
     @ResponseBody
     public ResponseEntity<String> delete(@RequestParam PersistentProfileGroup profile) {
 
-        if (profile.getType().equals(ProfileType.get("General"))) {
+        if (profile.getType().equals(ProfileType.get(GENERAL))) {
             deleteprofile(profile);
             return new ResponseEntity<String>("", HttpStatus.ACCEPTED);
         } else {

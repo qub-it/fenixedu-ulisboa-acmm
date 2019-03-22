@@ -23,11 +23,16 @@ import pt.ist.fenixframework.dml.runtime.Relation;
 public class PersistentProfileGroup extends PersistentProfileGroup_Base {
 
     protected PersistentProfileGroup(String name, PersistentGroup group) {
-        this.setBennu(Bennu.getInstance());
-        this.setName(name);
-        this.setGroup(group);
-        this.setCreator(Authenticate.getUser());
-        this.setCreated(DateTime.now());
+        if (!name.isEmpty()) {
+            this.setBennu(Bennu.getInstance());
+            this.setName(name);
+            this.setGroup(group);
+            this.setCreator(Authenticate.getUser());
+            this.setCreated(DateTime.now());
+        } else {
+            throw new Error("Profile name cannot be empty!");
+        }
+
     }
 
     @Override

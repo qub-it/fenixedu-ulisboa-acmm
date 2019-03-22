@@ -89,47 +89,6 @@ public class NavigationProfileBO {
 
     }
 
-//    @RequestMapping(path = "addUserToAuth", method = RequestMethod.POST)
-//    @ResponseBody
-//    public String addUserToAuth(@RequestParam AcademicOperationType operation, @RequestParam String username) {
-//
-//        final User user = User.findByUsername(username);
-//
-//        final Set<AcademicAccessTarget> targets = new HashSet<AcademicAccessTarget>();
-//        final String id = grantRule(operation, user, targets, new DateTime("9999-12-31"));
-//
-//        return id;
-//    }
-//
-//    @Atomic(mode = TxMode.WRITE)
-//    private String grantRule(AcademicOperationType operation, User user, Set<AcademicAccessTarget> targets, DateTime validity) {
-//        final AcademicAccessRule rule = new AcademicAccessRule(operation, user.groupOf(), targets, validity);
-//
-//        return rule.getExternalId();
-//    }
-//
-//    @RequestMapping(path = "removeUserToAuth", method = RequestMethod.POST)
-//    @ResponseBody
-//    public String removeUserToAuth(@RequestParam AcademicOperationType operation, @RequestParam String username) {
-//
-//        final User user = User.findByUsername(username);
-//
-//        try {
-//            final AcademicAccessRule rule = AcademicAccessRule.accessRules()
-//                    .filter(r -> r.getOperation().equals(operation) && r.getWhoCanAccess().isMember(user)).findFirst().get();
-//            revokeRule(rule);
-//            return "";
-//        } catch (final Exception e) {
-//            throw new Error("Rule doesn't exists!");
-//        }
-//
-//    }
-//
-//    @Atomic(mode = TxMode.WRITE)
-//    private void revokeRule(AcademicAccessRule rule) {
-//        rule.revoke();
-//    }
-
     @RequestMapping(path = "addUserToGroup", method = RequestMethod.POST)
     @ResponseBody
     public Boolean addGroup(Model model, @RequestParam String username, @RequestParam String expression) {
@@ -209,7 +168,7 @@ public class NavigationProfileBO {
         AcademicAccessRule.accessRules().forEach(rule -> {
 
             if (rule.getWhoCanAccess().equals(grpFrom)) {
-                crearteRule(rule, grpTo);
+                createRule(rule, grpTo);
             }
 
         });
@@ -218,7 +177,7 @@ public class NavigationProfileBO {
     }
 
     @Atomic(mode = TxMode.WRITE)
-    private void crearteRule(AcademicAccessRule rule, ProfileGroup group) {
+    private void createRule(AcademicAccessRule rule, ProfileGroup group) {
 //        new AcademicAccessRule(rule.getOperation(), group, rule.getWhatCanAffect(), rule.getValidity());
         new AcademicAccessRule(rule.getOperation(), group, rule.getWhatCanAffect());
 
