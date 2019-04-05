@@ -20,7 +20,8 @@ relation ProfileTypes {
 }
 
 public class groups.PersistentProfileGroup extends .org.fenixedu.bennu.core.domain.groups.PersistentGroup {
-	protected String name ;
+	public String name ;
+	protected String cod ;
 	protected DateTime created (REQUIRED); 
 }
 

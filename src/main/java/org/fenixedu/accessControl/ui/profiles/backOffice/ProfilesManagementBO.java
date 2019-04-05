@@ -245,9 +245,26 @@ public class ProfilesManagementBO {
 
     @Atomic(mode = TxMode.WRITE)
     private ProfileGroup createProfile(String name, String type) {
-        final ProfileGroup profile = new ProfileGroup(name);
+
+        final ProfileGroup profile = new ProfileGroup(generateShort(name));
         profile.setType(type);
+        profile.setName(name);
         return profile;
+    }
+
+    private String generateShort(String name) {
+
+        String cod = "";
+        final String[] words = name.split(" ");
+
+        for (final String word : words) {
+            cod += word.charAt(0);
+        }
+
+        cod += String.valueOf(name.length());
+
+        return cod;
+
     }
 
     @RequestMapping(path = "addAuth", method = RequestMethod.POST)

@@ -19,24 +19,32 @@ public class ProfileGroup extends CustomGroup {
     private static final long serialVersionUID = -2479247368353841836L;
 
     @GroupArgument(value = "")
-    private String name;
+    private String cod;
 
     ProfileGroup() {
     }
 
-    public ProfileGroup(String name) {
+    public ProfileGroup(String cod) {
         this();
-        this.name = name;
+        this.cod = cod;
         toPersistentGroup();
+    }
+
+    public void setName(String name) {
+        toPersistentGroup().setName(name);
     }
 
     @Override
     public String getPresentationName() {
-        return BundleUtil.getString("resources.AccesscontrolResources", "label.profile") + " " + this.name;
+        return BundleUtil.getString("resources.AccesscontrolResources", "label.profile") + " " + toPersistentGroup().getName();
+    }
+
+    public String getCod() {
+        return this.cod;
     }
 
     public String getName() {
-        return this.name;
+        return toPersistentGroup().getName();
     }
 
     public void setType(String type) {
@@ -49,8 +57,8 @@ public class ProfileGroup extends CustomGroup {
 
     @Override
     public PersistentProfileGroup toPersistentGroup() {
-        return PersistentProfileGroup.getInstance(this.name)
-                .orElseGet(() -> PersistentProfileGroup.set(this.name, Group.nobody().toPersistentGroup()));
+        return PersistentProfileGroup.getInstance(this.cod)
+                .orElseGet(() -> PersistentProfileGroup.set(this.cod, Group.nobody().toPersistentGroup()));
     }
 
     @Override
@@ -99,18 +107,18 @@ public class ProfileGroup extends CustomGroup {
 
     @Override
     public Group grant(User user) {
-        PersistentProfileGroup.set(this.name, this.persisted().or(user.groupOf()).toPersistentGroup());
+        PersistentProfileGroup.set(this.cod, this.persisted().or(user.groupOf()).toPersistentGroup());
         return this;
     }
 
     @Override
     public Group revoke(User user) {
-        PersistentProfileGroup.set(this.name, this.persisted().minus(user.groupOf()).toPersistentGroup());
+        PersistentProfileGroup.set(this.cod, this.persisted().minus(user.groupOf()).toPersistentGroup());
         return this;
     }
 
     public void delete() {
-        final Optional<PersistentProfileGroup> persistent = PersistentProfileGroup.getInstance(this.name);
+        final Optional<PersistentProfileGroup> persistent = PersistentProfileGroup.getInstance(this.cod);
         if (persistent.isPresent()) {
             persistent.get().delete();
         }
@@ -119,18 +127,18 @@ public class ProfileGroup extends CustomGroup {
     @Override
     public boolean equals(Object object) {
         if (object instanceof ProfileGroup) {
-            return this.name.equals(((ProfileGroup) object).name);
+            return this.cod.equals(((ProfileGroup) object).cod);
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return this.name.hashCode();
+        return this.cod.hashCode();
     }
 
     public Group persisted() {
-        final Optional<PersistentProfileGroup> persistent = PersistentProfileGroup.getInstance(this.name);
+        final Optional<PersistentProfileGroup> persistent = PersistentProfileGroup.getInstance(this.cod);
         if (persistent.isPresent()) {
             return persistent.get().getGroup().toGroup();
         }

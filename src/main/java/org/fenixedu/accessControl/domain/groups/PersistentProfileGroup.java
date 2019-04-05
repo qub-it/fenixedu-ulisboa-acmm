@@ -22,10 +22,10 @@ import pt.ist.fenixframework.dml.runtime.Relation;
 
 public class PersistentProfileGroup extends PersistentProfileGroup_Base {
 
-    protected PersistentProfileGroup(String name, PersistentGroup group) {
-        if (!name.isEmpty()) {
+    protected PersistentProfileGroup(String cod, PersistentGroup group) {
+        if (!cod.isEmpty()) {
             this.setBennu(Bennu.getInstance());
-            this.setName(name);
+            this.setCod(cod);
             this.setGroup(group);
             this.setCreator(Authenticate.getUser());
             this.setCreated(DateTime.now());
@@ -37,7 +37,7 @@ public class PersistentProfileGroup extends PersistentProfileGroup_Base {
 
     @Override
     public ProfileGroup toGroup() {
-        return new ProfileGroup(this.getName());
+        return new ProfileGroup(this.getCod());
     }
 
     @Override
@@ -93,8 +93,8 @@ public class PersistentProfileGroup extends PersistentProfileGroup_Base {
 
     public boolean validate(PersistentProfileGroup parent) {
 
-        if (this.getName().equals(parent.getName())) {
-            throw new Error(parent.getName() + " is already an ancestor of " + this.getName());
+        if (this.getCod().equals(parent.getCod())) {
+            throw new Error(parent.getCod() + " is already an ancestor of " + this.getCod());
         }
 
         if (parent.getParentSet().isEmpty()) {
@@ -116,12 +116,12 @@ public class PersistentProfileGroup extends PersistentProfileGroup_Base {
     }
 
     @Atomic(mode = TxMode.WRITE)
-    public static PersistentProfileGroup set(String name, PersistentGroup overridingGroup) {
-        final Optional<PersistentProfileGroup> persistent = PersistentProfileGroup.getInstance(name);
+    public static PersistentProfileGroup set(String cod, PersistentGroup overridingGroup) {
+        final Optional<PersistentProfileGroup> persistent = PersistentProfileGroup.getInstance(cod);
         if (persistent.isPresent()) {
             return persistent.get().changeGroup(overridingGroup);
         }
-        return new PersistentProfileGroup(name, overridingGroup);
+        return new PersistentProfileGroup(cod, overridingGroup);
     }
 
     @Override
@@ -129,13 +129,13 @@ public class PersistentProfileGroup extends PersistentProfileGroup_Base {
         return Collections.singleton(PersistentProfileGroup.getRelationPersistentProfileGroups());
     }
 
-    public static Optional<PersistentProfileGroup> getInstance(String name) {
-        return Bennu.getInstance().getProfileGroupSet().stream().filter(group -> group.getName().equals(name)).findAny();
+    public static Optional<PersistentProfileGroup> getInstance(String cod) {
+        return Bennu.getInstance().getProfileGroupSet().stream().filter(group -> group.getCod().equals(cod)).findAny();
     }
 
     public void delete() {
         this.setBennu(null);
-        this.setName(null);
+        this.setCod(null);
         this.setGroup(Group.nobody().toPersistentGroup());
     }
 }
