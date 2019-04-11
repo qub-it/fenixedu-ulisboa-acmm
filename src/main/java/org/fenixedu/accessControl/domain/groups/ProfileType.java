@@ -1,5 +1,7 @@
 package org.fenixedu.accessControl.domain.groups;
 
+import java.util.Optional;
+
 import org.fenixedu.bennu.core.domain.Bennu;
 
 import pt.ist.fenixframework.Atomic;
@@ -15,8 +17,13 @@ public class ProfileType extends ProfileType_Base {
 
     @Atomic(mode = TxMode.WRITE)
     public static ProfileType get(String type) {
-        return Bennu.getInstance().getProfileTypeSet().stream().filter(profileType -> profileType.getType().equals(type))
-                .findAny().orElse(new ProfileType(type));
+        final Optional<ProfileType> ptype = Bennu.getInstance().getProfileTypeSet().stream()
+                .filter(profileType -> profileType.getType().equals(type)).findAny();
+        if (ptype.isPresent()) {
+            return ptype.get();
+        }
+
+        return new ProfileType(type);
     }
 
 }

@@ -57,7 +57,6 @@ var users = [<c:forEach var="user" items="${users}">"${user}",</c:forEach>];
 		  				<th><spring:message code="label.authorizations"/></th>
 			  			<th><spring:message code="label.offices"/></th>
 			  			<th><spring:message code="label.degrees"/></th>
-			  			<th><spring:message code="label.validity"/></th>	
 		  			</tr>
 		  			
 		  		</thead>
@@ -94,10 +93,6 @@ var users = [<c:forEach var="user" items="${users}">"${user}",</c:forEach>];
 			  						</c:forEach>
 			  					</table>
 							</td>
-							<td>
-								<input value="${fn:split(auth.getValidity(),'T')[0]}" type="date" class="singledate datepicker form-control">	
-								
-							</td>
 			  			</tr>
 			  		</c:forEach>
 			  		<tr class="auth ui-droppable" style="height: 50px;"><td style="border-top: transparent;"></td><td style="border-top: transparent;"></td><td style="border-top: transparent;"></td><td style="border-top: transparent;"></td></tr>
@@ -130,9 +125,6 @@ var users = [<c:forEach var="user" items="${users}">"${user}",</c:forEach>];
 					<c:forEach var="operation" items="${operations}">
 						<a href="${navigation}?operation=${operation}">
 							<div class="draggable_course authorization">
-								<c:if test="${operation.critical}">
-									<div id="warning">${operation.criticalDescription}</div>
-								</c:if>
 								<div id="presentationName">${operation.localizedName}</div>
 								<div id="operationName" style="display:none">${operation}</div>
 							</div>
@@ -183,28 +175,7 @@ var users = [<c:forEach var="user" items="${users}">"${user}",</c:forEach>];
 					</div>
 				</div>
 			</div>
-			
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<h3 class="panel-title">
-						<a data-toggle="collapse" data-parent="#cursos_acc" data-target="#collapseFour">
-							<spring:message code="title.phd.programs"/>
-						</a>
-					</h3>
-				</div>
-				<div id="collapseFour" class="panel-collapse collapse">
-					<div class="panel-body">
-						<c:forEach var="program" items="${phdPrograms}">
-							<div class="draggable_course program">
-								<div id="oid" style="display:none">${program.oid}</div>
-								<div id="presentationName" style="display:none">${program.presentationName}</div>
-								<div id="name">${program.name}</div>
-							</div>
-						</c:forEach>
-					</div>
-				</div>
-			</div>
-		
+	
 	</div>
 </div>
 

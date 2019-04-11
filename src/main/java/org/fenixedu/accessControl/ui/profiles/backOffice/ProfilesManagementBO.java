@@ -240,7 +240,7 @@ public class ProfilesManagementBO {
             createProfile(name, type);
         }
 
-        return "redirect:";
+        return "redirect:/back-office-profiles";
     }
 
     @Atomic(mode = TxMode.WRITE)
@@ -476,8 +476,8 @@ public class ProfilesManagementBO {
     @RequestMapping(path = "copy", method = RequestMethod.GET)
     public String accessGroupCopy(Model model, @RequestParam String groupFrom, @RequestParam String groupTo) {
 
-        final ProfileGroup grpFrom = new ProfileGroup(groupFrom);
-        final ProfileGroup grpTo = new ProfileGroup(groupTo);
+        final ProfileGroup grpFrom = new ProfileGroup(generateShort(groupFrom));
+        final ProfileGroup grpTo = new ProfileGroup(generateShort(groupTo));
 
         AcademicAccessRule.accessRules().forEach(rule -> {
             if (rule.getWhoCanAccess().equals(grpFrom)) {
@@ -486,12 +486,12 @@ public class ProfilesManagementBO {
         });
 
         getMenu(PortalConfiguration.getInstance().getMenu().getOrderedChild()).forEach(menu -> {
-            if (menu.getAccessGroup().getExpression().contains(groupFrom)) {
+            if (menu.getAccessGroup().getExpression().contains(grpFrom.getExpression())) {
                 setAddGroup(grpTo, menu);
             }
         });
 
-        return "redirect:";
+        return "redirect:/back-office-profiles";
     }
 
     @Atomic(mode = TxMode.WRITE)

@@ -70,7 +70,7 @@ var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup(
 			  <thead>
 		  			<tr>
 		  				<th><spring:message code="label.authorizations.profile"/></th>
-			  			<th><spring:message code="label.offices"/></th>
+			  			<th><spring:message code="portal.academicAdminOffice"/></th>
 			  			<th><spring:message code="label.degrees"/></th>
 		  			</tr>
 		  			

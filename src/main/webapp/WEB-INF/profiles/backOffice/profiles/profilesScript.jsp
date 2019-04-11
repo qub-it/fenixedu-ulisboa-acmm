@@ -517,8 +517,9 @@ $(document).ready(function() {
 				return value.replace( /[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&" );
 			},
 			filter: function( array, term ) {
-				var matcher = new RegExp("^" + $.ui.autocomplete.escapeRegex(term), "i");
-	
+// 				var matcher = new RegExp("^" + $.ui.autocomplete.escapeRegex(term), "i");
+				var matcher = new RegExp( $.ui.autocomplete.escapeRegex( '\\b' + term.split(" ").join("\\b*[A-Z]*") + '+\\b' ), "gi" );
+				console.log(matcher);
 				return $.grep( array, function( value ) {
 					return matcher.test( value );
 				} );
@@ -529,6 +530,7 @@ $(document).ready(function() {
 		$("#userInp").autocomplete({
 		    source: users,
 		    minLength: 3,
+
 		  });
 		
 		$(".groupInp").autocomplete({

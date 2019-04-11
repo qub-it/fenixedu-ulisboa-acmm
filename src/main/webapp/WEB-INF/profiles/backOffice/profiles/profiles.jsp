@@ -15,7 +15,7 @@
 
 
 <script type="text/javascript">
- var users = [<c:forEach var="user" items="${users}">"${user.getName()}",</c:forEach>];
+ var users = [<c:forEach var="user" items="${users}">"${user.getName()} - ${user.getDisplayName()}",</c:forEach>];
 </script>
 
 <script type="text/javascript">
@@ -81,7 +81,7 @@ var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup(
 		  	  <thead>
 		  			<tr>
 		  				<th><spring:message code="label.authorizations.profile"/></th>
-			  			<th><spring:message code="label.offices"/></th>
+			  			<th><spring:message code="portal.academicAdminOffice"/></th>
 			  			<th><spring:message code="label.degrees"/></th>
 		  			</tr>
 		  			

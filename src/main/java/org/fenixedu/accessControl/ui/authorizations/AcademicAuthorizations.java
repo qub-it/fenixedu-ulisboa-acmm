@@ -11,7 +11,6 @@ import org.fenixedu.academic.domain.accessControl.academicAdministration.Academi
 import org.fenixedu.academic.domain.accessControl.academicAdministration.AcademicAccessRule.AcademicAccessTarget;
 import org.fenixedu.academic.domain.accessControl.academicAdministration.AcademicOperationType;
 import org.fenixedu.academic.domain.administrativeOffice.AdministrativeOffice;
-import org.fenixedu.academic.domain.phd.PhdProgram;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
@@ -36,14 +35,12 @@ public class AcademicAuthorizations {
         final AcademicOperationType[] operations = AcademicOperationType.class.getEnumConstants();
         final Set<AdministrativeOffice> offices = Bennu.getInstance().getAdministrativeOfficesSet();
         final Set<Degree> degrees = Bennu.getInstance().getDegreesSet();
-        final Set<PhdProgram> phdPrograms = Bennu.getInstance().getPhdProgramsSet();
 
         model.addAttribute("rules", rules);
         model.addAttribute("users", users);
         model.addAttribute("operations", operations);
         model.addAttribute("offices", offices);
         model.addAttribute("degrees", degrees);
-        model.addAttribute("phdPrograms", phdPrograms);
 
         return "authorizations/academicAuthorizations/search";
     }
@@ -59,7 +56,6 @@ public class AcademicAuthorizations {
         final AcademicOperationType[] operations = AcademicOperationType.class.getEnumConstants();
         final Set<AdministrativeOffice> offices = Bennu.getInstance().getAdministrativeOfficesSet();
         final Set<Degree> degrees = Bennu.getInstance().getDegreesSet();
-        final Set<PhdProgram> phdPrograms = Bennu.getInstance().getPhdProgramsSet();
 
         model.addAttribute("user", user);
         model.addAttribute("rules", rules);
@@ -67,7 +63,6 @@ public class AcademicAuthorizations {
         model.addAttribute("operations", operations);
         model.addAttribute("offices", offices);
         model.addAttribute("degrees", degrees);
-        model.addAttribute("phdPrograms", phdPrograms);
 
         return "authorizations/academicAuthorizations/search";
     }

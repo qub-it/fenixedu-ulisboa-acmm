@@ -1622,8 +1622,9 @@ $.extend( $.ui.autocomplete, {
 		return value.replace( /[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&" );
 	},
 	filter: function( array, term ) {
-// 		var matcher = new RegExp( $.ui.autocomplete.escapeRegex( term ), "i" );
-		var matcher = new RegExp("^" + $.ui.autocomplete.escapeRegex(term));
+		var matcher = new RegExp( $.ui.autocomplete.escapeRegex( term.split("").join('+|') + "+" ), "gi" );
+		console.log(matcher);
+// 		var matcher = new RegExp("^" + $.ui.autocomplete.escapeRegex(term));
 
 		return $.grep( array, function( value ) {
 			return matcher.test( value );

@@ -83,18 +83,33 @@ public class ProfileUserOrientedBO {
     @ResponseBody
     public String addToProfile(@RequestParam User user, @RequestParam String profile) {
 
-        final ProfileGroup group = new ProfileGroup(profile);
+        final ProfileGroup group = new ProfileGroup(generateShort(profile));
 
         group.grant(user);
 
         return "";
     }
 
+    private String generateShort(String name) {
+
+        String cod = "";
+        final String[] words = name.split(" ");
+
+        for (final String word : words) {
+            cod += word.charAt(0);
+        }
+
+        cod += String.valueOf(name.length());
+
+        return cod;
+
+    }
+
     @RequestMapping(path = "removeFromProfile", method = RequestMethod.POST)
     @ResponseBody
     public String removeFromProfile(@RequestParam User user, @RequestParam String profile) {
 
-        final ProfileGroup group = new ProfileGroup(profile);
+        final ProfileGroup group = new ProfileGroup(generateShort(profile));
 
         group.revoke(user);
 

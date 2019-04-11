@@ -201,14 +201,31 @@ public class ProfilesManagementFO {
             createProfile(name, GENERAL);
         }
 
-        return "redirect:";
+        return "redirect:/front-office-profiles";
     }
 
     @Atomic(mode = TxMode.WRITE)
     private ProfileGroup createProfile(String name, String type) {
-        final ProfileGroup profile = new ProfileGroup(name);
+
+        final ProfileGroup profile = new ProfileGroup(generateShort(name));
         profile.setType(type);
+        profile.setName(name);
         return profile;
+    }
+
+    private String generateShort(String name) {
+
+        String cod = "";
+        final String[] words = name.split(" ");
+
+        for (final String word : words) {
+            cod += word.charAt(0);
+        }
+
+        cod += String.valueOf(name.length());
+
+        return cod;
+
     }
 
     @RequestMapping(path = "addAuth", method = RequestMethod.POST)
@@ -363,8 +380,8 @@ public class ProfilesManagementFO {
     @RequestMapping(path = "copy", method = RequestMethod.GET)
     public String accessGroupCopy(Model model, @RequestParam String groupFrom, @RequestParam String groupTo) {
 
-        final ProfileGroup grpFrom = new ProfileGroup(groupFrom);
-        final ProfileGroup grpTo = new ProfileGroup(groupTo);
+        final ProfileGroup grpFrom = new ProfileGroup(generateShort(groupFrom));
+        final ProfileGroup grpTo = new ProfileGroup(generateShort(groupTo));
 
         AcademicAccessRule.accessRules().forEach(rule -> {
             if (rule.getWhoCanAccess().equals(grpFrom)) {
@@ -373,12 +390,12 @@ public class ProfilesManagementFO {
         });
 
         getMenu(PortalConfiguration.getInstance().getMenu().getOrderedChild()).forEach(menu -> {
-            if (menu.getAccessGroup().getExpression().contains(groupFrom)) {
+            if (menu.getAccessGroup().getExpression().contains(grpFrom.getExpression())) {
                 setGroup(menu, grpFrom.or(grpTo));
             }
         });
 
-        return "redirect:";
+        return "redirect:/front-office-profiles";
     }
 
     @Atomic(mode = TxMode.WRITE)

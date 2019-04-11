@@ -127,6 +127,10 @@ $(document).ready(function() {
 		    minLength: 3,
 		  });
 	
+		$("#userInp2").autocomplete({
+		    source: users,
+		    minLength: 3,
+		  });
 	   
 		$(".draggable").draggable({
 			revert : 'invalid',
