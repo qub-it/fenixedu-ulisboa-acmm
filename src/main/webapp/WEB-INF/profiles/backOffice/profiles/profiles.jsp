@@ -67,7 +67,7 @@ var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup(
 			<div>
 				<div class="col-lg-6"></div>
 				<div class="col-lg-6">
-					<form class="form-horizontal" action="${copyAction}" method="GET">
+					<form class="form-horizontal" action="${copyAction}" method="POST">
 						<label class="control-label"><spring:message code="label.copyFrom" /></label>
 						<input id="groupInp" name="groupFrom" class=" groupInp autocomplete">
 						<input id="groupId" name="groupTo" value="${profile.toGroup().getName()}" type="hidden">
@@ -151,19 +151,24 @@ var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup(
 				</div>				
 			</div>	
 
-			<header class="headerProfile"><spring:message code="label.subProfiles" /></header>
+			
 			<div class="box subprofiles">
+				<header class="headerProfile"><spring:message code="label.subProfiles" /></header>
 				<c:forEach var="subProfile" items="${subProfiles.get(profile.getExternalId())}">
 					<button data-profile-id="${profile.getExternalId()}" data-profile-name="${profile.getPresentationName()}" data-child-id="${subProfile.getExternalId()}" data-user-name="${subProfile.getPresentationName()}"  data-type='child' class='btn btn-default btn-box' data-toggle='modal' data-target='#confirmDelete' title=<spring:message code="label.delete"/>> ${subProfile.getPresentationName()} <span class="glyphicon glyphicon-remove"></span> </button>
 				</c:forEach>
 			</div>
 			
-			<header class="headerProfile"><spring:message code="label.users" /></header>
+			
 			<div class="box users ui-droppable">
+			<header class="headerProfile"><spring:message code="label.users" /></header>
 				<c:forEach var="user" items="${profilesUsers.get(profile.getExternalId())}">
-					<button data-profile-id="${profile.getExternalId()}" data-profile-name="${profile.getPresentationName()}" data-user-id="${user.getExternalId()}" data-user-name="${user.getUsername()}" data-type="user" data-toggle="modal" data-target="#confirmDelete" class="btn btn-default" title=<spring:message code="label.delete"/>>${user.getUsername()} <span class="glyphicon glyphicon-remove"></span></button>
+					<button data-profile-id="${profile.getExternalId()}" data-profile-name="${profile.getPresentationName()}" data-user-id="${user.getExternalId()}" data-user-name="${user.getUsername()} - ${user.getDisplayName()}" data-type="user" data-toggle="modal" data-target="#confirmDelete" class="btn btn-default" title=<spring:message code="label.delete"/>>${user.getUsername()} - ${user.getDisplayName()} <span class="glyphicon glyphicon-remove"></span></button>
 				</c:forEach>
 			</div>
+			
+			
+			<button data-profile-id="${profile.getExternalId()}" data-profile-name="${profile.getPresentationName()}" data-type="profile" data-toggle="modal" data-target="#confirmDelete" class="btn btn-danger" title=<spring:message code="label.delete"/>><spring:message code="label.delete" /> <span class="glyphicon glyphicon-remove"></span></button>
 	
 	
 		</div>
@@ -310,6 +315,25 @@ var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup(
       <div class="modal-footer">
         <button type="button" class="btn btn-default" id="cancel" data-dismiss="modal"><spring:message code="label.cancel"/></button>
 		<button type="button" class="btn btn-danger" id="confirm"><spring:message code="label.delete"/></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal Dialog to childNotification-->
+<div class="modal fade" id="childNotification" role="dialog" aria-labelledby="childNotification" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title"><spring:message code="label.spaces.delete.title"/></h4>
+      </div>
+      <div class="modal-body">
+        <p><spring:message code="label.spaces.delete.message"/></p>
+      </div>
+      <div class="modal-footer">
+		<button type="button" class="btn btn-default" data-dismiss="modal"><spring:message code="label.close"/></button>
       </div>
     </div>
   </div>

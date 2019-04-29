@@ -3,7 +3,9 @@
 <style>
 
 
-
+.box > .btn {
+    margin: 5px;
+}
 
 .authtip {
   position: relative;
@@ -466,7 +468,13 @@
                 success: function(result) {
                 	$('#'+$profile).hide().prev().hide();
                 	$('#confirmDelete').modal('hide');
-				    }
+				    },
+					error: function(){
+						$('#confirmDelete').modal('hide');
+						$('#childNotification').modal('show');
+						$('#childNotification').find('.modal-body p').text('Please remove this profile from all menus before deleting it');
+					    $('#childNotification').find('.modal-title').text('Error on delete');
+					}
 				});
 	    	  
 	    	  $('#confirmDelete').find('.modal-footer #confirm').off("click");
@@ -518,7 +526,7 @@ $(document).ready(function() {
 			},
 			filter: function( array, term ) {
 // 				var matcher = new RegExp("^" + $.ui.autocomplete.escapeRegex(term), "i");
-				var matcher = new RegExp( $.ui.autocomplete.escapeRegex( '\\b' + term.split(" ").join("\\b*[A-Z]*") + '+\\b' ), "gi" );
+				var matcher = new RegExp( $.ui.autocomplete.escapeRegex( "[ A-Z-@.]*" + term.split(" ").join("[ A-Z-@.]*") + "[ A-Z-@.]*" ), "gi" );
 				console.log(matcher);
 				return $.grep( array, function( value ) {
 					return matcher.test( value );

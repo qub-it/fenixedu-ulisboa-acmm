@@ -107,19 +107,20 @@ $(document).ready(function() {
 	});
 	
 	
-//		new filter function
-		$.extend( $.ui.autocomplete, {
-			escapeRegex: function( value ) {
-				return value.replace( /[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&" );
-			},
-			filter: function( array, term ) {
-				var matcher = new RegExp("^" + $.ui.autocomplete.escapeRegex(term), "i");
-	
-				return $.grep( array, function( value ) {
-					return matcher.test( value );
-				} );
-			}
-		} );
+//	new filter function
+	$.extend( $.ui.autocomplete, {
+		escapeRegex: function( value ) {
+			return value.replace( /[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&" );
+		},
+		filter: function( array, term ) {
+//				var matcher = new RegExp("^" + $.ui.autocomplete.escapeRegex(term), "i");
+			var matcher = new RegExp( $.ui.autocomplete.escapeRegex( "[ A-Z-@.]*" + term.split(" ").join("[ A-Z-@.]*") + "[ A-Z-@.]*" ), "gi" );
+			console.log(matcher);
+			return $.grep( array, function( value ) {
+				return matcher.test( value );
+			} );
+		}
+	} );
 		
 		
 		$("#userInp").autocomplete({

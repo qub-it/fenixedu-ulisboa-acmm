@@ -24,6 +24,8 @@ import org.fenixedu.bennu.portal.domain.MenuItem;
 import org.fenixedu.bennu.portal.domain.PortalConfiguration;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.joda.time.DateTime;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -379,7 +381,7 @@ public class ProfilesManagementBO {
     @ResponseBody
     public String addMember(@RequestParam PersistentProfileGroup profile, @RequestParam String username) {
 
-        final User user = User.findByUsername(username);
+        final User user = User.findByUsername(username.split(" - ")[0]);
 
         addMember(profile.toGroup(), user);
 
@@ -407,11 +409,14 @@ public class ProfilesManagementBO {
 
     @RequestMapping(path = "delete", method = RequestMethod.POST)
     @ResponseBody
-    public String delete(@RequestParam PersistentProfileGroup profile) {
+    public ResponseEntity<String> delete(@RequestParam PersistentProfileGroup profile) {
 
-        deleteprofile(profile);
-
-        return "";
+        if (profile.getMenus().isEmpty()) {
+            deleteprofile(profile);
+            return new ResponseEntity<String>("", HttpStatus.ACCEPTED);
+        } else {
+            return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
+        }
     }
 
     @Atomic(mode = TxMode.WRITE)
@@ -473,7 +478,7 @@ public class ProfilesManagementBO {
         programs.remove(program);
     }
 
-    @RequestMapping(path = "copy", method = RequestMethod.GET)
+    @RequestMapping(path = "copy", method = RequestMethod.POST)
     public String accessGroupCopy(Model model, @RequestParam String groupFrom, @RequestParam String groupTo) {
 
         final ProfileGroup grpFrom = new ProfileGroup(generateShort(groupFrom));

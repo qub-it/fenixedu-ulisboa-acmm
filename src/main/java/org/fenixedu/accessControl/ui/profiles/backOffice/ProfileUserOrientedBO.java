@@ -29,7 +29,7 @@ public class ProfileUserOrientedBO {
     @RequestMapping(method = RequestMethod.GET)
     public String initial(Model model) {
 
-        final Set<String> users = getUsers();
+        final Set<User> users = Bennu.getInstance().getUserSet();
         final Set<PersistentProfileGroup> profileSet = getProfiles();
 
         model.addAttribute("users", users);
@@ -41,10 +41,10 @@ public class ProfileUserOrientedBO {
     @RequestMapping(path = "search", method = RequestMethod.GET)
     public String search(Model model, @RequestParam String username) {
 
-        final User user = User.findByUsername(username);
+        final User user = User.findByUsername(username.split(" - ")[0]);
         final Set<PersistentProfileGroup> profiles = getProfiles(user);
 
-        final Set<String> users = getUsers();
+        final Set<User> users = Bennu.getInstance().getUserSet();
         final Set<PersistentProfileGroup> profileSet = getProfiles();
 
         model.addAttribute("user", user);
@@ -53,17 +53,6 @@ public class ProfileUserOrientedBO {
         model.addAttribute("profileSet", profileSet);
 
         return "profiles/backOffice/users/search";
-    }
-
-    private Set<String> getUsers() {
-
-        final Set<String> users = new HashSet<String>();
-
-        Bennu.getInstance().getUserSet().forEach(user -> {
-            users.add(user.getUsername());
-        });
-
-        return users;
     }
 
     private Set<PersistentProfileGroup> getProfiles(User user) {

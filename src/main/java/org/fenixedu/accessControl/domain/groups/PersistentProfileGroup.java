@@ -14,6 +14,7 @@ import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
 import org.fenixedu.bennu.core.groups.Group;
 import org.fenixedu.bennu.core.security.Authenticate;
+import org.fenixedu.bennu.portal.domain.MenuItem;
 import org.joda.time.DateTime;
 
 import pt.ist.fenixframework.Atomic;
@@ -133,9 +134,27 @@ public class PersistentProfileGroup extends PersistentProfileGroup_Base {
         return Bennu.getInstance().getProfileGroupSet().stream().filter(group -> group.getCod().equals(cod)).findAny();
     }
 
+    public Set<MenuItem> getMenus() {
+        return this.getMenuItemSet();
+    }
+
     public void delete() {
+
+        if (!this.getMenuItemSet().isEmpty()) {
+            throw new Error("This profiles is associated with menus!");
+        }
+
+        this.getParentSet().forEach(parent -> {
+            this.removeParent(parent);
+        });
+
+        this.getChildSet().forEach(child -> {
+            this.removeChild(child);
+        });
+
         this.setBennu(null);
         this.setCod(null);
         this.setGroup(Group.nobody().toPersistentGroup());
+
     }
 }

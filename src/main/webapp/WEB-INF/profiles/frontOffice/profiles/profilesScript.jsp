@@ -2,6 +2,10 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <style>
 
+.box > .btn {
+    margin: 5px;
+}
+
 .authtip {
   position: relative;
   display: inline-block;
@@ -464,7 +468,13 @@
                 success: function(result) {
                 	$('#'+$profile).hide().prev().hide();
                 	$('#confirmDelete').modal('hide');
-				    }
+				},
+				error: function(){
+					$('#confirmDelete').modal('hide');
+					$('#childNotification').modal('show');
+					$('#childNotification').find('.modal-body p').text('Please remove this profile from all menus before deleting it');
+				    $('#childNotification').find('.modal-title').text('Error on delete');
+				}
 				});
 	    	  
 	    	  $('#confirmDelete').find('.modal-footer #confirm').off("click");
@@ -498,7 +508,7 @@ $(document).ready(function() {
 				return value.replace( /[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&" );
 			},
 			filter: function( array, term ) {
-				var matcher = new RegExp("^" + $.ui.autocomplete.escapeRegex(term), "i");
+				var matcher = new RegExp( $.ui.autocomplete.escapeRegex( "[ A-Z-@.]*" + term.split(" ").join("[ A-Z-@.]*") + "[ A-Z-@.]*" ), "gi" );
 	
 				return $.grep( array, function( value ) {
 					return matcher.test( value );

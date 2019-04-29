@@ -56,7 +56,7 @@ var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup(
 			<div>
 				<div class="col-lg-6"></div>
 				<div class="col-lg-6">
-					<form class="form-horizontal" action="${copyAction}" method="GET">
+					<form class="form-horizontal" action="${copyAction}" method="POST">
 						<label class="control-label"><spring:message code="label.copyFrom" /></label>
 						<input id="groupInp" name="groupFrom" class=" groupInp autocomplete">
 						<input id="groupId" name="groupTo" value="${profile.toGroup().getName()}" type="hidden">
@@ -143,19 +143,25 @@ var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup(
 				</div>				
 			</div>	
 			
-			<header class="headerProfile"><spring:message code="label.subProfiles" /></header>
+			
 			<div class="box subprofiles">
+				<header class="headerProfile"><spring:message code="label.subProfiles" /></header>
 				<c:forEach var="subProfile" items="${subProfiles.get(profile.getExternalId())}">
 					<button data-profile-id="${profile.getExternalId()}" data-profile-name="${profile.getPresentationName()}" data-child-id="${subProfile.getExternalId()}" data-user-name="${subProfile.getPresentationName()}"  data-type='child' class='btn btn-default btn-box' data-toggle='modal' data-target='#confirmDelete' title=<spring:message code="label.delete"/>> ${subProfile.getPresentationName()} <span class="glyphicon glyphicon-remove"></span> </button>
 				</c:forEach>
 			</div>
 			
-			<header class="headerProfile"><spring:message code="label.users" /></header>
+			
 			<div class="box users ui-droppable">
+				<header class="headerProfile"><spring:message code="label.users" /></header>
 				<c:forEach var="user" items="${profilesUsers.get(profile.getExternalId())}">
-					<button data-profile-id="${profile.getExternalId()}" data-profile-name="${profile.getPresentationName()}" data-user-id="${user.getExternalId()}" data-user-name="${user.getUsername()}" data-type="user" data-toggle="modal" data-target="#confirmDelete" class="btn btn-default" title=<spring:message code="label.delete"/>>${user.getUsername()} <span class="glyphicon glyphicon-remove"></span></button>
+					<button data-profile-id="${profile.getExternalId()}" data-profile-name="${profile.getPresentationName()}" data-user-id="${user.getExternalId()}" data-user-name="${user.getUsername()} - ${user.getDisplayName()}" data-type="user" data-toggle="modal" data-target="#confirmDelete" class="btn btn-default" title=<spring:message code="label.delete"/>>${user.getUsername()} - ${user.getDisplayName()} <span class="glyphicon glyphicon-remove"></span></button>
 				</c:forEach>
-			</div>			
+			</div>
+			
+			<c:if test="${profile.getType().getType().equals('General')}">
+				<button data-profile-id="${profile.getExternalId()}" data-profile-name="${profile.getPresentationName()}" data-type="profile" data-toggle="modal" data-target="#confirmDelete" class="btn btn-danger" title=<spring:message code="label.delete"/>><spring:message code="label.delete" /> <span class="glyphicon glyphicon-remove"></span></button>
+			</c:if>		
 	
 		</div>
 

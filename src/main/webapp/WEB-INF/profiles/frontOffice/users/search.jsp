@@ -15,7 +15,7 @@
 <spring:url var="getTree" value="/back-office-users/getTree"/>
 
 <script type="text/javascript">
-var users = [<c:forEach var="user" items="${users}">"${user}",</c:forEach>];
+var users = [<c:forEach var="user" items="${users}">"${user.getName()} - ${user.getDisplayName()}",</c:forEach>];
 </script>
 
 

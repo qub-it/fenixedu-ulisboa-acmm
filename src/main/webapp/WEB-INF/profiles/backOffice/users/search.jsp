@@ -14,7 +14,7 @@
 <spring:url var="navigationGroup" value="/back-office-navigationProfile/accessGroup"/>
 
 <script type="text/javascript">
-var users = [<c:forEach var="user" items="${users}">"${user}",</c:forEach>];
+var users = [<c:forEach var="user" items="${users}">"${user.getName()} - ${user.getDisplayName()}",</c:forEach>];
 </script>
 
 

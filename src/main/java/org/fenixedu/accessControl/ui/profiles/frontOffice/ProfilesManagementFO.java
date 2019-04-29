@@ -271,7 +271,7 @@ public class ProfilesManagementFO {
     public ResponseEntity<String> addMember(@RequestParam PersistentProfileGroup profile, @RequestParam String username) {
 
         if (profile.getType().equals(ProfileType.get(GENERAL))) {
-            final User user = User.findByUsername(username);
+            final User user = User.findByUsername(username.split(" - ")[0]);
             addMember(profile.toGroup(), user);
             return new ResponseEntity<String>(user.getExternalId(), HttpStatus.ACCEPTED);
         } else {
@@ -307,7 +307,7 @@ public class ProfilesManagementFO {
     @ResponseBody
     public ResponseEntity<String> delete(@RequestParam PersistentProfileGroup profile) {
 
-        if (profile.getType().equals(ProfileType.get(GENERAL))) {
+        if (profile.getType().equals(ProfileType.get(GENERAL)) && profile.getMenus().isEmpty()) {
             deleteprofile(profile);
             return new ResponseEntity<String>("", HttpStatus.ACCEPTED);
         } else {
@@ -377,7 +377,7 @@ public class ProfilesManagementFO {
         programs.remove(program);
     }
 
-    @RequestMapping(path = "copy", method = RequestMethod.GET)
+    @RequestMapping(path = "copy", method = RequestMethod.POST)
     public String accessGroupCopy(Model model, @RequestParam String groupFrom, @RequestParam String groupTo) {
 
         final ProfileGroup grpFrom = new ProfileGroup(generateShort(groupFrom));
