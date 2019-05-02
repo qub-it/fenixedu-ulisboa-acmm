@@ -144,6 +144,10 @@ public class PersistentProfileGroup extends PersistentProfileGroup_Base {
             throw new Error("This profiles is associated with menus!");
         }
 
+        this.getAccessRuleSet().forEach(rule -> {
+            rule.revoke();
+        });
+
         this.getParentSet().forEach(parent -> {
             this.removeParent(parent);
         });

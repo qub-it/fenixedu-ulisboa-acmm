@@ -527,7 +527,6 @@ $(document).ready(function() {
 			filter: function( array, term ) {
 // 				var matcher = new RegExp("^" + $.ui.autocomplete.escapeRegex(term), "i");
 				var matcher = new RegExp( $.ui.autocomplete.escapeRegex( "[ A-Z-@.]*" + term.split(" ").join("[ A-Z-@.]*") + "[ A-Z-@.]*" ), "gi" );
-				console.log(matcher);
 				return $.grep( array, function( value ) {
 					return matcher.test( value );
 				} );

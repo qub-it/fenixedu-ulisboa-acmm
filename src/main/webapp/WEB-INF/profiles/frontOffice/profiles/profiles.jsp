@@ -15,7 +15,7 @@
 
 
 <script type="text/javascript">
- var users = [<c:forEach var="user" items="${users}">"${user.getName()}",</c:forEach>];
+var users = [<c:forEach var="user" items="${users}">"${user.getName()} - ${user.getDisplayName()}",</c:forEach>];
 </script>
 
 <script type="text/javascript">
