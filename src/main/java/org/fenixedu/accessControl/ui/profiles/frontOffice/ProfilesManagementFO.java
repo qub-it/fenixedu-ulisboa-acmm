@@ -110,7 +110,7 @@ public class ProfilesManagementFO {
         return "profiles/frontOffice/profiles/profiles";
     }
 
-    @RequestMapping(path = "getTree", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(path = "getTree", method = RequestMethod.GET, produces = { "application/json; charset=UTF-8" })
     @ResponseBody
     public String getTree(@RequestParam PersistentProfileGroup profile) {
 
@@ -307,7 +307,7 @@ public class ProfilesManagementFO {
     @ResponseBody
     public ResponseEntity<String> delete(@RequestParam PersistentProfileGroup profile) {
 
-        if (profile.getType().equals(ProfileType.get(GENERAL)) && profile.getMenus().isEmpty()) {
+        if (profile.getType().equals(ProfileType.get(GENERAL)) && profile.getMenuItemSet().isEmpty()) {
             deleteprofile(profile);
             return new ResponseEntity<String>("", HttpStatus.ACCEPTED);
         } else {

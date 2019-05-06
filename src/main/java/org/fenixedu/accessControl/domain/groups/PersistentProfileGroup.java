@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.fenixedu.academic.domain.accessControl.rules.AccessRule;
 import org.fenixedu.accessControl.groups.ProfileGroup;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
@@ -134,8 +135,14 @@ public class PersistentProfileGroup extends PersistentProfileGroup_Base {
         return Bennu.getInstance().getProfileGroupSet().stream().filter(group -> group.getCod().equals(cod)).findAny();
     }
 
-    public Set<MenuItem> getMenus() {
-        return this.getMenuItemSet();
+    @Override
+    public Set<MenuItem> getMenuItemSet() {
+        return super.getMenuItemSet();
+    }
+
+    @Override
+    public Set<AccessRule> getAccessRuleSet() {
+        return super.getAccessRuleSet().stream().filter(rule -> rule.getRevoked() == null).collect(Collectors.toSet());
     }
 
     public void delete() {

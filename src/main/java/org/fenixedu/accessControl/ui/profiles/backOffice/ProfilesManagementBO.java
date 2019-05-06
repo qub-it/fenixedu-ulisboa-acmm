@@ -12,6 +12,7 @@ import org.fenixedu.academic.domain.accessControl.AcademicAuthorizationGroup;
 import org.fenixedu.academic.domain.accessControl.academicAdministration.AcademicAccessRule;
 import org.fenixedu.academic.domain.accessControl.academicAdministration.AcademicAccessRule.AcademicAccessTarget;
 import org.fenixedu.academic.domain.accessControl.academicAdministration.AcademicOperationType;
+import org.fenixedu.academic.domain.accessControl.rules.AccessRule;
 import org.fenixedu.academic.domain.administrativeOffice.AdministrativeOffice;
 import org.fenixedu.accessControl.domain.groups.PersistentProfileGroup;
 import org.fenixedu.accessControl.domain.groups.ProfileType;
@@ -52,9 +53,8 @@ public class ProfilesManagementBO {
         final AcademicOperationType[] operations = AcademicOperationType.class.getEnumConstants();
 
         final Set<ProfileType> types = Bennu.getInstance().getProfileTypeSet();
-        final Set<User> users = Bennu.getInstance().getUserSet();
 
-        final Multimap<String, AcademicAccessRule> profilesAuths = HashMultimap.create();
+        final Set<User> users = Bennu.getInstance().getUserSet();
 
         final Multimap<String, String> authsMenus = HashMultimap.create();
 
@@ -62,13 +62,10 @@ public class ProfilesManagementBO {
 
         final Map<String, Set<PersistentProfileGroup>> subProfiles = new HashMap<>();
 
-        AcademicAccessRule.accessRules().forEach(rule -> {
-            if (rule.getWhoCanAccess() instanceof ProfileGroup) {
-                profilesAuths.put(((ProfileGroup) rule.getWhoCanAccess()).toPersistentGroup().getExternalId(), rule);
-            }
-        });
+        final Map<String, Set<AccessRule>> profilesAuths = new HashMap<>();
 
         profiles.forEach(profile -> {
+            profilesAuths.put(profile.getExternalId(), profile.getAccessRuleSet());
             profilesUsers.put(profile.getExternalId(), profile.getMembersWithoutParents().collect(Collectors.toSet()));
             subProfiles.put(profile.getExternalId(), profile.getChildSet());
         });
@@ -93,7 +90,7 @@ public class ProfilesManagementBO {
         final Set<Degree> degrees = Bennu.getInstance().getDegreesSet();
 
         model.addAttribute("profiles", profiles);
-        model.addAttribute("profilesAuths", profilesAuths.asMap());
+        model.addAttribute("profilesAuths", profilesAuths);
         model.addAttribute("subProfiles", subProfiles);
         model.addAttribute("authsMenus", authsMenus.asMap());
         model.addAttribute("profilesUsers", profilesUsers);
@@ -106,7 +103,7 @@ public class ProfilesManagementBO {
         return "profiles/backOffice/profiles/profiles";
     }
 
-    @RequestMapping(path = "getMenusTree", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(path = "getMenusTree", method = RequestMethod.GET, produces = { "application/json; charset=UTF-8" })
     @ResponseBody
     public String getMenusTree() {
 
@@ -116,7 +113,7 @@ public class ProfilesManagementBO {
 
     }
 
-    @RequestMapping(path = "getTree", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(path = "getTree", method = RequestMethod.GET, produces = { "application/json; charset=UTF-8" })
     @ResponseBody
     public String getTree(@RequestParam PersistentProfileGroup profile) {
 
@@ -212,6 +209,7 @@ public class ProfilesManagementBO {
                     final Map<String, Object> folder = new HashMap<>();
 
                     folder.put("key", menuItem.getExternalId());
+
                     folder.put("title", menuItem.getTitle().getContent());
                     folder.put("folder", "true");
                     folder.put("expanded", "true");
@@ -411,7 +409,7 @@ public class ProfilesManagementBO {
     @ResponseBody
     public ResponseEntity<String> delete(@RequestParam PersistentProfileGroup profile) {
 
-        if (profile.getMenus().isEmpty()) {
+        if (profile.getMenuItemSet().isEmpty()) {
             deleteprofile(profile);
             return new ResponseEntity<String>("", HttpStatus.ACCEPTED);
         } else {

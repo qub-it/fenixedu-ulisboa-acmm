@@ -600,10 +600,6 @@ $(document).ready(function() {
 				var $auth = $(e.relatedTarget).attr('data-auth-id');
 				var $authName = $(e.relatedTarget).attr('data-auth-name');
 				deleteProgram($program, $programName, $auth, $authName);
-			}else if($type == "menu"){
-				var $menu = $(e.relatedTarget).attr('data-menu-id');
-				var $menuPath = $(e.relatedTarget).attr('data-menu-path');
-				deleteMenu($profileId, $profileName, $menu, $menuPath);
 			}else if($type == "user"){
 				var $user = $(e.relatedTarget).attr('data-user-id');
 				var $userName = $(e.relatedTarget).attr('data-user-name');
@@ -612,7 +608,7 @@ $(document).ready(function() {
 				var $child = $(e.relatedTarget).attr('data-child-id');
 				var $childName = $(e.relatedTarget).attr('data-child-name');
 				deleteChild($profileId, $profileName, $child, $childName);
-			}else{
+			}else if($type == "profile"){
 				deleteProfile($profileId, $profileName);
 			}
 
