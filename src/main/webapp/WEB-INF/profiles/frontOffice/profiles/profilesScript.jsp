@@ -2,6 +2,11 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <style>
 
+.scrollable{
+	overflow-y: scroll;
+    max-height: 450px;
+}
+
 .box > .btn {
     margin: 5px;
 }
@@ -509,12 +514,15 @@ $(document).ready(function() {
 		},
 		filter: function( array, term ) {
 //				var matcher = new RegExp("^" + $.ui.autocomplete.escapeRegex(term), "i");
-			var matcher = new RegExp( $.ui.autocomplete.escapeRegex( "[ A-Z-@.]*" + term.split(" ").join("[ A-Z-@.]*") + "[ A-Z-@.]*" ), "gi" );
+			var matcher = new RegExp( $.ui.autocomplete.escapeRegex( "[ A-Z-@.()]*" + term.split(" ").join("[ A-Z-@.()]*") + "[ A-Z-@.()]*" ), "gi" );
 			return $.grep( array, function( value ) {
 				return matcher.test( value );
 			} );
 		}
 	} );
+	
+	
+	
 		
 		
  		$("#userInp").autocomplete({
@@ -547,6 +555,19 @@ $(document).ready(function() {
 			appendTo: 'body',
 			start: function() {
 				$(this).addClass("course-dragging");
+				console.log("ola");
+				if($(this).hasClass("authorization") || $(this).hasClass("office") || $(this).hasClass("program")){
+					console.log("oi");
+					$(".table-auths").effect( "highlight", 3000 );
+				}else if($(this).hasClass("menu")){
+					$(".menus").effect( "highlight", 3000 );
+				}else if($(this).hasClass("menu")){
+					$(".menus").effect( "highlight", 3000 );
+				}else if($(this).hasClass("profile")){
+					$(".subprofiles").effect( "highlight", 3000 );
+				} else if($(this).hasClass("user")){
+					$(".users").effect( "highlight", 3000 );
+				} 
 			}
 		});
 		
@@ -554,7 +575,7 @@ $(document).ready(function() {
 			drop: dropFunction
 		});
 		
-		$(".table").droppable({
+		$(".table-auths").droppable({
 			drop: dropFunction
 		})
 		
@@ -572,6 +593,19 @@ $(document).ready(function() {
 				appendTo: 'body',
 				start: function() {
 					$(this).addClass("course-dragging");
+					console.log("ola");
+					if($(this).hasClass("authorization") || $(this).hasClass("office") || $(this).hasClass("program")){
+						console.log("oi");
+						$(".table-auths").effect( "highlight", 3000 );
+					}else if($(this).hasClass("menu")){
+						$(".menus").effect( "highlight", 3000 );
+					}else if($(this).hasClass("menu")){
+						$(".menus").effect( "highlight", 3000 );
+					}else if($(this).hasClass("profile")){
+						$(".subprofiles").effect( "highlight", 3000 );
+					} else if($(this).hasClass("user")){
+						$(".users").effect( "highlight", 3000 );
+					} 
 				}
 			});
 		    

@@ -409,7 +409,7 @@ public class ProfilesManagementBO {
     @ResponseBody
     public ResponseEntity<String> delete(@RequestParam PersistentProfileGroup profile) {
 
-        if (profile.getMenuItemSet().isEmpty()) {
+        if (getMenus(PortalConfiguration.getInstance().getMenu().getAsMenuContainer().getOrderedChild(), profile).isEmpty()) {
             deleteprofile(profile);
             return new ResponseEntity<String>("", HttpStatus.ACCEPTED);
         } else {

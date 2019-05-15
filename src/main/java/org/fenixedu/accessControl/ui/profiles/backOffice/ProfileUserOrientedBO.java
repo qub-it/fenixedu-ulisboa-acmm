@@ -109,7 +109,7 @@ public class ProfileUserOrientedBO {
     public String copy(Model model, @RequestParam String usernameTo, @RequestParam String usernameFrom) {
 
         final User userTo = User.findByUsername(usernameTo);
-        final User userFrom = User.findByUsername(usernameFrom);
+        final User userFrom = User.findByUsername(usernameFrom.split(" - ")[0]);
 
         Bennu.getInstance().getProfileGroupSet().forEach(profile -> {
 
@@ -124,7 +124,7 @@ public class ProfileUserOrientedBO {
         return "redirect:search?username=" + userTo.getUsername();
     }
 
-    @RequestMapping(path = "getTree", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(path = "getTree", method = RequestMethod.GET, produces = { "application/json; charset=UTF-8" })
     @ResponseBody
     public String getTree(@RequestParam User user) {
 

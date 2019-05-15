@@ -307,7 +307,9 @@ public class ProfilesManagementFO {
     @ResponseBody
     public ResponseEntity<String> delete(@RequestParam PersistentProfileGroup profile) {
 
-        if (profile.getType().equals(ProfileType.get(GENERAL)) && profile.getMenuItemSet().isEmpty()) {
+        if (profile.getType().equals(ProfileType.get(GENERAL))
+                && getMenus(PortalConfiguration.getInstance().getMenu().getAsMenuContainer().getOrderedChild(), profile)
+                        .isEmpty()) {
             deleteprofile(profile);
             return new ResponseEntity<String>("", HttpStatus.ACCEPTED);
         } else {

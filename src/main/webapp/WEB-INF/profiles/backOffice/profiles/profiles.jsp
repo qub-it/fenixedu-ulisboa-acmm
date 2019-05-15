@@ -27,27 +27,31 @@ var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup(
 
 <div class="row">
 <div class="col-md-4">
-	<form class="form-horizontal" action="${create}" method="POST">
-		<div class="input-group">
-		    <div class="input-group-addon">
-		        <span><spring:message code="label.profile" /></span>
-		    </div>
-		    <input name="name" required>
-		</div>
-		<div class="input-group">
-		    <div class="input-group-addon">
-		        <span><spring:message code="label.type" /></span>
-		    </div>
-		    <select name="type" required>
-		    	<c:forEach var="tp" items="${types}">
-		    		<option value="${tp.getType()}">${tp.getType()}</option>
-		    	</c:forEach>
-		    </select>
-		</div>
+	
+	
+	<form action="${create}" method="POST">
+	  <div class="input-group">
+	  	<div class="input-group-addon">
+	        <span><spring:message code="label.profile" /></span>
+	    </div>
+	    <input type="text" class="form-control" id="profile" name="name" required>
+	  </div>
+	  <div class="input-group">
+	    <div class="input-group-addon">
+	        <span><spring:message code="label.type" /> </span>
+	    </div>
+	    <select class="form-control" id="type" nme="type">
+	      <c:forEach var="tp" items="${types}">
+    		<option value="${tp.getType()}">${tp.getType()}</option>
+    	  </c:forEach>
+	    </select>
+	  </div>
+	  <input name="_csrf" value="${csrf.token}" hidden>
 
-		<input name="_csrf" value="${csrf.token}" hidden>
-		<button class="btn btn-primary" type="submit"><span class="glyphicon glyphicon-plus"></span> <spring:message code="label.create" /></button>
+	  <button class="btn btn-primary" type="submit"><span class="glyphicon glyphicon-plus"></span> <spring:message code="label.create" /></button>
 	</form>
+	
+	
 </div>
 </div>
 
@@ -62,14 +66,14 @@ var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup(
 			${profile.getPresentationName()} - ${profile.getType().getType()}
 		</div>
 		
-		<div class="accordion-panel" style="overflow: visible;" id="${profile.getExternalId()}">
+		<div class="accordion-panel"  id="${profile.getExternalId()}">
 			
 			<div>
 				<div class="col-lg-6"></div>
 				<div class="col-lg-6">
 					<form class="form-horizontal" action="${copyAction}" method="POST">
 						<label class="control-label"><spring:message code="label.copyFrom" /></label>
-						<input id="groupInp" name="groupFrom" class=" groupInp autocomplete">
+						<input id="groupInp" name="groupFrom" class=" groupInp autocomplete" required>
 						<input id="groupId" name="groupTo" value="${profile.toGroup().getName()}" type="hidden">
 						<button class="btn btn-primary" type="submit"><spring:message code="label.copy" /></button>
 					</form>
@@ -77,7 +81,7 @@ var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup(
 			</div>
 			
 			<div id="${profile.getExternalId()}" class="small">
-			<table class="table ui-droppable" >
+			<table class="table table-auths ui-droppable" >
 		  	  <thead>
 		  			<tr>
 		  				<th><spring:message code="label.authorizations.profile"/></th>
@@ -144,9 +148,9 @@ var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup(
 		  	</table>
 		</div>
 		
-			<header class="headerProfile"><spring:message code="label.menus" /></header>
 			<div class="box menus" >
-			
+			<header class="headerProfile"><spring:message code="label.menus" /></header>
+				
 				<div class="tree${profile.getExternalId()}"  style="broder: none;">
 				</div>				
 			</div>	
@@ -168,7 +172,7 @@ var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup(
 			</div>
 			
 			
-			<button data-profile-id="${profile.getExternalId()}" data-profile-name="${profile.getPresentationName()}" data-type="profile" data-toggle="modal" data-target="#confirmDelete" class="btn btn-danger" title=<spring:message code="label.delete"/>><spring:message code="label.delete" /> <span class="glyphicon glyphicon-remove"></span></button>
+			<button style="float: right" data-profile-id="${profile.getExternalId()}" data-profile-name="${profile.getPresentationName()}" data-type="profile" data-toggle="modal" data-target="#confirmDelete" class="btn btn-danger" title=<spring:message code="label.delete"/>><spring:message code="label.delete" /> <spring:message code="label.profile" />  <span class="glyphicon glyphicon-remove"></span></button>
 	
 	
 		</div>
@@ -188,7 +192,28 @@ var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup(
 				</h3>
 			</div>
 			<div id="collapseOne" class="panel-collapse collapse">
-				<div class="panel-body">
+				
+				<div id="filter-auths" class="input-group">
+					<div class="input-group-addon">
+				       <span><spring:message code="label.filter" /></span>
+				    </div>
+				    <input type="text"  class="form-control">
+				    
+				    <script type="text/javascript">
+						$("#filter-auths").find("input").keyup(function() {
+						  $("#filter-auths").next().children().each(function () {
+						    if(!$(this).find("#presentationName").html().toLowerCase().includes($("#filter-auths").find("input").val().toLowerCase())){
+								$(this).hide();
+						    }else{
+						    	$(this).show();
+						    }
+						  });
+						});
+					</script>
+				    
+				</div>
+
+				<div class="panel-body scrollable">
 					<c:forEach var="operation" items="${operations}">
 						<a href="${navigationAuths}?operation=${operation}">
 							<div class="draggable_course authorization">
@@ -198,6 +223,9 @@ var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup(
 						</a>
 					</c:forEach>
 				</div>
+				
+				
+			
 			</div>
 		</div>
 		
@@ -210,7 +238,29 @@ var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup(
 				</h3>
 			</div>
 			<div id="collapseTwo" class="panel-collapse collapse">
-				<div class="panel-body">
+			
+				<div id="filter-offices" class="input-group">
+					<div class="input-group-addon">
+				       <span><spring:message code="label.filter" /></span>
+				    </div>
+				    <input type="text"  class="form-control">
+				    
+				    <script type="text/javascript">
+						$("#filter-offices").find("input").keyup(function() {
+						  $("#filter-offices").next().children().each(function () {
+						    if(!$(this).find("#presentationName").html().toLowerCase().includes($("#filter-offices").find("input").val().toLowerCase())){
+								$(this).hide();
+						    }else{
+						    	$(this).show();
+						    }
+						  });
+						});
+					</script>
+				    
+				</div>
+			
+			
+				<div class="panel-body scrollable">
 					<c:forEach var="office" items="${offices}">
 						<div class="draggable_course office">
 							<div id="oid" style="display:none">${office.oid}</div>
@@ -231,12 +281,32 @@ var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup(
 				</h3>
 			</div>
 			<div id="collapseThree" class="panel-collapse collapse">
-				<div class="panel-body">
+			
+				<div id="filter-degree" class="input-group">
+					<div class="input-group-addon">
+				       <span><spring:message code="label.filter" /></span>
+				    </div>
+				    <input type="text"  class="form-control">
+				    
+				    <script type="text/javascript">
+						$("#filter-degree").find("input").keyup(function() {
+						  $("#filter-degree").next().children().each(function () {
+						    if(!$(this).find("#presentationName").html().toLowerCase().includes($("#filter-degree").find("input").val())){
+								$(this).hide();
+						    }else{
+						    	$(this).show();
+						    }
+						  });
+						});
+					</script>
+				    
+				</div>
+			
+				<div class="panel-body scrollable">
 					<c:forEach var="degree" items="${degrees}">
 						<div class="draggable_course program">
 							<div id="oid" style="display:none">${degree.oid}</div>
-							<div id="presentationName" style="display:none">${degree.presentationName}</div>
-							<div id="name">${degree.name}</div>
+							<div id="presentationName" >${degree.getCode()} - ${degree.presentationName}</div>
 						</div>
 					</c:forEach>
 				</div>
@@ -252,7 +322,28 @@ var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup(
 				</h3>
 			</div>
 			<div id="collapseFour" class="panel-collapse collapse">
-				<div class="panel-body">
+				
+				<div id="filter-menus" class="input-group">
+					<div class="input-group-addon">
+				       <span><spring:message code="label.filter" /></span>
+				    </div>
+				    <input type="text"  class="form-control">
+				    
+				    <script type="text/javascript">
+						$("#filter-menus").find("input").keyup(function() {
+						  $("#filter-menus").next().find(".fancytree-container").children().each(function () {
+						    if(!$(this).find("#path").html().toLowerCase().includes($("#filter-menus").find("input").val().toLowerCase())){
+								$(this).hide();
+						    }else{
+						    	$(this).show();
+						    }
+						  });
+						});
+					</script>
+				    
+				</div>
+			
+				<div class="panel-body scrollable">
 					<div id="menus"></div>
 				</div>
 			</div>
@@ -267,7 +358,28 @@ var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup(
 				</h3>
 			</div>
 			<div id="collapseFive" class="panel-collapse collapse">
-				<div class="panel-body">
+			
+				<div id="filter-profile" class="input-group">
+					<div class="input-group-addon">
+				       <span><spring:message code="label.filter" /></span>
+				    </div>
+				    <input type="text"  class="form-control">
+				    
+				    <script type="text/javascript">
+						$("#filter-profile").find("input").keyup(function() {
+						  $("#filter-profile").next().children().each(function () {
+						    if(!$(this).find("#name").html().toLowerCase().includes($("#filter-profile").find("input").val().toLowerCase())){
+								$(this).hide();
+						    }else{
+						    	$(this).show();
+						    }
+						  });
+						});
+					</script>
+				    
+				</div>
+			
+				<div class="panel-body scrollable">
 					<c:forEach var="profile" items="${profiles}">
 						<div class="draggable_course profile">
 							<div id="oid" style="display:none">${profile.oid}</div>
@@ -287,7 +399,7 @@ var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup(
 				</h3>
 			</div>
 			<div id="collapseSix" class="panel-collapse collapse">
-				<div class="panel-body">
+				<div class="panel-body scrollable">
 					<form class="form-horizontal" id="userForm">
 						<label class="control-label"><spring:message code="label.username" /></label>
 						<input id="userInp" name="username" class="autocomplete">
