@@ -22,6 +22,8 @@
 var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup().getName()}",</c:forEach>];
 </script>
 
+
+<jsp:include page="ui-autocomplete.jsp" />
 <jsp:include page="profilesScript.jsp" />
 
 <div class="row">

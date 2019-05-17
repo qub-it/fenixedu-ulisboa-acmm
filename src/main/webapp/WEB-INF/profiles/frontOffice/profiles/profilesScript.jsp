@@ -525,15 +525,7 @@ $(document).ready(function() {
 		}
 	} );
 	
-	
-	
-		
-		
- 		$("#userInp").autocomplete({
- 		    source: users,
- 		    minLength: 3,
- 		  });
-		
+			
 		$(".groupInp").autocomplete({
 		    source: profiles,
 		    minLength: 3,
