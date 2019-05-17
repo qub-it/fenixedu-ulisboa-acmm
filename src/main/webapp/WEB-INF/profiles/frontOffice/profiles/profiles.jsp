@@ -22,7 +22,6 @@ var users = [<c:forEach var="user" items="${users}">"${user.getName()} - ${user.
 var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup().getName()}",</c:forEach>];
 </script>
 
-<jsp:include page="ui-autocomplete.jsp" />
 <jsp:include page="profilesScript.jsp" />
 
 <div class="row">
@@ -351,13 +350,20 @@ var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup(
 				</h3>
 			</div>
 			<div id="collapseSix" class="panel-collapse collapse">
-				<div class="panel-body scrollable">
-					<form class="form-horizontal" id="userForm">
-						<label class="control-label"><spring:message code="label.username" /></label>
-						<input id="userInp" name="username" class="autocomplete">
-						<button class="btn btn-primary" type="submit"><spring:message code="label.search" /></button>
-					</form>
+			
+				<div id="filter-users" class="input-group">
+					<div class="input-group-addon">
+				       <span><spring:message code="label.filter" /></span>
+				    </div>
+				   
+				    <input type="text"  class="form-control">
+
 				</div>
+				
+
+				<div id="usersResults" class="panel-body scrollable">
+				</div>
+				
 			</div>
 		</div>
 		

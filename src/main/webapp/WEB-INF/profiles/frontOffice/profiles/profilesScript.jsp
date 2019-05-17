@@ -500,6 +500,10 @@
 			});
 	  };
 	  
+	  function closeAllLists() {
+		    $(".user").remove();
+		  }		
+	  
 	  
 
 
@@ -555,9 +559,7 @@ $(document).ready(function() {
 			appendTo: 'body',
 			start: function() {
 				$(this).addClass("course-dragging");
-				console.log("ola");
 				if($(this).hasClass("authorization") || $(this).hasClass("office") || $(this).hasClass("program")){
-					console.log("oi");
 					$(".table-auths").effect( "highlight", 3000 );
 				}else if($(this).hasClass("menu")){
 					$(".menus").effect( "highlight", 3000 );
@@ -584,33 +586,46 @@ $(document).ready(function() {
 		})
 		
 
-		$('#userForm').on('submit', function(){
-		    $(this).after("<div class='draggable_course user ui-draggable'><div id='userName'>" + $(this).find("#userInp").val() + "</div></div>");
-		    
-		    $(this).parent().find(".user").draggable({
-				revert : 'invalid',
-				helper: 'clone',
-				appendTo: 'body',
-				start: function() {
-					$(this).addClass("course-dragging");
-					console.log("ola");
-					if($(this).hasClass("authorization") || $(this).hasClass("office") || $(this).hasClass("program")){
-						console.log("oi");
-						$(".table-auths").effect( "highlight", 3000 );
-					}else if($(this).hasClass("menu")){
-						$(".menus").effect( "highlight", 3000 );
-					}else if($(this).hasClass("menu")){
-						$(".menus").effect( "highlight", 3000 );
-					}else if($(this).hasClass("profile")){
-						$(".subprofiles").effect( "highlight", 3000 );
-					} else if($(this).hasClass("user")){
-						$(".users").effect( "highlight", 3000 );
-					} 
-				}
-			});
-		    
-		    return false;
-		 });
+		$("#filter-users").find("input").keyup(function(e) {
+			arr = users;
+			
+		      var a, b, i, val = this.value;
+
+	    	  closeAllLists();
+		      if (!val || val.length < 4) {
+		    	  return false;
+		      }
+		      for (i = 0; i < arr.length; i++) {
+		    	  
+					var matcher = new RegExp("[ A-Z-@.()]*" + term.split(" ").join("[ A-Z-@.()]*") + "[ A-Z-@.()]*", "gi" );
+		    	  
+		        if (matcher.test(arr[i].toLowerCase())) {
+		        	$("#usersResults").append("<div class='draggable_course user ui-draggable'><div id='userName'>" + arr[i] + "</div></div>");
+		        
+		        	$("#usersResults").find(".user").draggable({
+						revert : 'invalid',
+						helper: 'clone',
+						appendTo: 'body',
+						start: function() {
+							$(this).addClass("course-dragging");
+
+							if($(this).hasClass("authorization") || $(this).hasClass("office") || $(this).hasClass("program")){
+								$(".table-auths").effect( "highlight", 3000 );
+							}else if($(this).hasClass("menu")){
+								$(".menus").effect( "highlight", 3000 );
+							}else if($(this).hasClass("menu")){
+								$(".menus").effect( "highlight", 3000 );
+							}else if($(this).hasClass("profile")){
+								$(".subprofiles").effect( "highlight", 3000 );
+							} else if($(this).hasClass("user")){
+								$(".users").effect( "highlight", 3000 );
+							} 
+						}
+					});
+		        
+		        }
+		      }
+		  });
 		
 		$('#confirmDelete').on('show.bs.modal', function(e){ 
 			
