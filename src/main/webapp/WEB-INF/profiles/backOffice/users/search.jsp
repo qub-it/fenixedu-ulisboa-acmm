@@ -76,7 +76,28 @@ var users = [<c:forEach var="user" items="${users}">"${user.getName()} - ${user.
 					</h3>
 				</div>
 				<div id="collapseOne" class="panel-collapse collapse">
-					<div class="panel-body">
+				
+					<div id="filter-profile" class="input-group">
+						<div class="input-group-addon">
+					       <span><spring:message code="label.filter" /></span>
+					    </div>
+					    <input type="text"  class="form-control">
+					    
+					    <script type="text/javascript">
+							$("#filter-profile").find("input").keyup(function() {
+							  $("#filter-profile").next().children().each(function () {
+							    if(!$(this).find("#name").html().toLowerCase().includes($("#filter-profile").find("input").val().toLowerCase())){
+									$(this).hide();
+							    }else{
+							    	$(this).show();
+							    }
+							  });
+							});
+						</script>
+					    
+					</div>
+				
+					<div class="panel-body scrollable">
 						<c:forEach var="profile" items="${profileSet}">
 							<a href='${navigationGroup}?expression=${profile.expression()}'>
 								<div class="draggable profile">

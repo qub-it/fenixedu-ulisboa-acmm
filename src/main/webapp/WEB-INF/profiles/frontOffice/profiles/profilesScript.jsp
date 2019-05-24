@@ -144,6 +144,9 @@
 
 <script>
 
+
+var accentedCharacters = "àèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇßØøÅåÆæœ";
+
 	function dropFunction(event, ui) {
 		if(!$(ui.draggable).hasClass("course-dragging"))
 			return;
@@ -518,7 +521,7 @@ $(document).ready(function() {
 		},
 		filter: function( array, term ) {
 //				var matcher = new RegExp("^" + $.ui.autocomplete.escapeRegex(term), "i");
-			var matcher = new RegExp( $.ui.autocomplete.escapeRegex( "[ A-Z-@.()]*" + term.split(" ").join("[ A-Z-@.()]*") + "[ A-Z-@.()]*" ), "gi" );
+			var matcher = new RegExp( $.ui.autocomplete.escapeRegex( "[ A-Z-@.()"+ accentedCharacters+"]*" + term.split(" ").join("[ A-Z-@.()"+ accentedCharacters+"]*") + "[ A-Z-@.()"+ accentedCharacters+"]*" ), "gi" );
 			return $.grep( array, function( value ) {
 				return matcher.test( value );
 			} );
@@ -589,7 +592,7 @@ $(document).ready(function() {
 		      }
 		      for (i = 0; i < arr.length; i++) {
 		    	  
-					var matcher = new RegExp("[ A-Z-@.()]*" + term.split(" ").join("[ A-Z-@.()]*") + "[ A-Z-@.()]*", "gi" );
+					var matcher = new RegExp("[ A-Z-@.()"+ accentedCharacters+"]*" + term.split(" ").join("[ A-Z-@.()"+ accentedCharacters+"]*") + "[ A-Z-@.()"+ accentedCharacters+"]*", "gi" );
 		    	  
 		        if (matcher.test(arr[i].toLowerCase())) {
 		        	$("#usersResults").append("<div class='draggable_course user ui-draggable'><div id='userName'>" + arr[i] + "</div></div>");

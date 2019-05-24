@@ -155,6 +155,9 @@
 
 <script>
 
+
+var accentedCharacters = "àèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇßØøÅåÆæœ";
+
 	function dropFunction(event, ui) {
 		if(!$(ui.draggable).hasClass("course-dragging"))
 			return;
@@ -491,6 +494,7 @@
 	      
 	  };
 	  
+	  
 	  function loadTree($profile, $profileName){
 		  $(".tree"+$profile).fancytree({
 				source: {
@@ -502,7 +506,7 @@
 					
 					deleteMenu($profile, $profileName, data.node.key, data.node.title);
 									
-				},
+				}
 			});
 		  $(".draggable_course").draggable({
 				revert : 'invalid',
@@ -549,7 +553,7 @@ $(document).ready(function() {
 			},
 			filter: function( array, term ) {
 // 				var matcher = new RegExp("^" + $.ui.autocomplete.escapeRegex(term), "i");
-				var matcher = new RegExp( $.ui.autocomplete.escapeRegex( "[ A-Z-@.()]*" + term.split(" ").join("[ A-Z-@.()]*") + "[ A-Z-@.()]*" ), "gi" );
+				var matcher = new RegExp( $.ui.autocomplete.escapeRegex( "[ A-Z-@.()"+ accentedCharacters+"]*" + term.split(" ").join("[ A-Z-@.()"+ accentedCharacters+"]*") + "[ A-Z-@.()"+ accentedCharacters+"]*" ), "gi" );
 				return $.grep( array, function( value ) {
 					return matcher.test( value );
 				} );
@@ -558,6 +562,11 @@ $(document).ready(function() {
 		
 	
 		$(".groupInp").autocomplete({
+		    source: profiles,
+		    minLength: 3,
+		  });
+		
+		$(".userInp").autocomplete({
 		    source: profiles,
 		    minLength: 3,
 		  });
@@ -621,7 +630,7 @@ $(document).ready(function() {
 		      }
 		      for (i = 0; i < arr.length; i++) {
 		    	  
-					var matcher = new RegExp("[ A-Z-@.()]*" + val.toLowerCase().split(" ").join("[ A-Z-@.()]*") + "[ A-Z-@.()]*", "gi" );
+					var matcher = new RegExp("[ A-Z-@.()"+ accentedCharacters+"]*" + val.toLowerCase().split(" ").join("[ A-Z-@.()"+ accentedCharacters+"]*") + "[ A-Z-@.()"+ accentedCharacters+"]*", "gi" );
 		    	  
 		        if (matcher.test(arr[i].toLowerCase())) {
 		        	$("#usersResults").append("<div class='draggable_course user ui-draggable'><div id='userName'>" + arr[i] + "</div></div>");
@@ -684,6 +693,11 @@ $(document).ready(function() {
 				deleteChild($profileId, $profileName, $child, $childName);
 			}else if($type == "profile"){
 				deleteProfile($profileId, $profileName);
+			}else if($type == "menu"){
+				var $menu = $(e.relatedTarget).attr('data-menu-id');
+				var $menuName = $(e.relatedTarget).attr('data-menu-name');
+				deleteMenu($profileId, $profileName, $menu, $menuName);
+
 			}
 
 		});

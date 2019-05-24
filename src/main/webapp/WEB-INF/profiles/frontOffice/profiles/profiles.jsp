@@ -15,10 +15,12 @@
 
 
 <script type="text/javascript">
-var users = [<c:forEach var="user" items="${users}">"${user.getName()} - ${user.getDisplayName()}",</c:forEach>];
-</script>
 
-<script type="text/javascript">
+
+var accentedCharacters = "àèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇßØøÅåÆæœ";
+
+var users = [<c:forEach var="user" items="${users}">"${user.getName()} - ${user.getDisplayName()}",</c:forEach>];
+
 var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup().getName()}",</c:forEach>];
 </script>
 
@@ -194,8 +196,10 @@ var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup(
 				    <script type="text/javascript">
 						$("#filter-auths").find("input").keyup(function() {
 						  $("#filter-auths").next().children().each(function () {
-						    if(!$(this).find("#presentationName").html().toLowerCase().includes($("#filter-auths").find("input").val().toLowerCase())){
-								$(this).hide();
+							  matcher = new RegExp("[ A-Z-@.()"+ accentedCharacters+"]*" + $("#filter-auths").find("input").val().toLowerCase().split(" ").join("[ A-Z-@.()"+ accentedCharacters+"]*") + "[ A-Z-@.()"+ accentedCharacters+"]*" , "gi" );
+
+							    if(!matcher.test($(this).find("#presentationName").html().toLowerCase())){
+									$(this).hide();
 						    }else{
 						    	$(this).show();
 						    }
@@ -237,8 +241,10 @@ var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup(
 					    <script type="text/javascript">
 							$("#filter-offices").find("input").keyup(function() {
 							  $("#filter-offices").next().children().each(function () {
-							    if(!$(this).find("#presentationName").html().toLowerCase().includes($("#filter-offices").find("input").val().toLowerCase())){
-									$(this).hide();
+								  matcher = new RegExp("[ A-Z-@.()"+ accentedCharacters+"]*" + $("#filter-offices").find("input").val().toLowerCase().split(" ").join("[ A-Z-@.()"+ accentedCharacters+"]*") + "[ A-Z-@.()"+ accentedCharacters+"]*" , "gi" );
+
+									if(!matcher.test($(this).find("#presentationName").html().toLowerCase())){
+										$(this).hide();
 							    }else{
 							    	$(this).show();
 							    }
@@ -279,8 +285,10 @@ var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup(
 					    <script type="text/javascript">
 							$("#filter-degree").find("input").keyup(function() {
 							  $("#filter-degree").next().children().each(function () {
-							    if(!$(this).find("#presentationName").html().toLowerCase().includes($("#filter-degree").find("input").val().toLowerCase())){
-									$(this).hide();
+								  matcher = new RegExp("[ A-Z-@.()"+ accentedCharacters+"]*" + $("#filter-degree").find("input").val().toLowerCase().split(" ").join("[ A-Z-@.()"+ accentedCharacters+"]*") + "[ A-Z-@.()"+ accentedCharacters+"]*" , "gi" );
+
+									if(!matcher.test($(this).find("#presentationName").html().toLowerCase())){
+										$(this).hide();
 							    }else{
 							    	$(this).show();
 							    }
@@ -321,8 +329,10 @@ var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup(
 				    <script type="text/javascript">
 						$("#filter-profile").find("input").keyup(function() {
 						  $("#filter-profile").next().children().each(function () {
-						    if(!$(this).find("#name").html().toLowerCase().includes($("#filter-profile").find("input").val().toLowerCase())){
-								$(this).hide();
+							  matcher = new RegExp("[ A-Z-@.()"+ accentedCharacters+"]*" + $("#filter-profile").find("input").val().toLowerCase().split(" ").join("[ A-Z-@.()"+ accentedCharacters+"]*") + "[ A-Z-@.()"+ accentedCharacters+"]*" , "gi" );
+
+								if(!matcher.test($(this).find("#name").html().toLowerCase())){
+									$(this).hide();
 						    }else{
 						    	$(this).show();
 						    }

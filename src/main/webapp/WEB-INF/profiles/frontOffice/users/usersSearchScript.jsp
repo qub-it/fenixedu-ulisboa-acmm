@@ -42,6 +42,9 @@
 <spring:url var="getTree" value="/front-office-users/getTree"/>
 <script>
 
+
+var accentedCharacters = "àèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇßØøÅåÆæœ";
+
 	function dropFunction(event, ui) {
 		if(!$(ui.draggable).hasClass("dragging"))
 			return;
@@ -112,7 +115,7 @@ $(document).ready(function() {
 		},
 		filter: function( array, term ) {
 //				var matcher = new RegExp("^" + $.ui.autocomplete.escapeRegex(term), "i");
-			var matcher = new RegExp( $.ui.autocomplete.escapeRegex( "[ A-Z-@.]*" + term.split(" ").join("[ A-Z-@.]*") + "[ A-Z-@.]*" ), "gi" );
+			var matcher = new RegExp( $.ui.autocomplete.escapeRegex( "[ A-Z-@.()"+ accentedCharacters+"]*" + term.split(" ").join("[ A-Z-@.()"+ accentedCharacters+"]*") + "[ A-Z-@.()"+ accentedCharacters+"]*" ), "gi" );
 			console.log(matcher);
 			return $.grep( array, function( value ) {
 				return matcher.test( value );

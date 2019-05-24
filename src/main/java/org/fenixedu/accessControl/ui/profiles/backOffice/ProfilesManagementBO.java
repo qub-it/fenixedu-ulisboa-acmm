@@ -210,7 +210,11 @@ public class ProfilesManagementBO {
 
                     folder.put("key", menuItem.getExternalId());
 
-                    folder.put("title", menuItem.getTitle().getContent());
+                    folder.put("title", "<button data-profile-id='" + profile.getExternalId() + "' data-profile-name='"
+                            + profile.getName() + "' data-menu-id='" + menuItem.getExternalId() + "' data-menu-name='"
+                            + menuItem.getTitle().getContent()
+                            + "' data-type='menu' data-toggle='modal' data-target='#confirmDelete' class='btn btn-default'>"
+                            + menuItem.getTitle().getContent() + " <span class='glyphicon glyphicon-remove'></span></button>");
                     folder.put("folder", "true");
                     folder.put("expanded", "true");
 
@@ -224,7 +228,11 @@ public class ProfilesManagementBO {
                     final Map<String, String> leaf = new HashMap<>();
 
                     leaf.put("key", menuItem.getExternalId());
-                    leaf.put("title", menuItem.getTitle().getContent());
+                    leaf.put("title", "<button data-profile-id='" + profile.getExternalId() + "' data-profile-name='"
+                            + profile.getName() + "' data-menu-id='" + menuItem.getExternalId() + "' data-menu-name='"
+                            + menuItem.getTitle().getContent()
+                            + "' data-type='menu' data-toggle='modal' data-target='#confirmDelete' class='btn btn-default'>"
+                            + menuItem.getTitle().getContent() + " <span class='glyphicon glyphicon-remove'></span></button>");
 
                     items.add(leaf);
                 }
