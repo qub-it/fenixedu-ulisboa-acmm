@@ -1,6 +1,7 @@
 package org.fenixedu.accessControl.groups;
 
 import java.util.Optional;
+import java.util.Random;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -143,5 +144,22 @@ public class ProfileGroup extends CustomGroup {
             return persistent.get().getGroup().toGroup();
         }
         return Group.nobody();
+    }
+
+    public static String generateShort(String name) {
+
+        String cod = "";
+        final String[] words = name.split(" ");
+
+        for (final String word : words) {
+            cod += word.charAt(0);
+        }
+
+        final Random rand = new Random();
+
+        cod += String.valueOf(name.length() * rand.nextInt(100));
+
+        return cod;
+
     }
 }

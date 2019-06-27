@@ -19,7 +19,7 @@ var accentedCharacters = "àèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôû
 
    var users = [<c:forEach var="user" items="${users}">"${user.getName()} - ${user.getDisplayName()}",</c:forEach>];
 
-	var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup().getName()}",</c:forEach>];
+	var profiles = {<c:forEach var="profile" items="${profiles}">"${profile.toGroup().getName()}" : "${profile.toGroup().getCod()}",</c:forEach>};
 </script>
 
 
@@ -27,6 +27,7 @@ var accentedCharacters = "àèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôû
 <jsp:include page="profilesScript.jsp" />
 
 <div class="row">
+
 <div class="col-md-4">
 	
 	
@@ -41,7 +42,7 @@ var accentedCharacters = "àèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôû
 	    <div class="input-group-addon">
 	        <span><spring:message code="label.type" /> </span>
 	    </div>
-	    <select class="form-control" id="type" nme="type">
+	    <select class="form-control" id="type" name="type">
 	      <c:forEach var="tp" items="${types}">
     		<option value="${tp.getType()}">${tp.getType()}</option>
     	  </c:forEach>
@@ -74,8 +75,9 @@ var accentedCharacters = "àèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôû
 				<div class="col-lg-6">
 					<form class="form-horizontal" action="${copyAction}" method="POST">
 						<label class="control-label"><spring:message code="label.copyFrom" /></label>
-						<input id="groupInp" name="groupFrom" class=" groupInp autocomplete" required>
-						<input id="groupId" name="groupTo" value="${profile.toGroup().getName()}" type="hidden">
+						<input id="groupInp" class=" groupInp autocomplete" required>
+						<input id="groupInpCod" name="groupFrom" type="hidden">
+						<input id="groupId" name="groupTo" value="${profile.toGroup().getCod()}" type="hidden">
 						<button class="btn btn-primary" type="submit"><spring:message code="label.copy" /></button>
 					</form>
 				</div>

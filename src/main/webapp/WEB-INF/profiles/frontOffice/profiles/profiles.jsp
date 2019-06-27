@@ -21,7 +21,7 @@ var accentedCharacters = "àèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôû
 
 var users = [<c:forEach var="user" items="${users}">"${user.getName()} - ${user.getDisplayName()}",</c:forEach>];
 
-var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup().getName()}",</c:forEach>];
+var profiles = {<c:forEach var="profile" items="${profiles}">"${profile.toGroup().getName()}" : "${profile.toGroup().getCod()}",</c:forEach>};
 </script>
 
 
@@ -65,6 +65,7 @@ var profiles = [<c:forEach var="profile" items="${profiles}">"${profile.toGroup(
 					<form class="form-horizontal" action="${copyAction}" method="POST">
 						<label class="control-label"><spring:message code="label.copyFrom" /></label>
 						<input id="groupInp" name="groupFrom" class=" groupInp autocomplete" required>
+						<input id="groupInpCod" name="groupFrom" type="hidden">
 						<input id="groupId" name="groupTo" value="${profile.toGroup().getName()}" type="hidden">
 						<button class="btn btn-primary" type="submit"><spring:message code="label.copy" /></button>
 					</form>

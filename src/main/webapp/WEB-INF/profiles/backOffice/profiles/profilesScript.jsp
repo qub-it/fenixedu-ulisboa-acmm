@@ -562,14 +562,16 @@ $(document).ready(function() {
 		
 	
 		$(".groupInp").autocomplete({
-		    source: profiles,
+		    source: Object.keys(profiles),
 		    minLength: 3,
 		  });
 		
-		$(".userInp").autocomplete({
-		    source: profiles,
-		    minLength: 3,
+		$("#groupInp").change(function(){
+			
+			$("#groupInpCod").val(profiles[$(".groupInp").val()]);
+	
 		  });
+		
 	
 	   $(".accordion").on("click", function(){
 
