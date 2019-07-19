@@ -11,7 +11,7 @@
 
 <spring:url var="create" value="/front-office-profiles/create"/>
 <spring:url var="copyAction" value="/front-office-profiles/copy"/>
-<spring:url var="navigationAuths" value="/access-control/profiles/front-office-navigationProfile"/>
+<spring:url var="navigationAuths" value="/front-office-navigationProfile"/>
 
 
 <script type="text/javascript">
