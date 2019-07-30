@@ -102,11 +102,9 @@ var users = [<c:forEach var="user" items="${users}">"${user.getName()} - ${user.
 				
 					<div class="panel-body scrollable">
 						<c:forEach var="profile" items="${profileSet}">
-							<a href='${navigationGroup}?expression=${profile.expression()}'>
-								<div class="draggable profile">
-									<div id="name">${profile.toGroup().getName()}</div>
-								</div>
-							</a>
+							<div class="draggable profile">
+								<div id="name">${profile.toGroup().getName()}</div>
+							</div>
 						</c:forEach>
 					</div>
 				</div>
